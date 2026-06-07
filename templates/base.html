@@ -326,6 +326,114 @@
       .wa-float span { display: none; }
       .wa-float { padding: .85rem; }
     }
+
+    /* Newsletter global critical styles: never render as raw HTML below the footer. */
+    .nl-global {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 950;
+      display: flex;
+      justify-content: center;
+      padding: 0 16px 16px;
+      pointer-events: none;
+    }
+    .nl-global.is-hidden {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    .nl-global__card {
+      width: min(1080px, 100%);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(15,23,42,0.98), rgba(5,46,42,0.96));
+      color: #fff;
+      box-shadow: 0 22px 80px rgba(0,0,0,0.55);
+      overflow: hidden;
+      pointer-events: auto;
+    }
+    .nl-global__top,
+    .nl-global__body,
+    .nl-global__form {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nl-global__top {
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .nl-global__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.88);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .nl-global__dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #f59e0b;
+      box-shadow: 0 0 0 6px rgba(245,158,11,0.16);
+    }
+    .nl-global__close {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      cursor: pointer;
+    }
+    .nl-global__body {
+      justify-content: space-between;
+      padding: 14px 16px 16px;
+    }
+    .nl-global__title {
+      margin: 0 0 5px;
+      font-size: 1.05rem;
+      line-height: 1.2;
+      color: #fff;
+    }
+    .nl-global__text,
+    .nl-global__hint {
+      margin: 0;
+      color: rgba(255,255,255,0.76);
+      font-size: 0.86rem;
+    }
+    .nl-global__input {
+      min-width: 240px;
+      min-height: 42px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.24);
+      color: #fff;
+    }
+    .nl-global__btn {
+      min-height: 42px;
+      background: linear-gradient(135deg, #f7c948, #f59e0b);
+      color: #07111f;
+      border: 0;
+    }
+    @media (max-width: 860px) {
+      .nl-global__body,
+      .nl-global__form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .nl-global__input {
+        min-width: 0;
+        width: 100%;
+      }
+    }
   </style>
 
   {% if not has_premium and not has_temp_access %}

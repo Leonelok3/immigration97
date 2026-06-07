@@ -5,14 +5,15 @@
   <meta charset="UTF-8"/>
   <meta name="google-site-verification" content="Iawiq5lHjXn0VOj4Pd0y8O4BmrkgJKNS95ODHsvaMXk"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <meta name="description" content="Immigration97 — La plateforme qui connecte les talents africains aux employeurs internationaux. Créez votre profil, préparez vos tests de langue, trouvez du travail à l'étranger."/>
+  <meta name="description" content="Immigration97 — Immigration assistée par IA : visas, études, travail, résidence permanente, CV, tests de langue et accompagnement international."/>
   <meta name="theme-color" content="#050A18"/>
-  <title>Immigration97 — Placement International pour Africains</title>
+  <title>Immigration97 — Immigration assistée par IA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/immigration-brand.css' %}?v=20260607-ai-brand">
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;overflow-x:hidden;}
@@ -360,6 +361,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       <a href="/prep/">Tests de langue</a>
       <a href="{% url 'actualite:list' %}">Actualité</a>
       <a href="{% url 'resources:library' %}">Ressources</a>
+      <a href="/arsenal-ia/">Arsenal IA</a>
     </nav>
     <div class="nav-cta-group">
       {% if user.is_authenticated %}
@@ -384,6 +386,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <a href="{% url 'residence_permanente' %}" onclick="closeMobile()">Résidence 🇨🇦</a>
   <a href="{% url 'actualite:list' %}" onclick="closeMobile()">Actualité</a>
   <a href="{% url 'resources:library' %}" onclick="closeMobile()">Ressources</a>
+  <a href="/arsenal-ia/" onclick="closeMobile()">Arsenal IA</a>
   {% if user.is_authenticated %}
     <a href="{% url 'profiles:my_space' %}" onclick="closeMobile()">Mon espace</a>
     <a href="{% url 'authentification:logout' %}" class="nav-btn-primary" onclick="closeMobile()">Se déconnecter</a>
@@ -402,19 +405,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <div class="slide active" data-index="0">
     <div class="slide__bg" style="background-image:linear-gradient(135deg,#050A18 0%,#0A1628 40%,#0F2040 100%);"></div>
     <div class="slide__inner">
-      <div class="slide__kicker slide__kicker--work">💼 Travailler à l'étranger</div>
+      <div class="slide__kicker slide__kicker--work">Immigration assistée par IA</div>
       <h1 class="slide__title">
-        Les talents africains<br>trouvent du travail<br>
-        <span class="accent-gold">à l'international</span>
+        Votre projet d'immigration<br>devient un plan clair<br>
+        <span class="accent-gold">avec Immigration97</span>
       </h1>
-      <p class="slide__sub">Immigration97 connecte les professionnels africains qualifiés aux recruteurs d'Europe, du Canada et d'Australie. Créez votre profil, soyez visible, trouvez votre opportunité.</p>
+      <p class="slide__sub">Visas, études, travail, résidence permanente, CV et tests de langue : nos outils IA structurent votre dossier, puis l'accompagnement humain vous aide à passer à l'action.</p>
       <div class="slide__cta">
         {% if user.is_authenticated %}
           <a href="{% url 'profiles:my_space' %}" class="btn-hero-primary">→ Accéder à mon espace</a>
         {% else %}
-          <a href="{% url 'billing:access' %}" class="btn-hero-primary">✦ Créer mon profil gratuit</a>
+          <a href="{% url 'billing:access' %}" class="btn-hero-primary">✦ Évaluer mon projet</a>
         {% endif %}
-        <a href="{% url 'profiles:list' %}" class="btn-hero-ghost">🔍 Voir les talents</a>
+        <a href="{% url 'consultation_request' %}" class="btn-hero-ghost">Parler à un conseiller</a>
       </div>
     </div>
   </div>
@@ -423,7 +426,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <div class="slide" data-index="1">
     <div class="slide__bg" style="background-image:linear-gradient(135deg,#050A18 0%,#0a0f28 40%,#0d1540 100%);"></div>
     <div class="slide__inner">
-      <div class="slide__kicker slide__kicker--study">🎓 Étudier à l'étranger</div>
+      <div class="slide__kicker slide__kicker--study">Études • Travail • Installation</div>
       <h1 class="slide__title">
         Décrochez votre visa<br>étudiant et partez<br>
         <span class="accent-blue">construire votre avenir</span>
@@ -457,6 +460,82 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="stat"><span class="stat__num">100%</span><span class="stat__label">Gratuit recruteurs</span></div>
   </div>
 </div>
+
+<!-- ── IMMIGRATION + IA ── -->
+<section class="imm-ai-band">
+  <div class="imm-ai-panel">
+    <span class="ai-kicker">IA + accompagnement humain</span>
+    <h2>Une immigration plus claire, plus rapide, plus structurée.</h2>
+    <p>
+      Immigration97 transforme un projet flou en plan d'action : analyse du profil,
+      documents à préparer, destination adaptée, CV international, tests de langue
+      et suivi de dossier. L'IA accélère, l'humain sécurise.
+    </p>
+    <div class="slide__cta" style="justify-content:flex-start;margin-top:1.4rem;padding:0;">
+      <a href="/arsenal-ia/" class="btn-hero-primary">Découvrir l'Arsenal IA</a>
+      <a href="{% url 'consultation_request' %}" class="btn-hero-ghost">Demander une consultation</a>
+    </div>
+  </div>
+
+  <div class="imm-ai-orbit">
+    <article class="imm-agent-card">
+      <div class="imm-agent-avatar">IA</div>
+      <div>
+        <h3>Coach Visa</h3>
+        <p>Prépare les étapes, les pièces, les risques et les priorités de votre dossier.</p>
+      </div>
+    </article>
+    <article class="imm-agent-card">
+      <div class="imm-agent-avatar">CV</div>
+      <div>
+        <h3>CV International</h3>
+        <p>Adapte votre profil aux standards Canada, Europe et recruteurs internationaux.</p>
+      </div>
+    </article>
+    <article class="imm-agent-card">
+      <div class="imm-agent-avatar">97</div>
+      <div>
+        <h3>Influenceurs IA Immigration97</h3>
+        <p>De futurs guides IA pour expliquer les visas, opportunités et alertes par pays.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="imm-section">
+  <div class="imm-section__head imm-section__head--center">
+    <span class="imm-kicker">Votre parcours</span>
+    <h2>De l'idée au dossier prêt, chaque étape a sa place.</h2>
+    <p>Le candidat doit comprendre où il est, quoi faire maintenant, et comment avancer sans se perdre.</p>
+  </div>
+  <div class="imm-pathway">
+    <article class="imm-step-card">
+      <div class="imm-step-card__num">1</div>
+      <h3>Diagnostic</h3>
+      <p>Profil, objectif, budget, pays cible, niveau de langue et délais réalistes.</p>
+    </article>
+    <article class="imm-step-card">
+      <div class="imm-step-card__num">2</div>
+      <h3>Destination</h3>
+      <p>Canada, Europe, USA ou autre parcours selon les chances et contraintes.</p>
+    </article>
+    <article class="imm-step-card">
+      <div class="imm-step-card__num">3</div>
+      <h3>Documents</h3>
+      <p>Checklists, modèles, traductions, preuves financières et cohérence du dossier.</p>
+    </article>
+    <article class="imm-step-card">
+      <div class="imm-step-card__num">4</div>
+      <h3>Préparation</h3>
+      <p>CV, lettres, tests de langue, entretiens et preuves d'attache.</p>
+    </article>
+    <article class="imm-step-card">
+      <div class="imm-step-card__num">5</div>
+      <h3>Suivi</h3>
+      <p>Alertes, relances, corrections et accompagnement jusqu'à la prochaine étape.</p>
+    </article>
+  </div>
+</section>
 
 <!-- ── DEUX PUBLICS ── -->
 <section class="section">

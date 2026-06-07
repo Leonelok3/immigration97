@@ -20,6 +20,13 @@ body.visa-etude {
     var(--bg-main);
 }
 
+body.visa-etude {
+  --ve-primary: #10b981;
+  --ve-primary-soft: rgba(16,185,129,0.14);
+  --ve-gold: #d4a843;
+  --ve-sky: #38bdf8;
+}
+
 /* =====================================================
    ANIMATIONS
 ===================================================== */
@@ -45,12 +52,13 @@ body.visa-etude {
 .visa-etude .ve-dashboard-hero {
   padding: clamp(3rem, 6vw, 5rem) 1.5rem;
   background:
+    radial-gradient(700px 260px at 18% 24%, rgba(16,185,129,0.16), transparent 62%),
     radial-gradient(
       900px 320px at 70% -20%,
-      rgba(99, 102, 241, 0.22),
+      rgba(56, 189, 248, 0.18),
       transparent 60%
     ),
-    linear-gradient(180deg, var(--bg-surface), var(--bg-main));
+    linear-gradient(135deg, #06111f, #081426 52%, #050a18);
 
   border-bottom: 1px solid var(--ve-border);
 }
@@ -66,8 +74,9 @@ body.visa-etude {
 .visa-etude .ve-gradient {
   background: linear-gradient(
     90deg,
-    var(--brand-primary),
-    #818cf8
+    #ffffff,
+    var(--ve-gold),
+    var(--ve-sky)
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -95,7 +104,9 @@ body.visa-etude {
   background: var(--ve-primary-soft);
   color: var(--ve-primary);
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(16,185,129,0.28);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* =====================================================
@@ -122,20 +133,22 @@ body.visa-etude {
 .visa-etude .ve-module-card {
   background: linear-gradient(
     135deg,
-    var(--bg-surface),
-    var(--bg-main)
+    rgba(16,185,129,0.08),
+    rgba(56,189,248,0.035) 42%,
+    rgba(5,10,24,0.92)
   );
 
-  border: 1px solid var(--ve-border);
-  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 12px;
   padding: 2rem;
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .visa-etude .ve-module-card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
+  border-color: rgba(212,168,67,0.28);
+  box-shadow: 0 22px 55px rgba(0,0,0,0.32);
 }
 
 .visa-etude .ve-module-card h2 {
@@ -208,17 +221,17 @@ body.visa-etude {
 
   background: linear-gradient(
     135deg,
-    var(--brand-primary),
-    #6366f1
+    var(--ve-gold),
+    #f0c060
   );
 
-  color: #fff;
+  color: #06111f;
   font-weight: 800;
   border-radius: var(--radius-pill);
   text-decoration: none;
 
   box-shadow:
-    0 18px 45px rgba(99, 102, 241, 0.45),
+    0 18px 45px rgba(212,168,67,0.32),
     inset 0 0 0 1px rgba(255,255,255,0.25);
 
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -227,7 +240,7 @@ body.visa-etude {
 .visa-etude .ve-btn-primary:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 28px 65px rgba(99, 102, 241, 0.65),
+    0 28px 65px rgba(212,168,67,0.44),
     inset 0 0 0 1px rgba(255,255,255,0.35);
 }
 
@@ -268,8 +281,9 @@ body.visa-etude {
   height: 100%;
   background: linear-gradient(
     90deg,
-    var(--brand-primary),
-    #818cf8
+    var(--ve-primary),
+    var(--ve-sky),
+    var(--ve-gold)
   );
 }
 

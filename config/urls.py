@@ -38,6 +38,7 @@ from core.views import (
     wizard_pdf,
     wizard_steps_page,
     dashboard_page,
+    arsenal_ia_page,
     consultation_request,
     consultation_success,
 )
@@ -125,6 +126,8 @@ urlpatterns = [
     path("wizard/checklist.pdf", wizard_pdf, name="wizard_pdf"),
     path("wizard/steps/", wizard_steps_page, name="wizard_steps"),
     path("dashboard/", dashboard_page, name="dashboard"),
+    path("arsenal-ia/", arsenal_ia_page, name="arsenal_ia"),
+    path("business/arsenal-ia/", arsenal_ia_page, name="business_arsenal_ia"),
 
     path("langue/english/", include(("EnglishPrepApp.urls", "englishprep"), namespace="englishprep")),
     path("langue/german/", include(("GermanPrepApp.urls", "germanprep"), namespace="germanprep")),
@@ -142,6 +145,7 @@ urlpatterns = [
     path("protected-media/", include("mediafiles.urls")),
     path("api/ai/", include("ai_engine.urls")),
     path("ressources/", include(("resources.urls", "resources"), namespace="resources")),
+    path("", include(("outreach.urls", "outreach"), namespace="outreach")),
     path("edu/", include("edu_platform.urls", namespace="edu")),
 
     

@@ -1,49 +1,59 @@
 #!/bin/bash
 # Script de déploiement CE en VPS
-# Exécuter sur le VPS: bash deploy_ce.sh
+# Exécuter sur le VPS: bash deploy_ce_vps.sh
 
 set -e
+
+PROJECT_DIR="${PROJECT_DIR:-/home/deployer/projects/immigration97}"
+PYTHON_BIN="${PYTHON_BIN:-$PROJECT_DIR/.venv/bin/python}"
 
 echo ""
 echo "🚀 DÉPLOIEMENT COMPRÉHENSION ÉCRITE (CE) - VPS"
 echo "============================================================"
+echo "📁 Projet: $PROJECT_DIR"
 
 # 1. GIT PULL
 echo ""
-echo "📥 [1/5] Git pull..."
-cd /home/ubuntu/e-shelle
+echo "📥 [1/6] Git pull..."
+cd "$PROJECT_DIR"
 git pull origin main
 echo "✅ Git pull réussi"
 
-# 2. IMPORT CURRICULUM
+# 2. MIGRATE
 echo ""
-echo "📚 [2/5] Import curriculum CE (A1-C2)..."
-python manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_A1_fr.json --clear
-python manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_A2_fr.json
-python manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_B1_fr.json
-python manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_B2_fr.json
-python manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_C1_fr.json
-python manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_C2_fr.json
+echo "🗄️  [2/6] Database migrations..."
+"$PYTHON_BIN" manage.py migrate --noinput
+"$PYTHON_BIN" manage.py showmigrations resources
+echo "✅ Database migrations OK"
+
+# 3. IMPORT CURRICULUM
+echo ""
+echo "📚 [3/6] Import curriculum CE (A1-C2)..."
+"$PYTHON_BIN" manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_A1_fr.json --clear
+"$PYTHON_BIN" manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_A2_fr.json
+"$PYTHON_BIN" manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_B1_fr.json
+"$PYTHON_BIN" manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_B2_fr.json
+"$PYTHON_BIN" manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_C1_fr.json
+"$PYTHON_BIN" manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_C2_fr.json
 echo "✅ Curriculum CE importé (900 exercices)"
 
-# 3. IMPORT EXAMS
+# 4. IMPORT EXAMS
 echo ""
-echo "📋 [3/5] Import exams CE (A1-C2)..."
-python manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_a_b_fr.json --clear
-python manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_c_fr.json
+echo "📋 [4/6] Import exams CE (A1-C2)..."
+"$PYTHON_BIN" manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_a_b_fr.json --clear
+"$PYTHON_BIN" manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_c_fr.json
 echo "✅ Exams CE importés (195 questions)"
 
-# 4. MIGRATE (si applicable)
+# 5. STATIC FILES
 echo ""
-echo "🗄️  [4/5] Database check..."
-python manage.py migrate --noinput || echo "⚠️  Pas de migrations nécessaires"
-python manage.py collectstatic --noinput || echo "⚠️  Static files déjà collectés"
-echo "✅ Database OK"
+echo "📦 [5/6] Static files..."
+"$PYTHON_BIN" manage.py collectstatic --noinput
+echo "✅ Static files OK"
 
-# 5. RESTART SERVICES
+# 6. RESTART SERVICES
 echo ""
-echo "🔄 [5/5] Redémarrage services..."
-sudo systemctl restart gunicorn
+echo "🔄 [6/6] Redémarrage services..."
+sudo systemctl restart immigration97
 sudo systemctl restart nginx
 echo "✅ Services redémarrés"
 
@@ -53,7 +63,7 @@ echo "============================================================"
 echo "✨ VÉRIFICATION FINALE"
 echo "============================================================"
 echo ""
-python manage.py shell << PYTHON_CMD
+"$PYTHON_BIN" manage.py shell << PYTHON_CMD
 import django
 from preparation_tests.models import CourseLesson, Question
 

@@ -27,51 +27,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # ── SLUG : idempotent via RunSQL (colonne/index peuvent déjà exister) ──
-
-        # 1) Ajouter la colonne si elle n'existe pas encore
-        migrations.SeparateDatabaseAndState(
-            database_operations=[
-                migrations.RunSQL(
-                    sql="ALTER TABLE resources_resource ADD COLUMN IF NOT EXISTS slug varchar(255) NOT NULL DEFAULT '';",
-                    reverse_sql="ALTER TABLE resources_resource DROP COLUMN IF EXISTS slug;",
-                ),
-            ],
-            state_operations=[
-                migrations.AddField(
-                    model_name="resource",
-                    name="slug",
-                    field=models.SlugField(blank=True, max_length=255, default="", verbose_name="Slug"),
-                ),
-            ],
+        migrations.AddField(
+            model_name="resource",
+            name="slug",
+            field=models.SlugField(blank=True, max_length=255, default="", verbose_name="Slug"),
         ),
 
-        # 2) Peupler les slugs depuis les titres
         migrations.RunPython(populate_slugs, migrations.RunPython.noop),
 
-        # 3) Supprimer les anciens index partiels s'ils existent, puis créer unique + like
-        migrations.SeparateDatabaseAndState(
-            database_operations=[
-                migrations.RunSQL(
-                    sql="""
-                        DROP INDEX IF EXISTS resources_resource_slug_8867b959_like;
-                        DROP INDEX IF EXISTS resources_resource_slug_key;
-                        CREATE UNIQUE INDEX resources_resource_slug_key ON resources_resource (slug);
-                        CREATE INDEX resources_resource_slug_8867b959_like ON resources_resource (slug varchar_pattern_ops);
-                    """,
-                    reverse_sql="""
-                        DROP INDEX IF EXISTS resources_resource_slug_key;
-                        DROP INDEX IF EXISTS resources_resource_slug_8867b959_like;
-                    """,
-                ),
-            ],
-            state_operations=[
-                migrations.AlterField(
-                    model_name="resource",
-                    name="slug",
-                    field=models.SlugField(blank=True, max_length=255, unique=True, verbose_name="Slug"),
-                ),
-            ],
+        migrations.AlterField(
+            model_name="resource",
+            name="slug",
+            field=models.SlugField(blank=True, max_length=255, unique=True, verbose_name="Slug"),
         ),
 
         # ── Autres nouveaux champs Resource ──

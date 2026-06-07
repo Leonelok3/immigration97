@@ -46,9 +46,10 @@ class ResourceAdmin(admin.ModelAdmin):
             return format_html('<span style="color:#16a34a;font-weight:700;">GRATUIT</span>')
         if obj.price_xaf:
             eur = f" / {obj.price_eur} €" if obj.price_eur else ""
+            price_xaf = f"{obj.price_xaf:,}"
             return format_html(
-                '<span style="color:#D4A843;font-weight:700;">{:,} XAF{}</span>',
-                obj.price_xaf, eur,
+                '<span style="color:#D4A843;font-weight:700;">{} XAF{}</span>',
+                price_xaf, eur,
             )
         return format_html('<span style="color:#6366f1;font-weight:600;">Premium</span>')
     price_display.short_description = "Prix"

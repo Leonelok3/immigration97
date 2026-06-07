@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+
+{% block title %}Arsenal IA Immigration97{% endblock %}
+{% block meta_description %}Cockpit interne des agents IA Immigration97: prospection employeurs, job agent, documents, formation et immigration.{% endblock %}
+
+{% block extra_css %}
+<style>
+  .ia-page {
+    background:
+      radial-gradient(circle at top left, rgba(212, 168, 67, .16), transparent 32rem),
+      linear-gradient(135deg, #050914 0%, #0b1426 48%, #101624 100%);
+    color: #f7f2df;
+    min-height: 100vh;
+  }
+
+  .ia-wrap {
+    width: min(1760px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 34px 0 70px;
+  }
+
+  .ia-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+    gap: 28px;
+    align-items: stretch;
+    border: 1px solid rgba(212, 168, 67, .36);
+    background:
+      linear-gradient(135deg, rgba(15, 27, 51, .96), rgba(7, 12, 24, .98)),
+      radial-gradient(circle at 82% 12%, rgba(212, 168, 67, .16), transparent 18rem);
+    border-radius: 8px;
+    padding: 28px;
+  }
+
+  .ia-kicker {
+    color: #d4a843;
+    font-size: .88rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin: 0 0 18px;
+  }
+
+  .ia-home {
+    color: #f0c060;
+    display: inline-flex;
+    font-size: 1rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    text-decoration: none;
+  }
+
+  .ia-title {
+    color: #fff9e9;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: .92;
+    letter-spacing: 0;
+    margin: 20px 0 28px;
+    max-width: 980px;
+  }
+
+  .ia-subtitle {
+    color: #d7dce8;
+    font-size: clamp(1.05rem, 1.5vw, 1.45rem);
+    line-height: 1.45;
+    max-width: 1120px;
+    margin: 0;
+  }
+
+  .ia-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .ia-stat {
+    min-height: 112px;
+    border: 1px solid rgba(212, 168, 67, .28);
+    border-radius: 8px;
+    padding: 22px;
+    background: rgba(3, 8, 19, .62);
+  }
+
+  .ia-stat strong {
+    display: block;
+    color: #ffd21a;
+    font-size: 2.35rem;
+    line-height: 1;
+    margin-top: 12px;
+  }
+
+  .ia-stat span {
+    color: #b7bfd0;
+    font-size: .82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .ia-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 22px 0;
+  }
+
+  .ia-tab {
+    background: linear-gradient(135deg, #d4a843, #8d6a1f);
+    border: 0;
+    border-radius: 8px;
+    color: #fff;
+    display: inline-flex;
+    font-size: 1rem;
+    font-weight: 800;
+    min-height: 58px;
+    padding: 0 22px;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .ia-panel {
+    border: 1px solid rgba(212, 168, 67, .24);
+    border-radius: 8px;
+    background: rgba(8, 15, 30, .88);
+    padding: 28px 22px;
+    margin-top: 22px;
+  }
+
+  .ia-panel__head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .ia-panel h2 {
+    color: #ffd21a;
+    font-size: clamp(2rem, 4vw, 4rem);
+    line-height: 1;
+    margin: 0;
+  }
+
+  .ia-command {
+    color: #e7eaf1;
+    background: #050914;
+    border: 1px solid rgba(212, 168, 67, .24);
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    margin: 16px 0 0;
+  }
+
+  .ia-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .ia-card {
+    background:
+      linear-gradient(180deg, rgba(13, 24, 45, .98), rgba(8, 15, 30, .98));
+    border: 1px solid rgba(212, 168, 67, .22);
+    border-radius: 8px;
+    padding: 20px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ia-card__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .ia-card h3 {
+    color: #fff9e9;
+    font-size: 1.35rem;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  .ia-group {
+    color: #d4a843;
+    font-size: .75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .ia-status {
+    color: #0b1020;
+    background: #f0c060;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 900;
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
+
+  .ia-card p {
+    color: #cbd2df;
+    line-height: 1.48;
+    margin: 0;
+  }
+
+  .ia-metric {
+    color: #ffd21a;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-top: auto;
+  }
+
+  .ia-metric small {
+    color: #aeb7c8;
+    display: block;
+    font-size: .75rem;
+    text-transform: uppercase;
+  }
+
+  .ia-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .ia-link {
+    align-items: center;
+    background: rgba(212, 168, 67, .09);
+    border: 1px solid rgba(212, 168, 67, .28);
+    border-radius: 8px;
+    color: #f3cf78;
+    display: inline-flex;
+    font-weight: 800;
+    min-height: 40px;
+    padding: 0 12px;
+    text-decoration: none;
+  }
+
+  .ia-roadmap {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .ia-roadmap__item {
+    border: 1px solid rgba(212, 168, 67, .22);
+    border-radius: 8px;
+    background: rgba(5, 9, 20, .55);
+    padding: 18px;
+  }
+
+  .ia-roadmap__item strong {
+    display: block;
+    color: #fff9e9;
+    font-size: 1.12rem;
+    margin-bottom: 8px;
+  }
+
+  .ia-roadmap__item span {
+    color: #cbd2df;
+    line-height: 1.48;
+  }
+
+  @media (max-width: 1100px) {
+    .ia-hero { grid-template-columns: 1fr; }
+    .ia-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 720px) {
+    .ia-wrap { width: min(100% - 24px, 1760px); padding-top: 18px; }
+    .ia-hero { padding: 20px; }
+    .ia-stats, .ia-grid { grid-template-columns: 1fr; }
+    .ia-roadmap { grid-template-columns: 1fr; }
+    .ia-panel__head { align-items: start; flex-direction: column; }
+  }
+</style>
+{% endblock %}
+
+{% block body_class %}ia-page{% endblock %}
+
+{% block content %}
+<main class="ia-wrap">
+  <section class="ia-hero">
+    <div>
+      <a class="ia-home" href="{% url 'home' %}">Retour accueil</a>
+      <p class="ia-kicker">Cockpit agents IA</p>
+      <h1 class="ia-title">Arsenal IA Immigration97</h1>
+      <p class="ia-subtitle">
+        Tous les agents utiles pour transformer Immigration97 en moteur de mobilité assisté par IA:
+        recherche employeurs, prospection, candidatures, CV, lettres, examens, visas et résidence permanente.
+      </p>
+    </div>
+    <div class="ia-stats" aria-label="Statistiques agents IA">
+      <div class="ia-stat"><span>Leads web</span><strong>{{ stats.scraped_leads }}</strong></div>
+      <div class="ia-stat"><span>Opportunités vérifiées</span><strong>{{ stats.verified_opportunities }}</strong></div>
+      <div class="ia-stat"><span>Analyses anti-arnaque</span><strong>{{ stats.scam_assessments }}</strong></div>
+      <div class="ia-stat"><span>Risques élevés</span><strong>{{ stats.high_risk_scams }}</strong></div>
+    </div>
+  </section>
+
+  <nav class="ia-tabs" aria-label="Sections arsenal">
+    <a class="ia-tab" href="#agents">Tous les agents</a>
+    <a class="ia-tab" href="#daily-command">Commande quotidienne</a>
+    <a class="ia-tab" href="#verified-command">Vérification</a>
+    <a class="ia-tab" href="#scam-command">Anti-arnaque</a>
+    <a class="ia-tab" href="{% url 'outreach:verified_opportunities' %}">Opportunités vérifiées</a>
+    <a class="ia-tab" href="{% url 'admin:outreach_scrapedemployerlead_changelist' %}">Leads scrapés</a>
+    <a class="ia-tab" href="{% url 'admin:outreach_scamassessment_changelist' %}">Risques</a>
+    <a class="ia-tab" href="{% url 'admin:outreach_recruitercontact_changelist' %}">Recruteurs</a>
+    <a class="ia-tab" href="{% url 'job_agent:dashboard' %}">Job Agent</a>
+  </nav>
+
+  <section class="ia-panel" id="daily-command">
+    <div class="ia-panel__head">
+      <div>
+        <p class="ia-kicker">Automatisation opérationnelle</p>
+        <h2>Agent web du matin</h2>
+      </div>
+    </div>
+    <p class="ia-subtitle">
+      Commande Django à planifier sur le VPS pour alimenter les opportunités Canada,
+      Nouvelle-Zélande, Australie et Europe.
+    </p>
+    <pre class="ia-command"><code>python manage.py scrape_employer_opportunities --countries CA,NZ,AU,EU --limit 80 --email-to contact@immigration97.com</code></pre>
+    <pre class="ia-command"><code>0 6 * * * /chemin/venv/bin/python /chemin/immigration97/manage.py scrape_employer_opportunities --countries CA,NZ,AU,EU --limit 80 --email-to contact@immigration97.com</code></pre>
+  </section>
+
+  <section class="ia-panel" id="followup-command">
+    <p class="ia-kicker">Relances candidatures</p>
+    <pre class="ia-command"><code>python manage.py send_followups</code></pre>
+  </section>
+
+  <section class="ia-panel" id="verified-command">
+    <p class="ia-kicker">Qualification opportunités</p>
+    <pre class="ia-command"><code>python manage.py verify_employer_opportunities --include-reviewed</code></pre>
+  </section>
+
+  <section class="ia-panel" id="scam-command">
+    <p class="ia-kicker">Protection anti-arnaque</p>
+    <pre class="ia-command"><code>python manage.py assess_employer_scams --include-assessed</code></pre>
+  </section>
+
+  <section class="ia-panel" id="agents">
+    <div class="ia-panel__head">
+      <div>
+        <p class="ia-kicker">Inventaire opérationnel</p>
+        <h2>Tous les agents IA Immigration97</h2>
+      </div>
+    </div>
+    <div class="ia-grid">
+      {% for agent in agents %}
+        <article class="ia-card">
+          <div class="ia-card__top">
+            <div>
+              <div class="ia-group">{{ agent.group }}</div>
+              <h3>{{ agent.name }}</h3>
+            </div>
+            <span class="ia-status">{{ agent.status }}</span>
+          </div>
+          <p>{{ agent.description }}</p>
+          <div class="ia-metric">
+            {{ agent.metric|default:"IA" }}
+            <small>{{ agent.metric_label }}</small>
+          </div>
+          <div class="ia-links">
+            {% for link in agent.links %}
+              <a class="ia-link" href="{{ link.url }}">{{ link.label }}</a>
+            {% endfor %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="ia-panel" id="roadmap-agents">
+    <div class="ia-panel__head">
+      <div>
+        <p class="ia-kicker">Vision Immigration97</p>
+        <h2>Agents IA à concevoir pour l'emploi international</h2>
+      </div>
+    </div>
+    <p class="ia-subtitle">
+      Objectif: aider les Africains, avec un focus Cameroun, à identifier les vraies opportunités,
+      préparer un dossier solide et postuler plus vite vers Canada, Nouvelle-Zélande, Australie et Europe.
+    </p>
+    <div class="ia-roadmap" style="margin-top:22px;">
+      <div class="ia-roadmap__item">
+        <strong>Agent Opportunités Vérifiées</strong>
+        <span>Module actif: score de vérification, décision et signaux explicables sont maintenant enregistrés sur chaque lead employeur.</span>
+      </div>
+      <div class="ia-roadmap__item">
+        <strong>Agent Éligibilité Emploi + Visa</strong>
+        <span>Analyse le profil du candidat, son métier, son expérience, son niveau de langue et lui dit quels pays/programmes sont réalistes avant de postuler.</span>
+      </div>
+      <div class="ia-roadmap__item">
+        <strong>Agent CV International ATS</strong>
+        <span>Transforme un CV africain en CV Canada, Europe, Australie ou Nouvelle-Zélande, optimisé ATS et adapté au métier ciblé.</span>
+      </div>
+      <div class="ia-roadmap__item">
+        <strong>Agent Candidature Automatisée</strong>
+        <span>Prépare lettre, email, réponses de formulaire, message LinkedIn et checklist des pièces pour chaque offre sélectionnée.</span>
+      </div>
+      <div class="ia-roadmap__item">
+        <strong>Agent Anti-Arnaque Recrutement</strong>
+        <span>Module actif: analyse frais suspects, promesses irréalistes, emails gratuits et incohérences de domaine avant diffusion aux candidats.</span>
+      </div>
+      <div class="ia-roadmap__item">
+        <strong>Agent Préparation Entretien</strong>
+        <span>Simule les entretiens par métier et pays, corrige les réponses, prépare les questions RH et entraîne le candidat en français ou anglais.</span>
+      </div>
+      <div class="ia-roadmap__item">
+        <strong>Agent Suivi Candidatures</strong>
+        <span>Suit les offres postulées, relances, réponses, dates limites, documents envoyés et prochaines actions jusqu'à l'obtention d'un entretien.</span>
+      </div>
+      <div class="ia-roadmap__item">
+        <strong>Agent Marché Camerounais</strong>
+        <span>Construit une base de profils camerounais par métier, région, compétences et disponibilité pour présenter des candidats qualifiés aux recruteurs étrangers.</span>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

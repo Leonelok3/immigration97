@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python manage.py shell -c \"import GermanPrepApp.views; print\\(''OK''\\)\")"
+      "Bash(python manage.py shell -c \"import GermanPrepApp.views; print\\(''OK''\\)\")",
+      "Bash(\"immigration97_env/Scripts/python.exe\" manage.py makemigrations core)"
     ]
   }
 }

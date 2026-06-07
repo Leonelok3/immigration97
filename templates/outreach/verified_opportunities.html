@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Opportunités vérifiées — Immigration97{% endblock %}
+{% block meta_description %}Offres et employeurs vérifiés pour travailler à l'étranger: Canada, Nouvelle-Zélande, Australie et Europe.{% endblock %}
+{% block body_class %}verified-opportunities{% endblock %}
+
+{% block extra_css %}
+<style>
+  .vo-page {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top left, rgba(212, 168, 67, .15), transparent 30rem),
+      linear-gradient(135deg, #050914 0%, #0b1426 52%, #101624 100%);
+    color: #f7f2df;
+  }
+  .vo-wrap { width: min(1320px, calc(100% - 32px)); margin: 0 auto; padding: 34px 0 72px; }
+  .vo-hero {
+    border: 1px solid rgba(212,168,67,.32);
+    border-radius: 8px;
+    background: rgba(8,15,30,.9);
+    padding: clamp(22px, 4vw, 42px);
+  }
+  .vo-kicker { color:#d4a843; font-size:.82rem; font-weight:900; text-transform:uppercase; margin:0 0 12px; }
+  .vo-title { color:#fff9e9; font-size:clamp(2.4rem, 6vw, 5.4rem); line-height:.95; margin:0 0 18px; letter-spacing:0; }
+  .vo-subtitle { color:#d7dce8; font-size:1.1rem; line-height:1.55; max-width:900px; margin:0; }
+  .vo-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; }
+  .vo-btn {
+    align-items:center; border:1px solid rgba(212,168,67,.34); border-radius:8px; color:#f3cf78;
+    display:inline-flex; font-weight:850; min-height:44px; padding:0 16px; text-decoration:none; background:rgba(212,168,67,.08);
+  }
+  .vo-btn--primary { background:linear-gradient(135deg,#d4a843,#8d6a1f); color:#0b1020; border:0; }
+  .vo-filter {
+    margin:22px 0; border:1px solid rgba(212,168,67,.24); border-radius:8px; background:rgba(8,15,30,.84);
+    padding:18px; display:grid; grid-template-columns: 1.5fr repeat(4, minmax(130px, 1fr)) auto; gap:12px; align-items:end;
+  }
+  .vo-field label { display:block; color:#d4a843; font-size:.72rem; font-weight:900; text-transform:uppercase; margin-bottom:7px; }
+  .vo-field input, .vo-field select {
+    width:100%; min-height:44px; border-radius:8px; border:1px solid rgba(212,168,67,.24);
+    background:#050914; color:#f7f2df; padding:0 12px; font:inherit;
+  }
+  .vo-grid { display:grid; grid-template-columns: 1fr 340px; gap:18px; align-items:start; }
+  .vo-list { display:grid; gap:14px; }
+  .vo-card {
+    border:1px solid rgba(212,168,67,.24); border-radius:8px; background:linear-gradient(180deg, rgba(13,24,45,.98), rgba(8,15,30,.98));
+    padding:18px;
+  }
+  .vo-card__top { display:flex; justify-content:space-between; gap:14px; align-items:start; }
+  .vo-card h2 { color:#fff9e9; font-size:1.35rem; line-height:1.2; margin:0 0 7px; }
+  .vo-meta { color:#aeb7c8; display:flex; flex-wrap:wrap; gap:10px; font-size:.9rem; }
+  .vo-pill { border-radius:999px; background:rgba(212,168,67,.12); color:#f3cf78; padding:6px 10px; font-weight:800; font-size:.78rem; }
+  .vo-score { color:#ffd21a; font-size:2rem; line-height:1; font-weight:950; text-align:right; }
+  .vo-score small { display:block; color:#aeb7c8; font-size:.7rem; text-transform:uppercase; margin-top:6px; }
+  .vo-proof { color:#d7dce8; line-height:1.52; margin:16px 0; }
+  .vo-signal { color:#f3cf78; font-size:.9rem; margin-bottom:14px; }
+  .vo-risk { font-weight:900; }
+  .vo-risk--low { color:#60d394; }
+  .vo-risk--medium { color:#f0c060; }
+  .vo-risk--high { color:#ff7777; }
+  .vo-side { display:grid; gap:14px; }
+  .vo-panel { border:1px solid rgba(212,168,67,.24); border-radius:8px; background:rgba(8,15,30,.84); padding:18px; }
+  .vo-panel h3 { color:#ffd21a; margin:0 0 12px; font-size:1.1rem; }
+  .vo-source { padding:12px 0; border-top:1px solid rgba(212,168,67,.14); }
+  .vo-source:first-of-type { border-top:0; }
+  .vo-source a { color:#f3cf78; font-weight:850; text-decoration:none; }
+  .vo-source p { color:#cbd2df; margin:6px 0 0; line-height:1.42; font-size:.9rem; }
+  .vo-empty { border:1px solid rgba(212,168,67,.24); border-radius:8px; padding:24px; background:rgba(8,15,30,.84); color:#d7dce8; }
+  .vo-pagination { display:flex; gap:10px; margin-top:18px; align-items:center; }
+  @media(max-width: 980px){ .vo-filter { grid-template-columns:1fr 1fr; } .vo-grid{ grid-template-columns:1fr; } }
+  @media(max-width: 620px){ .vo-filter { grid-template-columns:1fr; } .vo-card__top{ flex-direction:column; } .vo-score{text-align:left;} }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="vo-page">
+  <div class="vo-wrap">
+    <section class="vo-hero">
+      <p class="vo-kicker">Travail à l'étranger</p>
+      <h1 class="vo-title">Opportunités vérifiées</h1>
+      <p class="vo-subtitle">
+        Offres et employeurs analysés par Immigration97 avec preuve, score de fiabilité,
+        signaux visa et contrôle anti-arnaque avant candidature.
+      </p>
+      <div class="vo-actions">
+        <a class="vo-btn vo-btn--primary" href="{% url 'outreach:verified_opportunities' %}">Toutes les opportunités</a>
+        <a class="vo-btn" href="{% url 'arsenal_ia' %}">Arsenal IA</a>
+        <a class="vo-btn" href="{% url 'job_agent:dashboard' %}">Job Agent</a>
+      </div>
+    </section>
+
+    <form class="vo-filter" method="get">
+      <div class="vo-field">
+        <label for="q">Recherche</label>
+        <input id="q" type="search" name="q" value="{{ filters.q }}" placeholder="Métier, employeur, ville, visa...">
+      </div>
+      <div class="vo-field">
+        <label for="country">Pays</label>
+        <select id="country" name="country">
+          <option value="">Tous</option>
+          <option value="EU" {% if filters.country == "EU" %}selected{% endif %}>Europe</option>
+          {% for code, label in country_choices %}
+            <option value="{{ code }}" {% if filters.country == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="vo-field">
+        <label for="sector">Métier</label>
+        <select id="sector" name="sector">
+          <option value="">Tous</option>
+          {% for code, label in sector_choices %}
+            <option value="{{ code }}" {% if filters.sector == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="vo-field">
+        <label for="risk">Risque</label>
+        <select id="risk" name="risk">
+          <option value="">Faible + moyen</option>
+          {% for code, label in risk_choices %}
+            <option value="{{ code }}" {% if filters.risk == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="vo-field">
+        <label for="min_score">Score min.</label>
+        <input id="min_score" type="number" name="min_score" min="0" max="100" value="{{ filters.min_score }}">
+      </div>
+      <button class="vo-btn vo-btn--primary" type="submit">Filtrer</button>
+    </form>
+
+    <div class="vo-grid">
+      <section class="vo-list" aria-label="Liste des opportunités vérifiées">
+        <p class="vo-kicker">{{ total_count }} opportunité(s) trouvée(s)</p>
+        {% for lead in page_obj %}
+          <article class="vo-card">
+            <div class="vo-card__top">
+              <div>
+                <h2>{{ lead.title }}</h2>
+                <div class="vo-meta">
+                  <span>{{ lead.company_name|default:"Employeur à confirmer" }}</span>
+                  <span>{{ lead.location|default:lead.get_country_display }}</span>
+                  <span class="vo-pill">{{ lead.get_sector_display }}</span>
+                  <span class="vo-pill">{{ lead.get_country_display }}</span>
+                </div>
+              </div>
+              <div class="vo-score">
+                {{ lead.verification_score|default:lead.confidence_score }}
+                <small>score</small>
+              </div>
+            </div>
+            {% if lead.visa_signal %}
+              <div class="vo-signal">Signal visa: {{ lead.visa_signal }}</div>
+            {% endif %}
+            <p class="vo-proof">{{ lead.evidence_text|default:"Preuve à compléter depuis la source officielle ou la page carrière."|truncatechars:360 }}</p>
+            <div class="vo-meta">
+              {% if lead.scam_assessment %}
+                <span class="vo-risk vo-risk--{{ lead.scam_assessment.risk_level }}">
+                  Risque: {{ lead.scam_assessment.get_risk_level_display }} ({{ lead.scam_assessment.risk_score }})
+                </span>
+              {% else %}
+                <span>Risque: non analysé</span>
+              {% endif %}
+              <span>Décision: {{ lead.verification_decision|default:"à revoir" }}</span>
+            </div>
+            <div class="vo-actions">
+              <a class="vo-btn vo-btn--primary" href="{{ lead.job_url }}" target="_blank" rel="noopener">Voir l'offre</a>
+              {% if lead.website %}
+                <a class="vo-btn" href="{{ lead.website }}" target="_blank" rel="noopener">Site employeur</a>
+              {% endif %}
+            </div>
+          </article>
+        {% empty %}
+          <div class="vo-empty">
+            Aucune opportunité ne correspond encore à ces filtres. Lance l'agent web ou baisse le score minimum.
+          </div>
+        {% endfor %}
+
+        {% if page_obj.has_other_pages %}
+          <nav class="vo-pagination" aria-label="Pagination">
+            {% if page_obj.has_previous %}
+              <a class="vo-btn" href="?page={{ page_obj.previous_page_number }}&country={{ filters.country }}&sector={{ filters.sector }}&risk={{ filters.risk }}&min_score={{ filters.min_score }}&q={{ filters.q }}">Précédent</a>
+            {% endif %}
+            <span>Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+              <a class="vo-btn" href="?page={{ page_obj.next_page_number }}&country={{ filters.country }}&sector={{ filters.sector }}&risk={{ filters.risk }}&min_score={{ filters.min_score }}&q={{ filters.q }}">Suivant</a>
+            {% endif %}
+          </nav>
+        {% endif %}
+      </section>
+
+      <aside class="vo-side">
+        <section class="vo-panel">
+          <h3>Sources officielles utilisées</h3>
+          {% for source in official_sources %}
+            <div class="vo-source">
+              <a href="{{ source.url }}" target="_blank" rel="noopener">{{ source.label }}</a>
+              <p>{{ source.notes }}</p>
+            </div>
+          {% empty %}
+            <p class="vo-proof">Choisis un pays ou un métier pour afficher les sources officielles ciblées.</p>
+          {% endfor %}
+        </section>
+        <section class="vo-panel">
+          <h3>Lecture du score</h3>
+          <p class="vo-proof">
+            75+ = opportunité forte. 50-74 = à revoir. Moins de 50 = signal faible.
+            Un risque anti-arnaque élevé doit bloquer la diffusion au candidat.
+          </p>
+        </section>
+      </aside>
+    </div>
+  </div>
+</main>
+{% endblock %}

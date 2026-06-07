@@ -6,14 +6,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            sql="""
-            ALTER TABLE italian_courses_lesson
-            ADD COLUMN IF NOT EXISTS cover_image varchar(100);
-            """,
-            reverse_sql="""
-            ALTER TABLE italian_courses_lesson
-            DROP COLUMN IF EXISTS cover_image;
-            """,
-        )
+        migrations.RunSQL(sql=migrations.RunSQL.noop, reverse_sql=migrations.RunSQL.noop)
     ]

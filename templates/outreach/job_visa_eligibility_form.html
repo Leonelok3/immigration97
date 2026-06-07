@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Éligibilité Emploi + Visa — Immigration97{% endblock %}
+{% block body_class %}job-visa-eligibility{% endblock %}
+
+{% block extra_css %}
+<style>
+  .jv-page{min-height:100vh;background:linear-gradient(135deg,#050914,#0b1426 55%,#101624);color:#f7f2df;}
+  .jv-wrap{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px;}
+  .jv-hero,.jv-card{border:1px solid rgba(212,168,67,.28);border-radius:8px;background:rgba(8,15,30,.9);padding:clamp(20px,3vw,34px);}
+  .jv-kicker{color:#d4a843;font-size:.78rem;font-weight:900;text-transform:uppercase;margin:0 0 10px;}
+  .jv-title{font-size:clamp(2.2rem,5vw,4.6rem);line-height:.98;margin:0 0 16px;color:#fff9e9;}
+  .jv-text{color:#d7dce8;line-height:1.55;font-size:1.05rem;max-width:820px;}
+  .jv-form{margin-top:22px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+  .jv-row--full{grid-column:1/-1;}
+  .jv-item label{display:block;color:#d4a843;font-weight:900;font-size:.76rem;text-transform:uppercase;margin-bottom:7px;}
+  .jv-field{width:100%;min-height:46px;border-radius:8px;border:1px solid rgba(212,168,67,.24);background:#050914;color:#f7f2df;padding:0 12px;font:inherit;}
+  textarea.jv-field{padding:12px;min-height:96px;}
+  .jv-help{color:#9faabd;font-size:.82rem;margin-top:6px;}
+  .jv-errors{color:#ff9a9a;font-size:.85rem;margin-top:6px;}
+  .jv-check{display:flex;gap:10px;align-items:center;min-height:46px;}
+  .jv-check input{width:20px;height:20px;}
+  .jv-actions{grid-column:1/-1;display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;}
+  .jv-btn{display:inline-flex;align-items:center;min-height:46px;padding:0 18px;border-radius:8px;border:1px solid rgba(212,168,67,.3);background:rgba(212,168,67,.08);color:#f3cf78;text-decoration:none;font-weight:900;cursor:pointer;}
+  .jv-btn--primary{border:0;background:linear-gradient(135deg,#d4a843,#8d6a1f);color:#0b1020;}
+  @media(max-width:760px){.jv-form{grid-template-columns:1fr;}}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="jv-page">
+  <div class="jv-wrap">
+    <section class="jv-hero">
+      <p class="jv-kicker">Agent IA candidat</p>
+      <h1 class="jv-title">Éligibilité Emploi + Visa</h1>
+      <p class="jv-text">
+        Réponds aux questions clés. L'agent estime ton niveau de préparation,
+        les pays les plus réalistes, les métiers accessibles, les documents manquants
+        et ton plan d'action.
+      </p>
+    </section>
+
+    <section class="jv-card" style="margin-top:18px;">
+      <form method="post" class="jv-form">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="jv-item {% if field.name == 'certificates' or field.name == 'preferred_countries' %}jv-row--full{% endif %}">
+            {% if field.field.widget.input_type == "checkbox" %}
+              <label>{{ field.label }}</label>
+              <div class="jv-check">{{ field }} <span>Oui</span></div>
+            {% else %}
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+            {% endif %}
+            {% if field.help_text %}<div class="jv-help">{{ field.help_text }}</div>{% endif %}
+            {% for error in field.errors %}<div class="jv-errors">{{ error }}</div>{% endfor %}
+          </div>
+        {% endfor %}
+        <div class="jv-actions">
+          <button class="jv-btn jv-btn--primary" type="submit">Analyser mon profil</button>
+          <a class="jv-btn" href="{% url 'outreach:verified_opportunities' %}">Voir les opportunités</a>
+          <a class="jv-btn" href="{% url 'arsenal_ia' %}">Arsenal IA</a>
+        </div>
+      </form>
+    </section>
+  </div>
+</main>
+{% endblock %}

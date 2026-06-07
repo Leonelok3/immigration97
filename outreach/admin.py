@@ -7,7 +7,17 @@ from django.utils import timezone
 from django.shortcuts import render, get_object_or_404
 from django import forms
 
-from .models import RecruiterContact, OutreachTemplate, OutreachCampaign, OutreachLog
+from .models import (
+    JobVisaEligibilityAssessment,
+    RecruiterContact,
+    OutreachTemplate,
+    OutreachCampaign,
+    OutreachLog,
+    ScrapedEmployerLead,
+    ScamAssessment,
+)
+from .opportunity_verifier import verify_employer_lead
+from .scam_guard import assess_scam_risk
 from .services import (
     import_contacts_from_csv, import_contacts_from_excel,
     export_contacts_to_csv, send_campaign, send_single_email,
@@ -328,3 +338,156 @@ class OutreachLogAdmin(admin.ModelAdmin):
     search_fields = ["recruiter__email", "recruiter__company_name", "campaign__name"]
     readonly_fields = ["tracking_id", "sent_at", "opened_at"]
     date_hierarchy = "sent_at"
+
+
+@admin.register(ScrapedEmployerLead)
+class ScrapedEmployerLeadAdmin(admin.ModelAdmin):
+    list_display = [
+        "company_name",
+        "title",
+        "country",
+        "sector",
+        "confidence_score",
+        "verification_score",
+        "verification_decision",
+        "scam_risk_badge",
+        "status",
+        "last_seen_at",
+    ]
+    list_filter = ["country", "sector", "status", "verification_decision", "confidence_score"]
+    search_fields = ["company_name", "title", "job_url", "evidence_text", "visa_signal"]
+    readonly_fields = [
+        "first_seen_at",
+        "last_seen_at",
+        "created_at",
+        "updated_at",
+        "raw_data",
+        "verification_score",
+        "verification_decision",
+        "verification_notes",
+        "verification_signals",
+    ]
+    ordering = ["-last_seen_at", "-confidence_score"]
+    actions = ["run_verification", "run_scam_assessment", "mark_reviewed", "mark_rejected"]
+
+    @admin.display(description="Risque arnaque")
+    def scam_risk_badge(self, obj):
+        assessment = getattr(obj, "scam_assessment", None)
+        if not assessment:
+            return "—"
+        colors = {"low": "#16a34a", "medium": "#d97706", "high": "#dc2626"}
+        return format_html(
+            '<strong style="color:{}">{} ({})</strong>',
+            colors.get(assessment.risk_level, "#6b7280"),
+            assessment.get_risk_level_display(),
+            assessment.risk_score,
+        )
+
+    @admin.action(description="Qualifier avec Agent Opportunités Vérifiées")
+    def run_verification(self, request, queryset):
+        updated = 0
+        for lead in queryset:
+            result = verify_employer_lead(lead)
+            lead.verification_score = result.score
+            lead.verification_decision = result.decision
+            lead.verification_notes = result.notes
+            lead.verification_signals = result.signals
+            if result.decision == "verified":
+                lead.status = "reviewed"
+            elif result.decision == "weak":
+                lead.status = "rejected"
+            lead.save(
+                update_fields=[
+                    "verification_score",
+                    "verification_decision",
+                    "verification_notes",
+                    "verification_signals",
+                    "status",
+                    "updated_at",
+                ]
+            )
+            updated += 1
+        messages.success(request, f"{updated} lead(s) qualifié(s).")
+
+    @admin.action(description="Analyser avec Agent Anti-Arnaque")
+    def run_scam_assessment(self, request, queryset):
+        updated = 0
+        for lead in queryset:
+            result = assess_scam_risk(lead)
+            ScamAssessment.objects.update_or_create(
+                lead=lead,
+                defaults={
+                    "risk_score": result.risk_score,
+                    "risk_level": result.risk_level,
+                    "flags": result.flags,
+                    "recommendation": result.recommendation,
+                },
+            )
+            updated += 1
+        messages.success(request, f"{updated} lead(s) analysé(s) anti-arnaque.")
+
+    @admin.action(description="Marquer comme vérifié")
+    def mark_reviewed(self, request, queryset):
+        updated = queryset.update(status="reviewed")
+        messages.success(request, f"{updated} lead(s) marqué(s) comme vérifié(s).")
+
+    @admin.action(description="Rejeter")
+    def mark_rejected(self, request, queryset):
+        updated = queryset.update(status="rejected")
+        messages.warning(request, f"{updated} lead(s) rejeté(s).")
+
+
+@admin.register(ScamAssessment)
+class ScamAssessmentAdmin(admin.ModelAdmin):
+    list_display = ["lead", "risk_level", "risk_score", "assessed_at"]
+    list_filter = ["risk_level", "risk_score", "assessed_at"]
+    search_fields = ["lead__company_name", "lead__title", "lead__job_url", "recommendation"]
+    readonly_fields = ["lead", "risk_score", "risk_level", "flags", "recommendation", "assessed_at", "created_at"]
+    ordering = ["-assessed_at", "-risk_score"]
+
+
+@admin.register(JobVisaEligibilityAssessment)
+class JobVisaEligibilityAssessmentAdmin(admin.ModelAdmin):
+    list_display = [
+        "user",
+        "profession",
+        "sector",
+        "country",
+        "readiness_score",
+        "has_passport",
+        "has_cv",
+        "created_at",
+    ]
+    list_filter = [
+        "sector",
+        "country",
+        "education_level",
+        "french_level",
+        "english_level",
+        "has_passport",
+        "has_cv",
+        "budget",
+        "readiness_score",
+        "created_at",
+    ]
+    search_fields = [
+        "user__username",
+        "user__email",
+        "profession",
+        "country",
+        "city",
+        "preferred_countries",
+    ]
+    readonly_fields = [
+        "readiness_score",
+        "recommended_countries",
+        "accessible_jobs",
+        "missing_documents",
+        "action_plan",
+        "result_summary",
+        "raw_result",
+        "created_at",
+        "updated_at",
+    ]
+    date_hierarchy = "created_at"
+    ordering = ["-created_at", "-readiness_score"]

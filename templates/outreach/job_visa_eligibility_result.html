@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Résultat Éligibilité Emploi + Visa — Immigration97{% endblock %}
+{% block body_class %}job-visa-eligibility-result{% endblock %}
+
+{% block extra_css %}
+<style>
+  .jvr-page{min-height:100vh;background:linear-gradient(135deg,#050914,#0b1426 58%,#101624);color:#f7f2df;}
+  .jvr-wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:34px 0 72px;}
+  .jvr-hero,.jvr-panel,.jvr-card{border:1px solid rgba(212,168,67,.28);border-radius:8px;background:rgba(8,15,30,.92);}
+  .jvr-hero{padding:clamp(20px,3vw,34px);display:grid;grid-template-columns:minmax(0,1.5fr) minmax(230px,.5fr);gap:22px;align-items:center;}
+  .jvr-kicker{color:#d4a843;font-size:.78rem;font-weight:900;text-transform:uppercase;margin:0 0 10px;}
+  .jvr-title{font-size:clamp(2rem,4.4vw,4.1rem);line-height:1;margin:0 0 14px;color:#fff9e9;}
+  .jvr-text{color:#d7dce8;line-height:1.55;font-size:1.02rem;margin:0;}
+  .jvr-score{border:1px solid rgba(212,168,67,.25);border-radius:8px;background:#050914;padding:20px;}
+  .jvr-score-number{font-size:clamp(3rem,8vw,5.3rem);font-weight:1000;line-height:.9;color:#d4a843;}
+  .jvr-meter{height:12px;border-radius:999px;background:#172033;overflow:hidden;margin-top:16px;}
+  .jvr-meter span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#d4a843,#f7d875);}
+  .jvr-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+  .jvr-btn{display:inline-flex;align-items:center;min-height:42px;padding:0 14px;border-radius:8px;border:1px solid rgba(212,168,67,.32);background:rgba(212,168,67,.08);color:#f3cf78;text-decoration:none;font-weight:900;}
+  .jvr-btn--primary{border:0;background:linear-gradient(135deg,#d4a843,#8d6a1f);color:#0b1020;}
+  .jvr-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px;}
+  .jvr-panel{padding:20px;}
+  .jvr-panel--wide{grid-column:span 2;}
+  .jvr-panel h2{font-size:1.35rem;margin:0 0 14px;color:#ffe18b;}
+  .jvr-list{display:grid;gap:10px;margin:0;padding:0;list-style:none;}
+  .jvr-list li{border:1px solid rgba(212,168,67,.16);border-radius:8px;background:rgba(5,9,20,.72);padding:12px;color:#dce2ef;line-height:1.42;}
+  .jvr-country{display:grid;gap:10px;}
+  .jvr-card{padding:14px;}
+  .jvr-card-head{display:flex;justify-content:space-between;gap:12px;align-items:start;}
+  .jvr-card h3{font-size:1.05rem;margin:0;color:#fff9e9;}
+  .jvr-pill{display:inline-flex;align-items:center;min-height:28px;padding:0 9px;border-radius:999px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.24);color:#f8d782;font-weight:900;font-size:.78rem;white-space:nowrap;}
+  .jvr-muted{color:#9faabd;font-size:.92rem;line-height:1.45;}
+  .jvr-proof{color:#cfd6e4;font-size:.9rem;line-height:1.45;margin:10px 0 0;}
+  .jvr-empty{color:#9faabd;border:1px dashed rgba(212,168,67,.28);border-radius:8px;padding:14px;}
+  @media(max-width:900px){.jvr-hero,.jvr-grid{grid-template-columns:1fr}.jvr-panel--wide{grid-column:auto;}}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="jvr-page">
+  <div class="jvr-wrap">
+    <section class="jvr-hero">
+      <div>
+        <p class="jvr-kicker">Résultat candidat</p>
+        <h1 class="jvr-title">Éligibilité Emploi + Visa</h1>
+        <p class="jvr-text">{{ assessment.result_summary }}</p>
+        <div class="jvr-actions">
+          <a class="jvr-btn jvr-btn--primary" href="{% url 'outreach:job_visa_eligibility' %}">Refaire l'analyse</a>
+          <a class="jvr-btn" href="{% url 'outreach:verified_opportunities' %}?sector={{ assessment.sector }}">Voir les opportunités</a>
+          <a class="jvr-btn" href="{% url 'arsenal_ia' %}">Arsenal IA</a>
+        </div>
+      </div>
+      <aside class="jvr-score">
+        <p class="jvr-kicker">Score de préparation</p>
+        <div class="jvr-score-number">{{ assessment.readiness_score }}%</div>
+        <div class="jvr-meter" aria-hidden="true"><span style="width:{{ assessment.readiness_score }}%"></span></div>
+        <p class="jvr-muted" style="margin:12px 0 0;">{{ assessment.profession }} · {{ assessment.get_sector_display }} · {{ assessment.years_experience }} an(s) d'expérience</p>
+      </aside>
+    </section>
+
+    <div class="jvr-grid">
+      <section class="jvr-panel jvr-panel--wide">
+        <h2>Pays recommandés</h2>
+        <div class="jvr-country">
+          {% for country in assessment.recommended_countries %}
+            <article class="jvr-card">
+              <div class="jvr-card-head">
+                <h3>{{ country.label }}</h3>
+                <span class="jvr-pill">{{ country.score }}% · {{ country.level }}</span>
+              </div>
+              <p class="jvr-muted">{{ country.reasons|join:", " }}</p>
+            </article>
+          {% empty %}
+            <div class="jvr-empty">Aucun pays recommandé pour le moment. Refaire l'analyse avec des pays préférés.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="jvr-panel">
+        <h2>Métiers accessibles</h2>
+        <ul class="jvr-list">
+          {% for job in assessment.accessible_jobs %}
+            <li>{{ job }}</li>
+          {% empty %}
+            <li>Aucun métier calculé.</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="jvr-panel">
+        <h2>Documents manquants</h2>
+        <ul class="jvr-list">
+          {% for item in assessment.missing_documents %}
+            <li>{{ item }}</li>
+          {% empty %}
+            <li>Les documents essentiels semblent présents. Vérifier quand même les preuves par pays.</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="jvr-panel jvr-panel--wide">
+        <h2>Plan d'action personnalisé</h2>
+        <ul class="jvr-list">
+          {% for step in assessment.action_plan %}
+            <li>{{ forloop.counter }}. {{ step }}</li>
+          {% empty %}
+            <li>Compléter le formulaire pour obtenir un plan d'action.</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="jvr-panel jvr-panel--wide">
+        <h2>Opportunités vérifiées proches de ton profil</h2>
+        <div class="jvr-country">
+          {% for lead in opportunities %}
+            <article class="jvr-card">
+              <div class="jvr-card-head">
+                <h3>{{ lead.company_name|default:"Employeur à vérifier" }}</h3>
+                <span class="jvr-pill">{{ lead.get_country_display }} · score {{ lead.verification_score }}</span>
+              </div>
+              <p class="jvr-muted">{{ lead.title }}{% if lead.location %} · {{ lead.location }}{% endif %}</p>
+              {% if lead.evidence_text %}<p class="jvr-proof">{{ lead.evidence_text|truncatechars:190 }}</p>{% endif %}
+              <div class="jvr-actions">
+                <a class="jvr-btn" href="{{ lead.job_url }}" target="_blank" rel="noopener">Lien candidature</a>
+                <a class="jvr-btn" href="{% url 'outreach:verified_opportunities' %}?q={{ lead.company_name|urlencode }}">Voir la preuve</a>
+              </div>
+            </article>
+          {% empty %}
+            <div class="jvr-empty">Aucune opportunité vérifiée ne correspond encore à ce secteur. Lance l'agent web du matin ou consulte toutes les opportunités.</div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+{% endblock %}

@@ -3,7 +3,7 @@
    Scope : / (toute l'app)
 */
 
-const CACHE_NAME = 'imm97-v1';
+const CACHE_NAME = 'imm97-v2-navfix';
 const PRECACHE_URLS = [
   '/prep/fr/',
   '/static/css/preparation_tests.css',

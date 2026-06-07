@@ -33,7 +33,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 #nav.scrolled{background:rgba(5,10,24,.98);}
 .nav-inner{max-width:1200px;margin:0 auto;padding:.85rem 1.5rem;
   display:flex;align-items:center;justify-content:space-between;gap:1rem;}
-.nav-logo img{height:44px;}
+.nav-logo{display:flex;align-items:center;gap:.7rem;font-weight:900;color:#fff;letter-spacing:.01em;}
+.nav-logo img{height:52px;width:52px;object-fit:contain;border-radius:8px;background:#050A18;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 10px 26px rgba(16,185,129,.14);}
+.nav-logo__text{display:flex;flex-direction:column;line-height:1;}
+.nav-logo__name{font-size:1.02rem;color:#fff;}
+.nav-logo__tag{font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:#F0C060;margin-top:.25rem;}
 .nav-links{display:flex;align-items:center;gap:1.75rem;}
 .nav-links a{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.6);transition:color .2s;}
 .nav-links a:hover{color:#F0C060;}
@@ -235,6 +239,28 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .student-dest__country{font-size:.88rem;font-weight:700;color:#fff;}
 .student-dest__info{font-size:.75rem;color:rgba(255,255,255,.4);}
 
+/* ── IMMIGRATION + IA — HOME CRITICAL ── */
+.imm-ai-band{max-width:1100px;margin:4rem auto 0;padding:0 1.5rem;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:1.25rem;align-items:stretch;}
+.imm-ai-panel{border:1px solid rgba(56,189,248,.18);border-radius:18px;background:linear-gradient(135deg,rgba(16,185,129,.13),rgba(56,189,248,.08)),rgba(8,18,34,.88);padding:2rem;box-shadow:0 22px 60px rgba(0,0,0,.28);}
+.ai-kicker,.imm-kicker{display:inline-flex;align-items:center;gap:.5rem;min-height:32px;padding:0 .95rem;border-radius:999px;font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;}
+.ai-kicker{border:1px solid rgba(56,189,248,.28);background:rgba(56,189,248,.1);color:#a7e7ff;}
+.imm-kicker{border:1px solid rgba(212,168,67,.3);background:rgba(212,168,67,.1);color:#F0C060;}
+.imm-ai-panel h2{font-size:clamp(1.7rem,3vw,2.55rem);line-height:1.08;color:#fff;margin:1rem 0 .8rem;}
+.imm-ai-panel p,.imm-section__head p{color:rgba(232,234,240,.68);line-height:1.75;margin:0;}
+.imm-ai-orbit{display:grid;gap:.85rem;}
+.imm-agent-card{display:grid;grid-template-columns:48px 1fr;gap:.9rem;align-items:start;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)),rgba(8,18,34,.82);padding:1rem;box-shadow:0 16px 42px rgba(0,0,0,.18);}
+.imm-agent-avatar{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#D4A843,#38BDF8);color:#06111f;font-weight:1000;}
+.imm-agent-card h3{margin:0 0 .35rem;color:#fff;font-size:1rem;}
+.imm-agent-card p{margin:0;color:rgba(232,234,240,.66);line-height:1.55;font-size:.86rem;}
+.imm-section{max-width:1100px;margin:0 auto;padding:4.5rem 1.5rem;}
+.imm-section__head{max-width:760px;margin:0 auto 1.6rem;text-align:center;display:grid;gap:.75rem;justify-items:center;}
+.imm-section__head h2{font-size:clamp(1.8rem,3.2vw,2.8rem);line-height:1.1;color:#fff;margin:0;}
+.imm-pathway{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1rem;}
+.imm-step-card{border:1px solid rgba(255,255,255,.08);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018)),rgba(8,18,34,.78);padding:1.1rem;min-height:185px;box-shadow:0 18px 50px rgba(0,0,0,.2);}
+.imm-step-card__num{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,#10B981,#38BDF8);color:#06111f;font-weight:1000;margin-bottom:1rem;}
+.imm-step-card h3{margin:0 0 .45rem;color:#fff;font-size:1rem;}
+.imm-step-card p{margin:0;color:rgba(232,234,240,.66);line-height:1.58;font-size:.86rem;}
+
 /* ── WHATSAPP FLOTTANT ── */
 .wa-float{
   position:fixed;bottom:1.75rem;right:1.75rem;z-index:9998;
@@ -322,6 +348,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   .student-section{grid-template-columns:1fr;padding:1.75rem;}
   .student-section__btns{flex-direction:column;}
   .btn-student{width:100%;justify-content:center;}
+  .imm-ai-band{grid-template-columns:1fr;margin-top:3rem;}
+  .imm-pathway{grid-template-columns:1fr 1fr;}
 
   /* News */
   .news-grid{grid-template-columns:1fr;}
@@ -341,6 +369,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   .slide__kicker{font-size:.62rem;}
   .slide__title{font-size:clamp(1.5rem,8vw,2.2rem);}
   .services{grid-template-columns:1fr;}
+  .nav-logo__tag{display:none;}
+  .imm-pathway{grid-template-columns:1fr;}
+  .imm-ai-panel{padding:1.5rem;}
   .stat__num{font-size:1.4rem;}
   .split-card__title{font-size:1.15rem;}
   .student-section{padding:1.25rem;}
@@ -353,7 +384,13 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 <!-- ── NAV ── -->
 <header id="nav">
   <div class="nav-inner">
-    <a href="/" class="nav-logo"><img src="{% static 'img/LOGOIMM97.png' %}" alt="Immigration97" height="44"></a>
+    <a href="/" class="nav-logo" aria-label="Accueil Immigration97">
+      <img src="{% static 'img/LOGOIMM97.png' %}" alt="" height="52" width="52">
+      <span class="nav-logo__text">
+        <span class="nav-logo__name">Immigration97</span>
+        <span class="nav-logo__tag">Visa + IA</span>
+      </span>
+    </a>
     <nav class="nav-links">
       <a href="{% url 'profiles:list' %}">Talents</a>
       <a href="{% url 'residence_permanente' %}">Résidence 🇨🇦</a>

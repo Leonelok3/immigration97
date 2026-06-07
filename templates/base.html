@@ -109,12 +109,56 @@
       align-items: center;
       flex: 0 0 auto;
       text-decoration: none;
+      gap: 0.7rem;
     }
     .c-navbar__brand img {
       display: block;
       width: auto;
       height: 54px;
       object-fit: contain;
+    }
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, rgba(16,185,129,0.24), rgba(56,189,248,0.12)),
+        #050a18;
+      border: 1px solid rgba(16,185,129,0.34);
+      color: #7fffd4;
+      font-weight: 1000;
+      font-size: 0.92rem;
+      letter-spacing: 0;
+      box-shadow: 0 12px 30px rgba(16,185,129,0.16);
+    }
+    .brand-lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #fff;
+      text-decoration: none;
+    }
+    .brand-lockup__text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+    }
+    .brand-lockup__name {
+      color: #fff;
+      font-size: 1.04rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .brand-lockup__tag {
+      margin-top: 0.25rem;
+      color: #f0c060;
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
     }
     .c-navbar__nav {
       display: flex;
@@ -175,7 +219,7 @@
       .c-navbar__nav.is-open { display: flex !important; }
       .c-navbar__toggle { display: flex !important; }
       .c-navbar__container { flex-wrap: nowrap; }
-      .c-navbar__brand img { height: 46px; }
+      .brand-mark { width: 44px; height: 44px; }
     }
     /* Sections qui peuvent déborder */
     @media (max-width: 768px) {
@@ -224,7 +268,7 @@
     .c-footer { background: linear-gradient(135deg, #0a0e1a 0%, #161c2e 100%); color: #e8eaed; border-top: 1px solid rgba(255,255,255,0.05); }
     .c-footer__main { max-width: 1280px; margin: 0 auto; padding: 4rem 2rem 2rem; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr; gap: 3rem; width: 100%; box-sizing: border-box; }
     .c-footer__brand-section { max-width: 320px; }
-    .c-footer__brand-section img { width: 160px; margin-bottom: 1.25rem; }
+    .c-footer__brand-section .brand-lockup { margin-bottom: 1.25rem; }
     .c-footer__brand-text { color: #b4b9c5; font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.5rem; }
     .c-footer__social { display:flex; gap:0.75rem; margin-top:1.5rem; }
     .c-footer__social-link { display:flex; align-items:center; justify-content:center; width:40px; height:40px; background: rgba(255,255,255,0.05); border-radius:8px; color:#e8eaed; transition: all 0.3s ease; text-decoration:none; }
@@ -461,8 +505,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <header class="c-navbar">
   <div class="c-navbar__container">
 
-    <a href="/" class="c-navbar__brand" aria-label="Accueil Immigration97">
-      <img src="{% static 'img/LOGOIMM97.png' %}" alt="Immigration97 Logo" width="140" height="40">
+    <a href="/" class="c-navbar__brand brand-lockup" aria-label="Accueil Immigration97">
+      <span class="brand-mark" aria-hidden="true">I97</span>
+      <span class="brand-lockup__text">
+        <span class="brand-lockup__name">Immigration97</span>
+        <span class="brand-lockup__tag">Visa + IA</span>
+      </span>
     </a>
 
     <button type="button" id="nav-toggle" class="c-navbar__toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-primary">
@@ -506,7 +554,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- (Ton footer inchangé, identique à ce que tu as collé) -->
     <!-- Brand & Mission -->
     <div class="c-footer__brand-section">
-      <img src="{% static 'img/LOGOIMM97.png' %}" alt="Immigration97" width="160" height="45" loading="lazy">
+      <a href="/" class="brand-lockup" aria-label="Accueil Immigration97">
+        <span class="brand-mark" aria-hidden="true">I97</span>
+        <span class="brand-lockup__text">
+          <span class="brand-lockup__name">Immigration97</span>
+          <span class="brand-lockup__tag">Immigration assistée par IA</span>
+        </span>
+      </a>
       <p class="c-footer__brand-text">
         <strong>Immigration97</strong> est la plateforme premium qui accompagne
         <strong>+15 000 candidats</strong> dans leur projet d'immigration vers le

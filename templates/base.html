@@ -120,17 +120,12 @@
     .brand-mark {
       width: 48px;
       height: 48px;
-      display: grid;
-      place-items: center;
+      display: block;
       border-radius: 12px;
       background:
-        linear-gradient(135deg, rgba(16,185,129,0.24), rgba(56,189,248,0.12)),
+        url("{% static 'img/LOGOIMM97.png' %}") center 38% / 178px 178px no-repeat,
         #050a18;
       border: 1px solid rgba(16,185,129,0.34);
-      color: #7fffd4;
-      font-weight: 1000;
-      font-size: 0.92rem;
-      letter-spacing: 0;
       box-shadow: 0 12px 30px rgba(16,185,129,0.16);
     }
     .brand-lockup {
@@ -506,7 +501,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="c-navbar__container">
 
     <a href="/" class="c-navbar__brand brand-lockup" aria-label="Accueil Immigration97">
-      <span class="brand-mark" aria-hidden="true">I97</span>
+      <span class="brand-mark" aria-hidden="true"></span>
       <span class="brand-lockup__text">
         <span class="brand-lockup__name">Immigration97</span>
         <span class="brand-lockup__tag">Visa + IA</span>
@@ -555,7 +550,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Brand & Mission -->
     <div class="c-footer__brand-section">
       <a href="/" class="brand-lockup" aria-label="Accueil Immigration97">
-        <span class="brand-mark" aria-hidden="true">I97</span>
+        <span class="brand-mark" aria-hidden="true"></span>
         <span class="brand-lockup__text">
           <span class="brand-lockup__name">Immigration97</span>
           <span class="brand-lockup__tag">Immigration assistée par IA</span>

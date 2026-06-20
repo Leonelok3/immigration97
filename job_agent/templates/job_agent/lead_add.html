@@ -7,6 +7,281 @@
 
 {% block extra_css %}
 {% include "job_agent/_ja_critical.html" %}
+<style>
+  body.job-agent .ja-add-page {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 36px 0 64px;
+    color: rgba(248, 250, 252, .94);
+    font-family: Inter, "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  body.job-agent .ja-add-page,
+  body.job-agent .ja-add-page * {
+    box-sizing: border-box;
+  }
+
+  body.job-agent .ja-add-hero {
+    border: 1px solid rgba(212, 168, 67, .24);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 86% 12%, rgba(94, 230, 168, .12), transparent 22rem),
+      linear-gradient(135deg, rgba(15, 32, 64, .96), rgba(5, 10, 24, .98));
+    box-shadow: 0 22px 55px rgba(0, 0, 0, .28);
+    padding: clamp(22px, 4vw, 40px);
+    margin-bottom: 22px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: end;
+  }
+
+  body.job-agent .ja-add-kicker {
+    margin: 0 0 10px;
+    color: #D4A843;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  body.job-agent .ja-add-hero h1 {
+    margin: 0;
+    max-width: 760px;
+    color: #FFF7E6;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(38px, 5vw, 68px);
+    line-height: .96;
+    letter-spacing: 0;
+  }
+
+  body.job-agent .ja-add-hero p {
+    max-width: 720px;
+    margin: 14px 0 0;
+    color: rgba(232, 234, 240, .74);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  body.job-agent .ja-add-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  body.job-agent .ja-add-shell {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+  }
+
+  body.job-agent .ja-add-shell .ja-menu {
+    position: sticky;
+    top: 92px;
+    min-width: 0;
+  }
+
+  body.job-agent .ja-add-stack {
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+  }
+
+  body.job-agent .ja-add-card {
+    border: 1px solid rgba(212, 168, 67, .22);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(15, 32, 64, .82), rgba(5, 10, 24, .94));
+    box-shadow: 0 18px 46px rgba(0, 0, 0, .24);
+    overflow: hidden;
+  }
+
+  body.job-agent .ja-add-card__head {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(212, 168, 67, .16);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  body.job-agent .ja-add-card__head h2 {
+    margin: 0;
+    color: #F0C060;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  body.job-agent .ja-add-card__head span,
+  body.job-agent .ja-add-help,
+  body.job-agent .ja-add-foot {
+    color: rgba(232, 234, 240, .62);
+  }
+
+  body.job-agent .ja-add-card__body {
+    padding: 20px;
+  }
+
+  body.job-agent .ja-add-alert {
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border: 1px solid rgba(212, 168, 67, .24);
+    border-radius: 12px;
+    background: rgba(212, 168, 67, .08);
+    color: rgba(255, 247, 230, .9);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  body.job-agent .ja-add-callouts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  body.job-agent .ja-add-callout {
+    min-height: 96px;
+    padding: 16px;
+    border: 1px solid rgba(212, 168, 67, .18);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .035);
+  }
+
+  body.job-agent .ja-add-callout strong {
+    display: block;
+    color: #F0C060;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  body.job-agent .ja-add-callout span {
+    display: block;
+    color: rgba(232, 234, 240, .78);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  body.job-agent .ja-add-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 18px;
+  }
+
+  body.job-agent .ja-add-field--full {
+    grid-column: 1 / -1;
+  }
+
+  body.job-agent .ja-add-field label {
+    display: block;
+    margin: 0 0 8px;
+    color: #F0C060;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  body.job-agent .ja-add-field input,
+  body.job-agent .ja-add-field select,
+  body.job-agent .ja-add-field textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
+    border: 1px solid rgba(212, 168, 67, .26);
+    border-radius: 12px;
+    background: rgba(5, 10, 24, .78);
+    color: rgba(248, 250, 252, .94);
+    font: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+
+  body.job-agent .ja-add-field textarea {
+    min-height: 180px;
+    resize: vertical;
+    line-height: 1.55;
+  }
+
+  body.job-agent .ja-add-field input:focus,
+  body.job-agent .ja-add-field select:focus,
+  body.job-agent .ja-add-field textarea:focus {
+    border-color: rgba(240, 192, 96, .8);
+    background: rgba(5, 10, 24, .9);
+    box-shadow: 0 0 0 4px rgba(212, 168, 67, .12);
+  }
+
+  body.job-agent .ja-add-field input::placeholder,
+  body.job-agent .ja-add-field textarea::placeholder {
+    color: rgba(232, 234, 240, .38);
+  }
+
+  body.job-agent .ja-add-help {
+    margin: 8px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  body.job-agent .ja-add-error {
+    margin-top: 7px;
+    color: #fca5a5;
+    font-size: 13px;
+  }
+
+  body.job-agent .ja-add-submit {
+    grid-column: 1 / -1;
+    border-top: 1px solid rgba(212, 168, 67, .16);
+    padding-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  body.job-agent .ja-add-foot {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(212, 168, 67, .16);
+    font-size: 13px;
+  }
+
+  @media (max-width: 980px) {
+    body.job-agent .ja-add-hero,
+    body.job-agent .ja-add-shell {
+      grid-template-columns: 1fr;
+    }
+
+    body.job-agent .ja-add-actions {
+      justify-content: flex-start;
+    }
+
+    body.job-agent .ja-add-shell .ja-menu {
+      position: static;
+    }
+  }
+
+  @media (max-width: 720px) {
+    body.job-agent .ja-add-page {
+      width: min(100% - 20px, 1180px);
+      padding-top: 20px;
+    }
+
+    body.job-agent .ja-add-form,
+    body.job-agent .ja-add-callouts {
+      grid-template-columns: 1fr;
+    }
+
+    body.job-agent .ja-add-card__head {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -14,145 +289,120 @@
 {% endblock %}
 
 {% block content %}
-<div class="app-main job-agent">
-  <div class="ja-container">
-
-    <div class="ja-pagehead">
-      <div class="ja-pagehead__title">
+<div class="ja-add-page">
+    <div class="ja-add-hero">
+      <div>
+        <p class="ja-add-kicker">Job Agent</p>
         <h1>Ajouter une offre</h1>
         <p>Colle un lien + (optionnel) la description pour obtenir un scoring immédiat.</p>
       </div>
-      <div class="ja-pagehead__actions">
+      <div class="ja-add-actions">
         <a class="c-btn" href="{% url 'job_agent:lead_list' %}" aria-label="Retour à la liste des offres">Offres</a>
         <a class="c-btn" href="{% url 'job_agent:dashboard' %}" aria-label="Retour au dashboard">Dashboard</a>
         <a class="c-btn c-btn--primary" href="{% url 'job_agent:kanban' %}" aria-label="Ouvrir le kanban">Kanban</a>
       </div>
     </div>
 
-    <div class="ja-layout">
+    <div class="ja-add-shell">
       {% include "job_agent/_menu.html" with active="leads" %}
 
-      <div class="ja-content">
+      <div class="ja-add-stack">
 
-        <section class="ja-card" aria-label="Conseils pour ajouter une offre">
-          <div class="ja-card__head">
+        <section class="ja-add-card" aria-label="Conseils pour ajouter une offre">
+          <div class="ja-add-card__head">
             <h2>Ajout rapide</h2>
-            <span class="ja-muted-2">2 étapes : URL → description (si tu l’as).</span>
+            <span>2 étapes : URL puis description si tu l’as.</span>
           </div>
-          <div class="ja-card__body">
-            <div class="ja-alert ja-alert--info" role="note">
+          <div class="ja-add-card__body">
+            <div class="ja-add-alert" role="note">
               <strong>Tip :</strong> si tu colles la description de l’offre, le score est plus fiable et le pack sera meilleur.
             </div>
-            <div class="ja-calloutgrid" aria-label="Raccourcis">
-              <div class="ja-callout">
-                <p class="ja-callout__k">URL</p>
-                <p class="ja-callout__v">Indeed, LinkedIn, site entreprise…</p>
+            <div class="ja-add-callouts" aria-label="Raccourcis">
+              <div class="ja-add-callout">
+                <strong>URL</strong>
+                <span>Indeed, LinkedIn, site entreprise...</span>
               </div>
-              <div class="ja-callout">
-                <p class="ja-callout__k">Description</p>
-                <p class="ja-callout__v">Copier/coller (recommandé)</p>
+              <div class="ja-add-callout">
+                <strong>Description</strong>
+                <span>Copier/coller le texte de l’annonce.</span>
               </div>
-              <div class="ja-callout">
-                <p class="ja-callout__k">Résultat</p>
-                <p class="ja-callout__v">Score + statut suggéré</p>
+              <div class="ja-add-callout">
+                <strong>Résultat</strong>
+                <span>Score, statut suggéré et pack candidat.</span>
               </div>
             </div>
           </div>
         </section>
 
-        <div class="ja-divider" aria-hidden="true"></div>
-
-        <section class="ja-card" aria-label="Formulaire ajout offre">
-          <div class="ja-card__head">
+        <section class="ja-add-card" aria-label="Formulaire ajout offre">
+          <div class="ja-add-card__head">
             <h2>Détails de l’offre</h2>
-            <span class="ja-muted-2">Tu peux remplir le minimum, puis compléter plus tard.</span>
+            <span>Remplis le minimum maintenant, complète le reste plus tard.</span>
           </div>
 
-          <div class="ja-card__body">
+          <div class="ja-add-card__body">
 
             {% if form.errors %}
-              <div class="ja-alert ja-alert--warn" role="alert" aria-label="Erreurs de formulaire">
+              <div class="ja-add-alert" role="alert" aria-label="Erreurs de formulaire">
                 <strong>Vérifie le formulaire :</strong> certains champs sont invalides.
               </div>
             {% endif %}
 
-            <form method="post" class="ja-form" novalidate>
+            <form method="post" class="ja-add-form" novalidate>
               {% csrf_token %}
 
-              <div class="ja-formgrid" aria-label="Champs offre">
-
-                <div class="ja-col-6">
-                  <div class="ja-field">
+                <div class="ja-add-field">
                     <label for="{{ form.search.id_for_label }}">Recherche associée</label>
                     {{ form.search|add_class:"c-input" }}
-                    <p class="ja-help">Optionnel — si vide, on associe automatiquement ta dernière recherche.</p>
-                  </div>
+                    <p class="ja-add-help">Optionnel : si vide, on associe automatiquement ta dernière recherche.</p>
                 </div>
 
-                <div class="ja-col-6">
-                  <div class="ja-field">
+                <div class="ja-add-field">
                     <label for="{{ form.source.id_for_label }}">Source</label>
                     {{ form.source|add_class:"c-input" }}
-                    <p class="ja-help">Ex: Indeed, LinkedIn, Site entreprise…</p>
-                  </div>
+                    <p class="ja-add-help">Ex: Indeed, LinkedIn, site entreprise...</p>
                 </div>
 
-                <div class="ja-col-12">
-                  <div class="ja-field">
+                <div class="ja-add-field ja-add-field--full">
                     <label for="{{ form.url.id_for_label }}">URL de l’offre</label>
                     {{ form.url|add_class:"c-input" }}
-                    <p class="ja-help">Ce champ est le plus important : il évite les doublons et garde la trace.</p>
-                    {% if form.url.errors %}<div class="ja-error">{{ form.url.errors }}</div>{% endif %}
-                  </div>
+                    <p class="ja-add-help">Ce champ est le plus important : il évite les doublons et garde la trace.</p>
+                    {% if form.url.errors %}<div class="ja-add-error">{{ form.url.errors }}</div>{% endif %}
                 </div>
 
-                <div class="ja-col-6">
-                  <div class="ja-field">
+                <div class="ja-add-field">
                     <label for="{{ form.title.id_for_label }}">Titre</label>
                     {{ form.title|add_class:"c-input" }}
-                    <p class="ja-help">Optionnel — utile si le site ne l’affiche pas clairement.</p>
-                  </div>
+                    <p class="ja-add-help">Optionnel : utile si le site ne l’affiche pas clairement.</p>
                 </div>
 
-                <div class="ja-col-6">
-                  <div class="ja-field">
+                <div class="ja-add-field">
                     <label for="{{ form.company.id_for_label }}">Entreprise</label>
                     {{ form.company|add_class:"c-input" }}
-                    <p class="ja-help">Optionnel — utile pour organiser ta liste.</p>
-                  </div>
+                    <p class="ja-add-help">Optionnel : utile pour organiser ta liste.</p>
                 </div>
 
-                <div class="ja-col-6">
-                  <div class="ja-field">
+                <div class="ja-add-field">
                     <label for="{{ form.location.id_for_label }}">Lieu</label>
                     {{ form.location|add_class:"c-input" }}
-                    <p class="ja-help">Ville / pays / remote.</p>
-                  </div>
+                    <p class="ja-add-help">Ville / pays / remote.</p>
                 </div>
 
-                <div class="ja-col-6">
-                  <div class="ja-field">
+                <div class="ja-add-field">
                     <label for="{{ form.status.id_for_label }}">Statut</label>
                     {{ form.status|add_class:"c-input" }}
-                    <p class="ja-help">Par défaut : “Trouvée”. Le score peut suggérer “À postuler”.</p>
-                  </div>
+                    <p class="ja-add-help">Par défaut : “Trouvée”. Le score peut suggérer “À postuler”.</p>
                 </div>
 
-                <div class="ja-col-12">
-                  <div class="ja-field">
+                <div class="ja-add-field ja-add-field--full">
                     <label for="{{ form.description_text.id_for_label }}">Description (recommandé)</label>
                     {{ form.description_text|add_class:"c-input ja-textarea" }}
-                    <p class="ja-help">
+                    <p class="ja-add-help">
                       Colle la description ici (ou les points clés). Ça améliore le scoring et la génération du pack.
                     </p>
-                  </div>
                 </div>
 
-              </div>
-
-              <div class="ja-divider" aria-hidden="true"></div>
-
-              <div class="ja-actions" aria-label="Actions formulaire">
+              <div class="ja-add-submit" aria-label="Actions formulaire">
                 <button class="c-btn c-btn--primary" type="submit" aria-label="Ajouter l'offre">
                   Ajouter l’offre
                 </button>
@@ -164,10 +414,8 @@
             </form>
           </div>
 
-          <div class="ja-card__foot">
-            <span class="ja-muted-2">
+          <div class="ja-add-foot">
               Après ajout : tu pourras recalculer le score, générer le pack et envoyer une relance depuis le détail.
-            </span>
           </div>
 
         </section>
@@ -179,6 +427,5 @@
 
       </div>
     </div>
-  </div>
 </div>
 {% endblock %}

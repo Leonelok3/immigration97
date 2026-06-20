@@ -2376,3 +2376,246 @@ body.profiles .app-main.profiles .hint{
   border: 1px solid rgba(0,0,0,.08);
   background: rgba(0,0,0,.02);
 }
+
+/* =========================================================
+   INVITATIONS PAGES — final production-safe styling
+   Fixes /profiles/me/invitations/ and /profiles/me/invitations-sent/
+========================================================= */
+body.profiles {
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+    #050a18 !important;
+  background-size: 72px 72px;
+  color: #e8eaf0 !important;
+}
+
+body.profiles .app-main.profiles {
+  padding: 2.5rem 0 5rem !important;
+}
+
+body.profiles .app-container {
+  width: min(1120px, calc(100% - 32px)) !important;
+  max-width: 1120px !important;
+  margin-inline: auto !important;
+}
+
+body.profiles .p-hero {
+  margin: 0 0 1.5rem !important;
+  display: block !important;
+}
+
+body.profiles .p-hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 2rem;
+  border-radius: 24px;
+  background:
+    radial-gradient(700px 240px at 20% 0%, rgba(59,130,246,.20), transparent 58%),
+    linear-gradient(135deg, rgba(15,35,68,.96), rgba(10,22,40,.96));
+  border: 1px solid rgba(212,168,67,.20);
+  box-shadow: 0 18px 55px rgba(0,0,0,.28);
+}
+
+body.profiles .p-hero__title {
+  margin: 0 0 .6rem !important;
+  color: #fff !important;
+  font-size: clamp(2rem, 4vw, 3.2rem) !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.02em !important;
+}
+
+body.profiles .p-hero__lead {
+  max-width: 680px;
+  margin: 0 !important;
+  color: rgba(232,234,240,.72) !important;
+  line-height: 1.65 !important;
+  font-size: 1rem !important;
+}
+
+body.profiles .p-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: .95rem;
+}
+
+body.profiles .p-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: .35rem .75rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.88);
+  font-size: .82rem;
+  font-weight: 800;
+}
+
+body.profiles .p-hero__right {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: .65rem;
+}
+
+body.profiles .p-card {
+  color: #e8eaf0 !important;
+}
+
+body.profiles .p-card--soft {
+  padding: 1.25rem !important;
+  border-radius: 22px !important;
+  background:
+    radial-gradient(700px 240px at 20% 0%, rgba(212,168,67,.08), transparent 60%),
+    rgba(13,24,43,.92) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  box-shadow: 0 18px 55px rgba(0,0,0,.22) !important;
+}
+
+body.profiles .p-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+body.profiles .p-section-title {
+  margin: 0 !important;
+  color: rgba(255,255,255,.76) !important;
+  font-size: .82rem !important;
+  letter-spacing: .12em !important;
+}
+
+body.profiles .p-kpi {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .4rem;
+  padding: .45rem .75rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+body.profiles .p-kpi__label {
+  color: rgba(255,255,255,.56);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+body.profiles .p-kpi__value {
+  color: #f0c060;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+body.profiles .p-table {
+  display: grid !important;
+  gap: .75rem !important;
+}
+
+body.profiles .p-table__row {
+  display: grid !important;
+  grid-template-columns: 1.05fr 1.75fr .75fr .8fr .9fr;
+  gap: .85rem;
+  align-items: center;
+  min-width: 0;
+}
+
+body.profiles .p-table__row--head {
+  padding: .75rem .9rem !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  background: rgba(255,255,255,.035) !important;
+  color: rgba(255,255,255,.55) !important;
+  font-size: .72rem !important;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+body.profiles .p-table__row:not(.p-table__row--head) {
+  padding: .95rem !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  background: rgba(255,255,255,.04) !important;
+}
+
+body.profiles .p-table__cell {
+  min-width: 0;
+}
+
+body.profiles .p-mini__title {
+  color: #fff !important;
+  font-weight: 900 !important;
+  overflow-wrap: anywhere;
+}
+
+body.profiles .p-mini__sub {
+  margin-top: .25rem;
+  color: rgba(232,234,240,.62) !important;
+  font-size: .84rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+body.profiles .p-muted {
+  color: rgba(232,234,240,.62) !important;
+}
+
+body.profiles .p-note,
+body.profiles .p-empty {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 16px;
+  background: rgba(212,168,67,.08);
+  border: 1px solid rgba(212,168,67,.18);
+  color: rgba(232,234,240,.82);
+}
+
+body.profiles .p-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+
+body.profiles .p-empty h3 {
+  color: #fff;
+  margin: 0 0 .5rem;
+}
+
+body.profiles .p-empty p {
+  color: rgba(232,234,240,.66);
+  margin: 0 0 1rem;
+}
+
+body.profiles .p-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+body.profiles .p-btn--sm {
+  padding: .5rem .75rem;
+  font-size: .78rem;
+}
+
+@media (max-width: 860px) {
+  body.profiles .p-hero__inner {
+    grid-template-columns: 1fr;
+    padding: 1.35rem;
+  }
+  body.profiles .p-hero__right {
+    justify-content: flex-start;
+  }
+  body.profiles .p-table__row {
+    grid-template-columns: 1fr;
+  }
+  body.profiles .p-table__row--head {
+    display: none !important;
+  }
+}

@@ -233,6 +233,21 @@ def my_space(request):
     profile_skills = ProfileSkill.objects.filter(profile=profile).select_related("skill").order_by("-level", "skill__name")
     portfolio_items = PortfolioItem.objects.filter(profile=profile).order_by("-id")
     all_skills = list(Skill.objects.values_list("name", flat=True).order_by("name")[:200])
+    recommended_offers = []
+
+    if profile.category_id:
+        try:
+            from job_agent.models import JobLead, PublicJobOffer
+
+            imported_urls = JobLead.objects.filter(user=request.user).values_list("url", flat=True)
+            recommended_offers = (
+                PublicJobOffer.objects.filter(is_active=True, category=profile.category)
+                .exclude(url__in=imported_urls)
+                .select_related("category")
+                .order_by("-created_at")[:6]
+            )
+        except Exception:
+            recommended_offers = []
 
     # Score de complétion
     checks = {
@@ -259,6 +274,7 @@ def my_space(request):
         "profile_checks": checks,
         "profile_progress": profile_progress,
         "test_results": [],
+        "recommended_offers": recommended_offers,
     }
     return render(request, "profiles/my_space.html", context)
 
@@ -528,6 +544,10 @@ def my_analytics(request):
     invites_accepted = invites_qs.filter(status="accepted").count()
     invites_declined = invites_qs.filter(status="declined").count()
     invites_pending = invites_qs.filter(status="sent").count()
+    recent_invites = (
+        invites_qs.select_related("recruiter", "recruiter__recruiter_profile")
+        .order_by("-created_at")[:5]
+    )
 
     # Completion score (simple)
     if profile:
@@ -545,6 +565,7 @@ def my_analytics(request):
         "invites_accepted": invites_accepted,
         "invites_declined": invites_declined,
         "invites_pending": invites_pending,
+        "recent_invites": recent_invites,
         "completion": completion,
     })
 

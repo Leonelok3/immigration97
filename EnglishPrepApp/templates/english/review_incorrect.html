@@ -9,8 +9,9 @@
 
 {% block extra_css %}
 <style>
+  .ep-shell { min-height:100vh; background:#050b18; color:#fff; padding:1px 0 4rem; }
   .ep-wrap { max-width: 900px; margin: 0 auto; padding: 0 1.25rem 4rem; }
-  .ep-bc { font-size: .82rem; color: #64748b; margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .ep-bc { font-size: .82rem; color: rgba(255,255,255,.45); margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
   .ep-bc a { color: #F59E0B; text-decoration: none; font-weight: 500; }
 
   .ep-hero { background: linear-gradient(135deg, #102B4E 0%, #1a3d6b 100%); border-radius: 20px; padding: 2.25rem 2rem; color: #fff; margin-bottom: 2rem; position: relative; overflow: hidden; }
@@ -21,24 +22,24 @@
   .ep-hero p { font-size: .88rem; opacity: .8; margin: 0; max-width: 500px; }
 
   .ep-quick { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.75rem; }
-  .ep-quick-link { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: .5rem 1rem; font-size: .82rem; font-weight: 600; color: #102B4E; text-decoration: none; transition: border-color .2s, box-shadow .2s; display: flex; align-items: center; gap: .4rem; }
+  .ep-quick-link { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: .5rem 1rem; font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.82); text-decoration: none; transition: border-color .2s, box-shadow .2s; display: flex; align-items: center; gap: .4rem; }
   .ep-quick-link:hover { border-color: #F59E0B; box-shadow: 0 2px 8px rgba(245,158,11,.15); }
 
-  .ep-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.75rem; }
-  .ep-q-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .ep-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 16px; padding: 1.75rem; }
+  .ep-q-item { background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.09); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
   .ep-q-item:last-child { margin-bottom: 0; }
   .ep-q-num { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #94a3b8; margin-bottom: .6rem; }
-  .ep-q-text { font-size: .95rem; font-weight: 600; color: #102B4E; line-height: 1.55; margin-bottom: 1rem; }
+  .ep-q-text { font-size: .95rem; font-weight: 600; color: #fff; line-height: 1.55; margin-bottom: 1rem; }
 
   .ep-answer-label { display: inline-block; border-radius: 20px; padding: .22rem .8rem; font-size: .72rem; font-weight: 700; margin-bottom: .35rem; }
   .ep-answer-wrong { background: #FEF2F2; color: #b91c1c; }
   .ep-answer-right { background: #F0FDF4; color: #15803d; }
-  .ep-answer-text { font-size: .88rem; color: #334155; margin: 0 0 .6rem; }
+  .ep-answer-text { font-size: .88rem; color: rgba(255,255,255,.72); margin: 0 0 .6rem; }
   .ep-answer-text.correct { color: #15803d; font-weight: 600; }
 
-  .ep-explanation { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: .75rem 1rem; margin-top: .5rem; }
+  .ep-explanation { background: rgba(5,11,24,.45); border: 1px solid rgba(255,255,255,.09); border-radius: 8px; padding: .75rem 1rem; margin-top: .5rem; }
   .ep-explanation-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; display: block; margin-bottom: .3rem; }
-  .ep-explanation p { font-size: .85rem; color: #475569; margin: 0; line-height: 1.6; }
+  .ep-explanation p { font-size: .85rem; color: rgba(255,255,255,.68); margin: 0; line-height: 1.6; }
 
   .ep-success { text-align: center; padding: 2.5rem 1rem; color: #15803d; }
   .ep-success p { font-size: 1rem; font-weight: 600; }
@@ -47,13 +48,15 @@
   .ep-btn-primary { background: #102B4E; color: #fff; border-radius: 10px; padding: .75rem 1.5rem; font-weight: 700; font-size: .88rem; text-decoration: none; transition: background .2s; }
   .ep-btn-primary:hover { background: #1a3d6b; color: #fff; }
   .ep-btn-secondary { background: #f1f5f9; color: #475569; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: .75rem 1.5rem; font-weight: 600; font-size: .88rem; text-decoration: none; transition: background .2s; }
-  .ep-btn-secondary:hover { background: #e2e8f0; }
+  .ep-btn-secondary { background: rgba(255,255,255,.045); color: rgba(255,255,255,.72); border-color: rgba(255,255,255,.12); }
+  .ep-btn-secondary:hover { background: rgba(255,255,255,.09); color:#fff; }
 
   @media (max-width: 600px) { .ep-hero::before { display: none; } }
 </style>
 {% endblock %}
 
 {% block content %}
+<main class="ep-shell">
 <div class="ep-wrap">
 
   <nav class="ep-bc">
@@ -128,4 +131,5 @@
   </div>
 
 </div>
+</main>
 {% endblock %}

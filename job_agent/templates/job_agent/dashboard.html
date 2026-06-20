@@ -13,7 +13,6 @@
 {% endblock %}
 
 {% block content %}
-<div class="app-main job-agent">
   <div class="ja-container">
 
     <div class="ja-pagehead">
@@ -24,6 +23,9 @@
       <div class="ja-pagehead__actions">
         <a class="c-btn" href="{% url 'job_agent:lead_list' %}" aria-label="Voir les offres">Offres</a>
         <a class="c-btn" href="{% url 'job_agent:lead_add' %}" aria-label="Ajouter une offre">Ajouter</a>
+        {% if request.user.is_staff %}
+          <a class="c-btn" href="{% url 'job_agent:review_detected_offers' %}" aria-label="Revoir les offres détectées">À revoir</a>
+        {% endif %}
         <a class="c-btn c-btn--primary" href="{% url 'job_agent:kanban' %}" aria-label="Ouvrir le kanban">Kanban</a>
       </div>
     </div>
@@ -32,6 +34,72 @@
       {% include "job_agent/_menu.html" with active="dashboard" %}
 
       <div class="ja-content">
+        <section class="ja-card" aria-label="Assistant Emploi IA" style="margin-bottom:18px;">
+          <div class="ja-card__head">
+            <h2>Assistant Emploi IA Immigration97</h2>
+            <span class="ja-muted-2">Trouver, adapter, postuler, relancer, réussir l’entretien.</span>
+          </div>
+          <div class="ja-card__body">
+            <div class="ja-alert ja-alert--info">
+              <strong>Objectif :</strong> transformer une offre en dossier complet : CV ciblé, lettre professionnelle,
+              email prêt à envoyer, réponses d’entretien, relance et suivi kanban.
+            </div>
+            <div class="ja-calloutgrid" aria-label="Actions principales">
+              <div class="ja-callout">
+                <p class="ja-callout__k">Recherche IA</p>
+                <p class="ja-callout__v">Écris ton objectif : pays, métier, visa, remote, niveau d’expérience.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">CV ATS</p>
+                <p class="ja-callout__v">Le système compare ton CV à l’offre et propose une version ciblée.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">Candidature</p>
+                <p class="ja-callout__v">Lettre, email, réponses recruteur et documents téléchargeables.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">Entretien</p>
+                <p class="ja-callout__v">Pitch, questions probables, forces à défendre et relance.</p>
+              </div>
+            </div>
+            <form method="get" action="{% url 'job_agent:public_offers' %}" class="ja-search" style="margin-top:14px;">
+              <input class="c-input" name="ai_query" type="search" placeholder="Ex: offres au Canada pour chauffeur avec visa sponsor">
+              <button class="c-btn c-btn--primary" type="submit">Lancer la recherche IA</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="ja-card" aria-label="Parcours conseillé" style="margin-bottom:18px;">
+          <div class="ja-card__head">
+            <h2>Parcours conseillé</h2>
+            <span class="ja-muted-2">CV → offre → pack → postuler → suivi</span>
+          </div>
+          <div class="ja-card__body">
+            <div class="ja-calloutgrid" aria-label="Étapes Job Agent">
+              <div class="ja-callout">
+                <p class="ja-callout__k">1. Préparer</p>
+                <p class="ja-callout__v">Importe ton CV dans Documents CV pour que l’agent lise ton profil.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">2. Trouver</p>
+                <p class="ja-callout__v">Choisis une offre publique ou ajoute une annonce trouvée ailleurs.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">3. Adapter</p>
+                <p class="ja-callout__v">Génère CV ciblé, lettre, email, réponses et conseils entretien.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">4. Suivre</p>
+                <p class="ja-callout__v">Déplace l’offre dans le kanban puis relance au bon moment.</p>
+              </div>
+            </div>
+            <div class="ja-actions ja-actions--wrap">
+              <a class="c-btn c-btn--primary" href="{% url 'job_agent:documents_edit' %}">Commencer par mon CV</a>
+              <a class="c-btn" href="{% url 'job_agent:public_offers' %}">Voir les offres publiques</a>
+              <a class="c-btn" href="{% url 'job_agent:lead_add' %}">Ajouter une offre</a>
+            </div>
+          </div>
+        </section>
 
         <section class="ja-stats" aria-label="Statistiques">
           <div class="ja-stat">
@@ -111,5 +179,4 @@
       </div>
     </div>
   </div>
-</div>
 {% endblock %}

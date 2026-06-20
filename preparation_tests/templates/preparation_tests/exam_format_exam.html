@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static prep_content %}
 
 {% block body_class %}preparation-tests{% endblock %}
 {% block app_scope %}preparation-tests{% endblock %}
@@ -15,9 +15,60 @@ Conditions réelles d'examen avec timing officiel.
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/preparation_tests.css' %}?v=20260329">
+<style>
+.fr-exam-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.fr-exam-page a{text-decoration:none;}
+.fr-exam-page .pt-hero,
+.fr-exam-page .pt-section{background:transparent;}
+.fr-exam-page .pt-title,
+.fr-exam-page .pt-card h2,
+.fr-exam-page .pt-question-text{color:#fff;}
+.fr-exam-page .pt-lead,
+.fr-exam-page .pt-card-meta{color:rgba(255,255,255,.68);}
+.fr-exam-page .pt-card{
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;
+  color:#fff;
+}
+.fr-exam-page .pt-card--section{margin-bottom:1.25rem;padding:1.5rem;}
+.fr-exam-page .pt-card--question{
+  background:rgba(255,255,255,.035);
+  border-color:rgba(255,255,255,.085);
+}
+.fr-exam-page .pt-choice{
+  display:flex;
+  align-items:center;
+  gap:.65rem;
+  padding:.65rem .85rem;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.8);
+  margin-bottom:.45rem;
+}
+.fr-exam-page .pt-choice:hover{
+  border-color:rgba(212,168,67,.35);
+  background:rgba(212,168,67,.08);
+}
+.fr-exam-page .pt-choice input{accent-color:#d4a843;}
+.fr-exam-page .pt-passage{
+  background:rgba(5,11,24,.55) !important;
+  border:1px solid rgba(16,185,129,.22);
+  color:rgba(255,255,255,.82);
+}
+.fr-exam-page .pt-empty{color:rgba(255,255,255,.45);}
+.fr-exam-page .pt-question-index{color:#f0c060;font-weight:800;}
+.fr-exam-page .pt-btn-primary,
+.fr-exam-page .pt-btn-ghost{
+  border-radius:10px;
+  text-decoration:none;
+}
+</style>
 {% endblock %}
 
 {% block content %}
+<main class="fr-exam-page">
 
 <!-- HERO -->
 <section class="pt-hero pt-hero--exam">
@@ -73,9 +124,7 @@ Conditions réelles d'examen avec timing officiel.
         <input type="hidden" name="ee_exercise_ids" value="{{ item.exercise.id }}">
       {% endfor %}
 
-      {# ════════════════════════════════════════════════
-         SECTION CO — Compréhension Orale
-      ════════════════════════════════════════════════ #}
+      {% comment %}SECTION CO — Compréhension Orale{% endcomment %}
       <article class="pt-card pt-card--section">
         <header class="pt-section-header" style="margin-bottom:1.5rem;">
           <h2>🎧 Compréhension Orale</h2>
@@ -95,7 +144,7 @@ Conditions réelles d'examen avec timing officiel.
               border-left:3px solid #3b82f6; padding-left:.75rem;
               margin-bottom:1rem;
             ">
-              🎧 {{ lesson.title }}
+              🎧 {{ lesson.title|prep_plain }}
             </p>
 
             {# Audio unique pour toute la leçon — affiché une seule fois avant les questions #}
@@ -119,31 +168,31 @@ Conditions réelles d'examen avec timing officiel.
                 <span class="pt-question-index">CO — Q{{ forloop.parentloop.counter }}.{{ forloop.counter }}</span>
               </header>
 
-              <p class="pt-question-text">{{ ex.question_text }}</p>
+              <p class="pt-question-text">{{ ex.question_text|prep_plain }}</p>
 
               <div class="pt-choices">
                 {% if ex.option_a %}
                 <label class="pt-choice">
                   <input type="radio" name="co_{{ ex.id }}" value="A">
-                  <span>{{ ex.option_a }}</span>
+                  <span>{{ ex.option_a|prep_plain }}</span>
                 </label>
                 {% endif %}
                 {% if ex.option_b %}
                 <label class="pt-choice">
                   <input type="radio" name="co_{{ ex.id }}" value="B">
-                  <span>{{ ex.option_b }}</span>
+                  <span>{{ ex.option_b|prep_plain }}</span>
                 </label>
                 {% endif %}
                 {% if ex.option_c %}
                 <label class="pt-choice">
                   <input type="radio" name="co_{{ ex.id }}" value="C">
-                  <span>{{ ex.option_c }}</span>
+                  <span>{{ ex.option_c|prep_plain }}</span>
                 </label>
                 {% endif %}
                 {% if ex.option_d %}
                 <label class="pt-choice">
                   <input type="radio" name="co_{{ ex.id }}" value="D">
-                  <span>{{ ex.option_d }}</span>
+                  <span>{{ ex.option_d|prep_plain }}</span>
                 </label>
                 {% endif %}
               </div>
@@ -157,9 +206,7 @@ Conditions réelles d'examen avec timing officiel.
         {% endif %}
       </article>
 
-      {# ════════════════════════════════════════════════
-         SECTION CE — Compréhension Écrite
-      ════════════════════════════════════════════════ #}
+      {% comment %}SECTION CE — Compréhension Écrite{% endcomment %}
       <article class="pt-card pt-card--section">
         <header class="pt-section-header" style="margin-bottom:1.5rem;">
           <h2>📖 Compréhension Écrite</h2>
@@ -179,7 +226,7 @@ Conditions réelles d'examen avec timing officiel.
               border-left:3px solid #10b981; padding-left:.75rem;
               margin-bottom:.75rem;
             ">
-              📖 {{ lesson.title }}
+              📖 {{ lesson.title|prep_plain }}
             </p>
 
             {# Texte de lecture (si disponible) #}
@@ -193,7 +240,7 @@ Conditions réelles d'examen avec timing officiel.
               font-size:.93rem;
               line-height:1.75;
             ">
-              {{ lesson.content_html|safe }}
+              {{ lesson.content_html|prep_rich }}
             </div>
             {% endif %}
 
@@ -204,31 +251,31 @@ Conditions réelles d'examen avec timing officiel.
                 <span class="pt-question-index">CE — Q{{ forloop.parentloop.counter }}.{{ forloop.counter }}</span>
               </header>
 
-              <p class="pt-question-text">{{ ex.question_text }}</p>
+              <p class="pt-question-text">{{ ex.question_text|prep_plain }}</p>
 
               <div class="pt-choices">
                 {% if ex.option_a %}
                 <label class="pt-choice">
                   <input type="radio" name="ce_{{ ex.id }}" value="A">
-                  <span>{{ ex.option_a }}</span>
+                  <span>{{ ex.option_a|prep_plain }}</span>
                 </label>
                 {% endif %}
                 {% if ex.option_b %}
                 <label class="pt-choice">
                   <input type="radio" name="ce_{{ ex.id }}" value="B">
-                  <span>{{ ex.option_b }}</span>
+                  <span>{{ ex.option_b|prep_plain }}</span>
                 </label>
                 {% endif %}
                 {% if ex.option_c %}
                 <label class="pt-choice">
                   <input type="radio" name="ce_{{ ex.id }}" value="C">
-                  <span>{{ ex.option_c }}</span>
+                  <span>{{ ex.option_c|prep_plain }}</span>
                 </label>
                 {% endif %}
                 {% if ex.option_d %}
                 <label class="pt-choice">
                   <input type="radio" name="ce_{{ ex.id }}" value="D">
-                  <span>{{ ex.option_d }}</span>
+                  <span>{{ ex.option_d|prep_plain }}</span>
                 </label>
                 {% endif %}
               </div>
@@ -242,9 +289,7 @@ Conditions réelles d'examen avec timing officiel.
         {% endif %}
       </article>
 
-      {# ════════════════════════════════════════════════
-         SECTION EO — Expression Orale (pratique libre)
-      ════════════════════════════════════════════════ #}
+      {% comment %}SECTION EO — Expression Orale{% endcomment %}
       <article class="pt-card pt-card--section">
         <header class="pt-section-header" style="margin-bottom:1.5rem;">
           <h2>🎤 Expression Orale
@@ -269,16 +314,16 @@ Conditions réelles d'examen avec timing officiel.
               🎤 Sujet {{ forloop.counter }} / {{ eo_items|length }}
             </p>
             <p class="pt-question-text" style="font-weight:600;">
-              {{ item.exercise.title }}
+              {{ item.exercise.title|prep_plain }}
             </p>
             {% if item.exercise.instruction %}
             <p style="font-size:.9rem; opacity:.8; margin-top:.4rem;">
-              {{ item.exercise.instruction }}
+              {{ item.exercise.instruction|prep_plain }}
             </p>
             {% endif %}
             {% if item.exercise.question_text %}
             <p style="font-size:.9rem; margin-top:.5rem; color:#a855f7;">
-              📝 {{ item.exercise.question_text }}
+              📝 {{ item.exercise.question_text|prep_plain }}
             </p>
             {% endif %}
           </div>
@@ -288,9 +333,7 @@ Conditions réelles d'examen avec timing officiel.
         {% endif %}
       </article>
 
-      {# ════════════════════════════════════════════════
-         SECTION EE — Expression Écrite (pratique libre)
-      ════════════════════════════════════════════════ #}
+      {% comment %}SECTION EE — Expression Écrite{% endcomment %}
       <article class="pt-card pt-card--section">
         <header class="pt-section-header" style="margin-bottom:1.5rem;">
           <h2>✍️ Expression Écrite
@@ -315,16 +358,16 @@ Conditions réelles d'examen avec timing officiel.
               ✍️ Sujet {{ forloop.counter }} / {{ ee_items|length }}
             </p>
             <p class="pt-question-text" style="font-weight:600;">
-              {{ item.exercise.title }}
+              {{ item.exercise.title|prep_plain }}
             </p>
             {% if item.exercise.instruction %}
             <p style="font-size:.9rem; opacity:.8; margin-top:.4rem;">
-              {{ item.exercise.instruction }}
+              {{ item.exercise.instruction|prep_plain }}
             </p>
             {% endif %}
             {% if item.exercise.question_text %}
             <p style="font-size:.9rem; margin-top:.5rem; color:#f59e0b;">
-              📝 {{ item.exercise.question_text }}
+              📝 {{ item.exercise.question_text|prep_plain }}
             </p>
             {% endif %}
           </div>
@@ -352,6 +395,7 @@ Conditions réelles d'examen avec timing officiel.
   </div>
 </section>
 
+</main>
 {% endblock %}
 
 {% block extra_js %}

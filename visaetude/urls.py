@@ -8,6 +8,7 @@ urlpatterns = [
     path("profil/", views.profile, name="profile"),
     path("student-profile/", views.student_profile, name="student_profile"),  # ✅ ajouté
     path("pays/", views.countries_list, name="countries_list"),
+    path("bourses/", views.scholarship_offers, name="scholarship_offers"),
     path("pays/<str:country>/", views.country_detail, name="country_detail"),
     path("parcours/", views.roadmap, name="roadmap"),
     path("checklist/", views.checklist, name="checklist"),

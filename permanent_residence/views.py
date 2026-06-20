@@ -4,9 +4,8 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
-from django.conf import settings
 import json
-import openai
+from services.ai_service import AIService, AIServiceError
 
 from .forms import PREligibilityForm
 from .models import (
@@ -141,7 +140,9 @@ def eligibility_view(request):
     POST -> enregistre le profil puis redirige vers la page de résultat stylée
     """
     if request.method == "POST":
-        form = PREligibilityForm(request.POST)
+        post_data = request.POST.copy()
+        post_data.setdefault("country", "CA")
+        form = PREligibilityForm(post_data)
         if form.is_valid():
             profile = form.save(commit=False)
             profile.user = request.user
@@ -363,18 +364,6 @@ def rp_coach_api(request, profile_id):
     if not user_message:
         return JsonResponse({"error": "Message vide."}, status=400)
 
-    # Si la clé n'est pas configurée, on répond proprement
-    api_key = getattr(settings, "OPENAI_API_KEY", None)
-    if not api_key:
-        fallback = (
-            "Le coach IA n'est pas encore configuré côté serveur (clé OpenAI manquante).\n\n"
-            "Demande à l'administrateur d'ajouter OPENAI_API_KEY dans les paramètres "
-            "pour activer les réponses automatiques."
-        )
-        return JsonResponse({"answer": fallback})
-
-    openai.api_key = api_key
-
     # Contexte profil pour que l'IA réponde de manière ultra ciblée
     country_label = (
         "Canada"
@@ -410,20 +399,16 @@ def rp_coach_api(request, profile_id):
     )
 
     try:
-        completion = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
-            messages=[
+        result = AIService().generate_response(
+            user_input=f"Question de l'utilisateur concernant son projet de RP :\n{user_message}",
+            task_type="analyse",
+            conversation_history=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": profil_context},
-                {
-                    "role": "user",
-                    "content": f"Question de l'utilisateur concernant son projet de RP :\n{user_message}",
-                },
             ],
-            temperature=0.4,
         )
-        answer = completion.choices[0].message["content"].strip()
-    except Exception:
+        answer = result["response"]
+    except AIServiceError:
         answer = (
             "Je n'ai pas pu générer de réponse pour l'instant (erreur technique côté serveur). "
             "Réessaie dans quelques minutes ou contacte le support."

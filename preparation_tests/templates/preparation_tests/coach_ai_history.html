@@ -1,146 +1,88 @@
 {% extends "base.html" %}
 {% load static %}
 
-{# ==================================================
-   SCOPE STRICT APP
-================================================== #}
 {% block body_class %}preparation-tests{% endblock %}
 {% block app_scope %}preparation-tests{% endblock %}
 
-{# ==================================================
-   SEO — TITLE & META
-================================================== #}
-{% block title %}
-Historique Coach IA – Analyses & Recommandations | Immigration97
-{% endblock %}
+{% block title %}Historique Coach IA – Analyses & Recommandations | Immigration97{% endblock %}
+{% block meta_description %}Historique des analyses et recommandations générées par le Coach IA Immigration97.{% endblock %}
 
-{% block meta_description %}
-Historique des analyses et recommandations générées par le Coach IA Immigration97.
-Consulte tes rapports personnalisés par examen et compétence linguistique.
-{% endblock %}
-
-{# ==================================================
-   CSS APP — VERSIONNÉ
-================================================== #}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/preparation_tests.css' %}?v=20260329">
+<style>
+.ch-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.ch-page a{text-decoration:none;}
+.ch-hero,.ch-section{max-width:1080px;margin:0 auto;padding-left:1.25rem;padding-right:1.25rem;}
+.ch-hero{padding-top:2rem;padding-bottom:1.5rem;}
+.ch-badge{display:inline-flex;align-items:center;gap:.4rem;border:1px solid rgba(168,85,247,.35);background:rgba(168,85,247,.12);color:#d8b4fe;border-radius:999px;padding:.35rem .85rem;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
+.ch-title{font-size:2rem;line-height:1.16;margin:.9rem 0 .65rem;color:#fff;font-weight:900;max-width:720px;}
+.ch-title span{color:#f0c060;}
+.ch-lead{max-width:760px;color:rgba(255,255,255,.64);line-height:1.7;margin:0;font-size:.95rem;}
+.ch-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1.2rem;align-items:start;}
+.ch-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.35rem;color:#fff;min-width:0;}
+.ch-card h2,.ch-card h3{margin:0 0 1rem;color:#fff;}
+.ch-card h2{font-size:1rem;}
+.ch-report{margin-bottom:1rem;}
+.ch-report-head{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:.8rem;}
+.ch-report-title{font-size:1rem;font-weight:900;color:#fff;margin:0;}
+.ch-report-scope{color:#d8b4fe;}
+.ch-date{font-size:.78rem;color:rgba(255,255,255,.45);}
+.ch-list{list-style:none;margin:0;padding:0;display:grid;gap:.55rem;}
+.ch-list li{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.7rem .85rem;color:rgba(255,255,255,.72);line-height:1.55;overflow-wrap:anywhere;}
+.ch-empty{border:1px dashed rgba(255,255,255,.14);background:rgba(255,255,255,.025);border-radius:14px;padding:2rem;text-align:center;color:rgba(255,255,255,.55);line-height:1.65;}
+.ch-btn{display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;border:1px solid rgba(212,168,67,.35);background:rgba(212,168,67,.12);color:#f0c060;border-radius:10px;padding:.65rem 1rem;font-weight:800;font-size:.86rem;}
+.ch-side-list{list-style:none;margin:0;padding:0;display:grid;gap:.7rem;}
+.ch-side-list li{position:relative;padding-left:1rem;color:rgba(255,255,255,.68);line-height:1.5;font-size:.9rem;}
+.ch-side-list li:before{content:"›";position:absolute;left:0;color:#f0c060;font-weight:900;}
+.ch-note{margin-top:1rem;color:rgba(255,255,255,.45);line-height:1.6;font-size:.84rem;border-top:1px solid rgba(255,255,255,.08);padding-top:1rem;}
+@media(max-width:860px){.ch-grid{grid-template-columns:1fr}.ch-title{font-size:1.65rem}}
+</style>
 {% endblock %}
 
 {% block content %}
+<main class="ch-page">
+  <section class="ch-hero">
+    <span class="ch-badge">🤖 Coach IA</span>
+    <h1 class="ch-title">Historique des analyses <span>et recommandations</span></h1>
+    <p class="ch-lead">Retrouve l’ensemble des rapports générés par le Coach IA après tes entraînements et examens. Chaque analyse t’aide à identifier tes points forts, corriger tes faiblesses et progresser plus vite.</p>
+  </section>
 
-<!-- ==================================================
-HERO — HISTORIQUE COACH IA
-================================================== -->
-<section class="pt-hero">
-  <div class="container pt-fade-up">
-
-    <span class="pt-badge">
-      🤖 Coach IA
-    </span>
-
-    <h1 class="pt-title">
-      Historique des analyses<br>
-      et recommandations
-    </h1>
-
-    <p class="pt-lead">
-      Retrouve l’ensemble des <strong>rapports générés par le Coach IA</strong>
-      après tes entraînements et examens.
-      Chaque analyse t’aide à identifier tes points forts,
-      corriger tes faiblesses et progresser plus vite.
-    </p>
-
-  </div>
-</section>
-
-<!-- ==================================================
-LISTE DES RAPPORTS
-================================================== -->
-<section class="pt-section">
-  <div class="container">
-
-    <div class="pt-grid-layout">
-
-      <!-- ================= MAIN ================= -->
-      <div class="pt-main">
-
-        <h2 class="pt-section-title">
-          📄 Rapports disponibles
-        </h2>
-
+  <section class="ch-section">
+    <div class="ch-grid">
+      <div>
+        <h2 style="font-size:1rem;margin:0 0 1rem;color:#fff;">📄 Rapports disponibles</h2>
         {% for r in reports %}
-          <article class="pt-card pt-card--report">
-
-            <!-- HEADER -->
-            <div class="pt-report-header">
-              <h3 class="pt-report-title">
-                {{ r.exam_code }} —
-                <span class="pt-report-scope">
-                  {{ r.scope|upper }}
-                </span>
-              </h3>
-
-              <span class="pt-report-date">
-                {{ r.created_at|date:"d M Y · H:i" }}
-              </span>
-            </div>
-
-            <!-- CONTENT -->
-            <ul class="pt-report-list">
-              {% for key, value in r.data.items %}
-                <li>
-                  <strong>{{ key }}</strong> :
-                  {{ value }}
-                </li>
-              {% endfor %}
-            </ul>
-
-            <!-- ACTION -->
-            <div class="pt-cta-group">
-              <a
-                href="{% url "preparation_tests:coach_ai_pdf" r.id %}"
-                class="pt-btn-secondary"
-              >
-                📄 Télécharger le rapport PDF
-              </a>
-            </div>
-
-          </article>
-
-        {% empty %}
-          <div class="pt-empty">
-            Aucun rapport du Coach IA pour le moment.<br>
-            Commence un entraînement ou un examen blanc
-            pour recevoir une analyse personnalisée.
+        <article class="ch-card ch-report">
+          <div class="ch-report-head">
+            <h3 class="ch-report-title">{{ r.exam_code }} — <span class="ch-report-scope">{{ r.scope|upper }}</span></h3>
+            <span class="ch-date">{{ r.created_at|date:"d M Y · H:i" }}</span>
           </div>
+          <ul class="ch-list">
+            {% for key, value in r.data.items %}
+            <li><strong>{{ key }}</strong> : {{ value }}</li>
+            {% endfor %}
+          </ul>
+          <a href="{% url "preparation_tests:coach_ai_pdf" r.id %}" class="ch-btn">📄 Télécharger le rapport PDF</a>
+        </article>
+        {% empty %}
+        <div class="ch-empty">
+          Aucun rapport du Coach IA pour le moment.<br>
+          Commence un entraînement ou un examen blanc pour recevoir une analyse personnalisée.
+        </div>
         {% endfor %}
-
       </div>
 
-      <!-- ================= SIDEBAR ================= -->
-      <aside class="pt-side">
-
-        <div class="pt-card pt-card--side">
-          <h3>À quoi servent ces rapports ?</h3>
-
-          <ul class="pt-side-list">
-            <li>Analyser tes performances réelles</li>
-            <li>Identifier tes points faibles</li>
-            <li>Suivre ta progression CECR</li>
-            <li>Optimiser ta stratégie d’examen</li>
-          </ul>
-
-          <p class="pt-small">
-            💡 Les rapports sont générés automatiquement
-            après les examens blancs et certaines leçons avancées.
-          </p>
-        </div>
-
+      <aside class="ch-card">
+        <h3>À quoi servent ces rapports ?</h3>
+        <ul class="ch-side-list">
+          <li>Analyser tes performances réelles</li>
+          <li>Identifier tes points faibles</li>
+          <li>Suivre ta progression CECR</li>
+          <li>Optimiser ta stratégie d’examen</li>
+        </ul>
+        <p class="ch-note">Les rapports sont générés automatiquement après les examens blancs et certaines leçons avancées.</p>
       </aside>
-
     </div>
-
-  </div>
-</section>
-
+  </section>
+</main>
 {% endblock %}

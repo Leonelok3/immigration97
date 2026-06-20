@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Offres détectées à revoir | Immigration97{% endblock %}
+{% block body_class %}job-agent{% endblock %}
+{% block app_scope %}job-agent{% endblock %}
+
+{% block extra_css %}
+{% include "job_agent/_ja_critical.html" %}
+<style>
+  body.job-agent .review-toolbar {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(160px, .35fr) minmax(160px, .35fr) auto;
+    gap: 12px;
+    align-items: end;
+  }
+
+  body.job-agent .review-table-wrap {
+    border: 1px solid rgba(212,168,67,.18);
+    border-radius: 16px;
+    overflow-x: auto;
+  }
+
+  body.job-agent .review-table {
+    border-collapse: collapse;
+    min-width: 1180px;
+    width: 100%;
+  }
+
+  body.job-agent .review-table th,
+  body.job-agent .review-table td {
+    border-bottom: 1px solid rgba(212,168,67,.14);
+    padding: 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  body.job-agent .review-table th {
+    color: #F0C060;
+    background: rgba(212,168,67,.08);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  body.job-agent .review-table td {
+    color: rgba(232,234,240,.78);
+    line-height: 1.45;
+  }
+
+  body.job-agent .review-badge {
+    border: 1px solid rgba(240,192,96,.28);
+    border-radius: 999px;
+    color: #F0C060;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 900;
+    margin: 4px 6px 4px 0;
+    padding: 5px 8px;
+  }
+
+  body.job-agent .review-badge--green {
+    background: rgba(94,230,168,.12);
+    border-color: rgba(94,230,168,.28);
+    color: #5EE6A8;
+  }
+
+  body.job-agent .review-evidence {
+    max-width: 360px;
+  }
+
+  @media (max-width: 980px) {
+    body.job-agent .review-toolbar {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ja-container">
+  <div class="ja-pagehead">
+    <div class="ja-pagehead__title">
+      <h1>Offres détectées à revoir</h1>
+      <p>{{ total_count }} annonce{{ total_count|pluralize }} non publiée{{ total_count|pluralize }} à contrôler manuellement.</p>
+    </div>
+    <div class="ja-pagehead__actions">
+      <a class="c-btn" href="{% url 'job_agent:public_offers' %}">Offres publiques</a>
+      <a class="c-btn c-btn--primary" href="{% url 'admin:index' %}">Admin Django</a>
+    </div>
+  </div>
+
+  <section class="ja-card" aria-label="Filtres de revue">
+    <div class="ja-card__head">
+      <h2>Filtrer la revue</h2>
+      <span class="ja-muted-2">Publie seulement les offres réellement utiles.</span>
+    </div>
+    <div class="ja-card__body">
+      <form class="review-toolbar" method="get">
+        <label class="ja-field">
+          <span>Recherche</span>
+          <input class="c-input" type="search" name="q" value="{{ q }}" placeholder="Titre, employeur, ville, mot-clé...">
+        </label>
+        <label class="ja-field">
+          <span>Source</span>
+          <input class="c-input" type="search" name="source" value="{{ source }}" placeholder="saskjobs, placeauxjeunes...">
+        </label>
+        <label class="ja-field">
+          <span>Décision</span>
+          <select class="c-input" name="decision">
+            <option value="">Toutes</option>
+            <option value="review" {% if decision == "review" %}selected{% endif %}>review</option>
+            <option value="weak" {% if decision == "weak" %}selected{% endif %}>weak</option>
+            <option value="verified" {% if decision == "verified" %}selected{% endif %}>verified</option>
+            <option value="" {% if not decision %}selected{% endif %}>vide</option>
+          </select>
+        </label>
+        <button class="c-btn c-btn--primary" type="submit">Filtrer</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="ja-card" aria-label="Annonces détectées" style="margin-top:18px;">
+    <div class="ja-card__head">
+      <h2>Annonces non publiées</h2>
+      <span class="ja-muted-2">Bouton manuel avec garde-fou lien direct.</span>
+    </div>
+    <div class="ja-card__body">
+      {% if leads %}
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead>
+              <tr>
+                <th>Offre</th>
+                <th>Source</th>
+                <th>Score</th>
+                <th>Détails</th>
+                <th>Preuve</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for lead in leads %}
+                <tr>
+                  <td>
+                    <strong>{{ lead.title }}</strong><br>
+                    {{ lead.company_name|default:"Employeur à vérifier" }}<br>
+                    <span class="ja-muted-2">{{ lead.location|default:"Canada" }}</span>
+                  </td>
+                  <td>
+                    <a href="{{ lead.job_url }}" target="_blank" rel="noopener">{{ lead.source_host|default:"Source" }}</a><br>
+                    {% if lead.direct_link_ok %}
+                      <span class="review-badge review-badge--green">Lien direct</span>
+                    {% else %}
+                      <span class="review-badge">Lien à vérifier</span>
+                    {% endif %}
+                    <span class="review-badge">{{ lead.status }}</span>
+                  </td>
+                  <td>
+                    <strong>{{ lead.foreign_access_score }}/100</strong><br>
+                    <span class="review-badge">{{ lead.foreign_access_label }}</span><br>
+                    <span class="ja-muted-2">Vérif. {{ lead.verification_score }}/100 - {{ lead.verification_decision|default:"-" }}</span>
+                  </td>
+                  <td>
+                    {% if lead.province_display %}<strong>Province:</strong> {{ lead.province_display }}<br>{% endif %}
+                    {% if lead.salary_display %}<strong>Salaire:</strong> {{ lead.salary_display }}<br>{% endif %}
+                    {% if lead.vacancies_display %}<strong>Postes:</strong> {{ lead.vacancies_display }}<br>{% endif %}
+                    {% if lead.deadline_display %}<strong>Date limite:</strong> {{ lead.deadline_display }}{% endif %}
+                  </td>
+                  <td class="review-evidence">
+                    {% if lead.who_can_apply_display %}
+                      <strong>Qui peut postuler:</strong> {{ lead.who_can_apply_display|truncatechars:220 }}<br>
+                    {% endif %}
+                    {{ lead.evidence_text|default:lead.verification_notes|truncatechars:260 }}
+                  </td>
+                  <td>
+                    <form method="post" action="{% url 'job_agent:publish_detected_offer' lead.id %}">
+                      {% csrf_token %}
+                      <button class="c-btn c-btn--primary" type="submit">Publier quand même</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="ja-empty" role="note">
+          <div class="ja-empty__inner">
+            <div>
+              <h3 class="ja-empty__title">Aucune annonce à revoir</h3>
+              <p class="ja-empty__text">Toutes les annonces détectées sont déjà publiées, importées ou rejetées.</p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

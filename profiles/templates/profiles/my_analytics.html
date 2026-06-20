@@ -35,6 +35,20 @@
 
   .ep-tip { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 12px; padding: 1rem 1.25rem; font-size: .85rem; color: #92400e; margin-bottom: 1.25rem; }
   .ep-tip strong { color: #78350f; }
+  .ep-invite-list { display: grid; gap: .85rem; }
+  .ep-invite { border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; display: grid; gap: .7rem; }
+  .ep-invite-head { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .ep-invite-title { font-weight: 800; color: #102B4E; }
+  .ep-invite-meta { font-size: .78rem; color: #64748b; }
+  .ep-invite-message { color: #475569; font-size: .86rem; line-height: 1.55; }
+  .ep-badge { display: inline-flex; align-items: center; border-radius: 999px; padding: .28rem .65rem; font-size: .72rem; font-weight: 800; }
+  .ep-badge--pending { background: #eff6ff; color: #1d4ed8; }
+  .ep-badge--ok { background: #ecfdf5; color: #047857; }
+  .ep-badge--no { background: #fef2f2; color: #b91c1c; }
+  .ep-actions { display: flex; gap: .55rem; flex-wrap: wrap; }
+  .ep-btn { border: 0; border-radius: 10px; padding: .58rem .9rem; font-size: .8rem; font-weight: 800; text-decoration: none; cursor: pointer; }
+  .ep-btn--primary { background: #F59E0B; color: #111827; }
+  .ep-btn--ghost { background: #f1f5f9; color: #334155; }
 </style>
 {% endblock %}
 
@@ -87,6 +101,57 @@
       <span class="ep-kpi-val amber">{{ invites_pending }}</span>
       <div class="ep-kpi-label">En attente</div>
     </div>
+  </div>
+
+  <!-- Invitations récentes -->
+  <div class="ep-card">
+    <p class="ep-card-title">Dernières invitations reçues</p>
+    {% if recent_invites %}
+      <div class="ep-invite-list">
+        {% for inv in recent_invites %}
+          <div class="ep-invite">
+            <div class="ep-invite-head">
+              <div>
+                <div class="ep-invite-title">
+                  {% if inv.recruiter.recruiter_profile.company_name %}
+                    {{ inv.recruiter.recruiter_profile.company_name }}
+                  {% else %}
+                    {{ inv.recruiter.get_full_name|default:inv.recruiter.username }}
+                  {% endif %}
+                </div>
+                <div class="ep-invite-meta">{{ inv.created_at|date:"d/m/Y H:i" }} · {{ inv.subject|default:"Invitation à entretien" }}</div>
+              </div>
+              {% if inv.status == "accepted" %}
+                <span class="ep-badge ep-badge--ok">Acceptée</span>
+              {% elif inv.status == "declined" %}
+                <span class="ep-badge ep-badge--no">Refusée</span>
+              {% else %}
+                <span class="ep-badge ep-badge--pending">En attente</span>
+              {% endif %}
+            </div>
+            <div class="ep-invite-message">{{ inv.message|truncatechars:180 }}</div>
+            {% if inv.status == "sent" %}
+              <div class="ep-actions">
+                <form method="post" action="{% url 'profiles:invite_accept' inv.id %}">
+                  {% csrf_token %}
+                  <button class="ep-btn ep-btn--primary" type="submit">Accepter</button>
+                </form>
+                <form method="post" action="{% url 'profiles:invite_decline' inv.id %}">
+                  {% csrf_token %}
+                  <button class="ep-btn ep-btn--ghost" type="submit">Refuser</button>
+                </form>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div style="margin-top:1rem;">
+        <a class="ep-btn ep-btn--ghost" href="{% url 'profiles:my_invitations' %}">Voir toutes mes invitations →</a>
+      </div>
+    {% else %}
+      <p style="color:#64748b;font-size:.9rem;margin:0 0 1rem;">Aucune invitation reçue pour le moment.</p>
+      <a class="ep-btn ep-btn--primary" href="{% url 'profiles:my_space' %}">Améliorer mon profil</a>
+    {% endif %}
   </div>
 
   <!-- Charts -->

@@ -7,6 +7,95 @@
 
 {% block extra_css %}
 {% include "job_agent/_ja_critical.html" %}
+<style>
+  body.job-agent .apply-premium-strip {
+    border: 1px solid rgba(212,168,67,.24);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 92% 0%, rgba(94,230,168,.12), transparent 18rem),
+      linear-gradient(135deg, rgba(15,32,64,.92), rgba(5,10,24,.96));
+    padding: clamp(18px, 3vw, 28px);
+    margin-bottom: 18px;
+  }
+
+  body.job-agent .apply-premium-strip h2 {
+    color: #FFF7E6;
+    font-size: clamp(24px, 3vw, 42px);
+    line-height: 1.08;
+    margin: 0 0 10px;
+  }
+
+  body.job-agent .apply-premium-strip p {
+    color: rgba(232,234,240,.76);
+    line-height: 1.55;
+    max-width: 900px;
+    margin: 0;
+  }
+
+  body.job-agent .apply-wizard-steps {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 18px;
+  }
+
+  body.job-agent .apply-wizard-steps a {
+    border: 1px solid rgba(212,168,67,.2);
+    border-radius: 14px;
+    background: rgba(15,32,64,.68);
+    color: rgba(232,234,240,.82);
+    font-weight: 800;
+    padding: 12px 14px;
+    text-decoration: none;
+  }
+
+  body.job-agent .apply-wizard-steps span {
+    color: #F0C060;
+    display: block;
+    font-size: 11px;
+    letter-spacing: .11em;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  body.job-agent .ja-layout--apply {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.job-agent .ja-layout--apply .ja-content {
+    max-width: 1160px;
+    width: 100%;
+  }
+
+  body.job-agent .ja-layout--apply .ja-card {
+    border-color: rgba(212,168,67,.22);
+    background: linear-gradient(180deg, rgba(15,32,64,.78), rgba(5,10,24,.94));
+  }
+
+  body.job-agent .ja-layout--apply .ja-card__head h2,
+  body.job-agent .ja-layout--apply .ja-block__head h3 {
+    color: #FFF7E6;
+  }
+
+  body.job-agent .ja-layout--apply .ja-field label {
+    color: #F0C060 !important;
+  }
+
+  body.job-agent .ja-layout--apply pre,
+  body.job-agent .ja-layout--apply .c-input {
+    color: #FFF7E6;
+    background: rgba(5,10,24,.74);
+    border: 1px solid rgba(212,168,67,.22);
+    border-radius: 12px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 900px) {
+    body.job-agent .apply-wizard-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -31,13 +120,28 @@
       </div>
     </div>
 
-    <div class="ja-layout">
-      {% include "job_agent/_menu.html" with active="leads" %}
+    <section class="apply-premium-strip" aria-label="Agent IA candidature">
+      <h2>Agent IA Candidature Premium</h2>
+      <p>
+        Vérifiez, corrigez puis téléchargez votre CV adapté, votre lettre et votre email.
+        Immigration97 vous aide à postuler plus vite avec un dossier aligné sur l'offre.
+      </p>
+    </section>
+
+    <nav class="apply-wizard-steps" aria-label="Étapes candidature">
+      <a href="#candidate"><span>1</span>Profil</a>
+      <a href="#coach"><span>2</span>Score ATS</a>
+      <a href="#cv"><span>3</span>CV adapté</a>
+      <a href="#email"><span>4</span>Email</a>
+      <a href="#letter"><span>5</span>Lettre</a>
+    </nav>
+
+    <div class="ja-layout ja-layout--apply">
 
       <div class="ja-content">
 
         <!-- CANDIDAT -->
-        <section class="ja-card" style="margin-bottom:1.5rem;">
+        <section class="ja-card" id="candidate" style="margin-bottom:1.5rem;">
           <div class="ja-card__head"><h2>Informations candidat</h2></div>
           <div class="ja-card__body">
             <div class="ja-formgrid">
@@ -61,11 +165,67 @@
           </div>
         </section>
 
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="save_pack">
+
+        <!-- COACH IA -->
+        <section class="ja-card" id="coach" style="margin-bottom:1.5rem;">
+          <div class="ja-card__head">
+            <h2>Coach IA candidature</h2>
+            <div class="ja-pagehead__actions">
+              <span class="c-btn" style="pointer-events:none;">Score ATS {{ draft.ats_score|default:0 }}/100</span>
+            </div>
+          </div>
+          <div class="ja-card__body">
+            {% if draft.coach_notes %}
+              <div class="ja-block" style="margin-bottom:1rem;">
+                <div class="ja-block__head"><h3>Conseils avant envoi</h3></div>
+                <textarea class="c-input" name="coach_notes" rows="4">{{ draft.coach_notes }}</textarea>
+              </div>
+            {% endif %}
+
+            <div class="ja-formgrid">
+              <div class="ja-col-6">
+                <div class="ja-block">
+                  <div class="ja-block__head"><h3>Mots-clés trouvés</h3></div>
+                  <pre>{% if draft.matched_keywords %}{% for kw in draft.matched_keywords %}{{ kw }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}—{% endif %}</pre>
+                </div>
+              </div>
+              <div class="ja-col-6">
+                <div class="ja-block">
+                  <div class="ja-block__head"><h3>Mots-clés à renforcer</h3></div>
+                  <pre>{% if draft.missing_keywords %}{% for kw in draft.missing_keywords %}{{ kw }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}—{% endif %}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CV ADAPTÉ -->
+        <section class="ja-card" id="cv" style="margin-bottom:1.5rem;">
+          <div class="ja-card__head">
+            <h2>CV adapté à l'offre</h2>
+            <div class="ja-pagehead__actions">
+              <a class="c-btn" href="{% url 'job_agent:pack_download_pdf' lead.id 'cv' %}">PDF</a>
+              <a class="c-btn" href="{% url 'job_agent:pack_download_docx' lead.id 'cv' %}">Word</a>
+              <button class="c-btn c-btn--primary" type="button" data-copy data-copy-target="#wiz-cv" data-copy-toast="CV adapté copié ✅">Copier</button>
+            </div>
+          </div>
+          <div class="ja-card__body">
+            <div class="ja-block">
+              <textarea class="c-input" id="wiz-cv" name="tailored_cv_text" rows="18">{{ draft.tailored_cv_text }}</textarea>
+            </div>
+          </div>
+        </section>
+
         <!-- EMAIL -->
-        <section class="ja-card" style="margin-bottom:1.5rem;">
+        <section class="ja-card" id="email" style="margin-bottom:1.5rem;">
           <div class="ja-card__head">
             <h2>Email prêt à envoyer</h2>
             <div class="ja-pagehead__actions">
+              <a class="c-btn" href="{% url 'job_agent:pack_download_pdf' lead.id 'email' %}">PDF</a>
+              <a class="c-btn" href="{% url 'job_agent:pack_download_docx' lead.id 'email' %}">Word</a>
               <button class="c-btn" type="button" data-copy data-copy-target="#wiz-subject" data-copy-toast="Objet copié ✅">Copier objet</button>
               <button class="c-btn c-btn--primary" type="button" data-copy data-copy-target="#wiz-email" data-copy-toast="Email copié ✅">Copier email</button>
             </div>
@@ -73,27 +233,40 @@
           <div class="ja-card__body">
             <div class="ja-block" style="margin-bottom:1rem;">
               <div class="ja-block__head"><h3>Objet</h3></div>
-              <pre id="wiz-subject">{{ draft.email_subject }}</pre>
+              <input class="c-input" id="wiz-subject" name="email_subject" value="{{ draft.email_subject }}">
             </div>
             <div class="ja-block">
               <div class="ja-block__head"><h3>Message</h3></div>
-              <pre id="wiz-email">{{ draft.email_body }}</pre>
+              <textarea class="c-input" id="wiz-email" name="generated_email" rows="9">{{ draft.email_body }}</textarea>
             </div>
           </div>
         </section>
 
         <!-- LETTRE -->
-        <section class="ja-card" style="margin-bottom:1.5rem;">
+        <section class="ja-card" id="letter" style="margin-bottom:1.5rem;">
           <div class="ja-card__head">
             <h2>Lettre de motivation</h2>
-            <button class="c-btn c-btn--primary" type="button" data-copy data-copy-target="#wiz-letter" data-copy-toast="Lettre copiée ✅">Copier</button>
+            <div class="ja-pagehead__actions">
+              <a class="c-btn" href="{% url 'job_agent:pack_download_pdf' lead.id 'letter' %}">PDF</a>
+              <a class="c-btn" href="{% url 'job_agent:pack_download_docx' lead.id 'letter' %}">Word</a>
+              <button class="c-btn c-btn--primary" type="button" data-copy data-copy-target="#wiz-letter" data-copy-toast="Lettre copiée ✅">Copier</button>
+            </div>
           </div>
           <div class="ja-card__body">
             <div class="ja-block">
-              <pre id="wiz-letter">{{ draft.letter }}</pre>
+              <textarea class="c-input" id="wiz-letter" name="generated_letter" rows="14">{{ draft.letter }}</textarea>
             </div>
           </div>
         </section>
+
+        <section class="ja-card" style="margin-bottom:1.5rem;">
+          <div class="ja-card__body">
+            <button type="submit" class="c-btn c-btn--primary">Enregistrer mes corrections</button>
+            <a class="c-btn" href="{% url 'job_agent:pack_detail' lead.id %}">Voir le pack complet</a>
+          </div>
+        </section>
+
+        </form>
 
         {% if draft.answers %}
         <section class="ja-card" style="margin-bottom:1.5rem;">
@@ -123,6 +296,7 @@
                   ✅ J'ai postulé — Marquer comme postulée
                 </button>
                 <a class="c-btn" href="{% url 'job_agent:lead_detail' lead.id %}">Retour au détail</a>
+                <a class="c-btn" href="{% url 'job_agent:pack_detail' lead.id %}">Voir le pack complet</a>
               </div>
             </form>
           </div>

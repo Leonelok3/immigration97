@@ -5,14 +5,16 @@
 
 {% block extra_css %}
 <style>
+  .ep-shell { min-height: 100vh; background: #050b18; color: #fff; padding: 1px 0 4rem; }
   .ep-wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem 4rem; }
 
-  .ep-bc { font-size: .82rem; color: #64748b; margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .ep-bc { font-size: .82rem; color: rgba(255,255,255,.45); margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
   .ep-bc a { color: #F59E0B; text-decoration: none; font-weight: 500; }
 
   .ep-page-header {
     background: linear-gradient(135deg, #102B4E 0%, #1a3d6b 100%);
     border-radius: 16px; padding: 2rem 2rem; color: #fff; margin-bottom: 2rem;
+    border: 1px solid rgba(255,255,255,.08);
   }
   .ep-page-header h1 { font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 800; margin: 0 0 .4rem; }
   .ep-page-header p  { font-size: .88rem; opacity: .8; margin: 0; }
@@ -27,10 +29,10 @@
 
   .ep-test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.1rem; }
   .ep-test-card {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.35rem;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 1.35rem;
     display: flex; flex-direction: column; transition: box-shadow .2s, border-color .2s;
   }
-  .ep-test-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08); border-color: #F59E0B; }
+  .ep-test-card:hover { box-shadow: 0 18px 40px rgba(0,0,0,.22); border-color: rgba(245,158,11,.65); }
 
   .ep-test-tags { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .75rem; }
   .ep-tag { border-radius: 20px; padding: .2rem .65rem; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
@@ -38,11 +40,11 @@
   .ep-tag-ielts   { background: #F0FDF4; color: #15803d; }
   .ep-tag-toefl   { background: #FFF7ED; color: #c2410c; }
   .ep-tag-toeic   { background: #FDF4FF; color: #7e22ce; }
-  .ep-tag-level   { background: #F1F5F9; color: #475569; }
+  .ep-tag-level   { background: rgba(255,255,255,.08); color: rgba(255,255,255,.72); }
 
-  .ep-test-name { font-size: 1rem; font-weight: 700; color: #102B4E; margin: 0 0 .4rem; }
-  .ep-test-desc { font-size: .83rem; color: #64748b; margin: 0 0 .75rem; flex: 1; line-height: 1.5; }
-  .ep-test-meta { font-size: .75rem; color: #94a3b8; margin-bottom: 1rem; }
+  .ep-test-name { font-size: 1rem; font-weight: 700; color: #fff; margin: 0 0 .4rem; }
+  .ep-test-desc { font-size: .83rem; color: rgba(255,255,255,.58); margin: 0 0 .75rem; flex: 1; line-height: 1.5; }
+  .ep-test-meta { font-size: .75rem; color: rgba(255,255,255,.42); margin-bottom: 1rem; }
   .ep-test-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
 
   .ep-btn-sm-primary {
@@ -52,19 +54,20 @@
   }
   .ep-btn-sm-primary:hover { background: #1a3d6b; color: #fff; }
   .ep-btn-sm-outline {
-    background: #f8fafc; color: #475569; border: 1px solid #e2e8f0;
+    background: rgba(255,255,255,.045); color: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.12);
     border-radius: 8px; padding: .5rem 1rem;
     font-size: .82rem; font-weight: 600; text-decoration: none; transition: background .2s;
   }
-  .ep-btn-sm-outline:hover { background: #e2e8f0; }
+  .ep-btn-sm-outline:hover { background: rgba(255,255,255,.09); color: #fff; }
 
-  .ep-empty { text-align: center; padding: 3rem 1rem; color: #94a3b8; font-size: .9rem; background: #f8fafc; border-radius: 14px; }
+  .ep-empty { text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,.52); font-size: .9rem; background: rgba(255,255,255,.035); border:1px dashed rgba(255,255,255,.12); border-radius: 14px; }
 
   @media (max-width: 600px) { .ep-test-grid { grid-template-columns: 1fr; } }
 </style>
 {% endblock %}
 
 {% block content %}
+<main class="ep-shell">
 <div class="ep-wrap">
 
   <div class="ep-bc">
@@ -104,4 +107,5 @@
   {% endif %}
 
 </div>
+</main>
 {% endblock %}

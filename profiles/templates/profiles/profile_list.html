@@ -25,48 +25,55 @@
 
 {% block extra_css %}
 <style>
-  .ep-wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem 4rem; }
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(56, 189, 248, .18), transparent 32rem),
+      linear-gradient(180deg, #dbeafe 0%, #eef6ff 42%, #f8fbff 100%);
+    color: #102033;
+  }
+
+  .ep-wrap { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
 
   /* ── Hero ── */
-  .ep-hero { background: linear-gradient(135deg, #102B4E 0%, #1a3d6b 100%); border-radius: 20px; padding: 3rem 2.5rem; color: #fff; margin: 1.5rem 0 0; display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; }
-  .ep-hero-kicker { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .15em; opacity: .6; margin-bottom: .5rem; }
+  .ep-hero { background: linear-gradient(135deg, #0f2f57 0%, #1e5b8f 58%, #2578a9 100%); border: 1px solid rgba(255,255,255,.24); border-radius: 18px; padding: 3rem 2.5rem; color: #fff; margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; box-shadow: 0 22px 55px rgba(15,47,87,.22); }
+  .ep-hero-kicker { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .15em; opacity: .78; margin-bottom: .5rem; }
   .ep-hero h1 { font-size: clamp(1.6rem,4vw,2.4rem); font-weight: 800; margin: 0 0 .5rem; line-height: 1.2; }
-  .ep-hero h1 span { color: #F59E0B; }
-  .ep-hero-lead { font-size: .9rem; opacity: .82; margin: 0 0 1.5rem; max-width: 520px; line-height: 1.6; }
+  .ep-hero h1 span { color: #fbbf24; }
+  .ep-hero-lead { font-size: .92rem; opacity: .9; margin: 0 0 1.5rem; max-width: 560px; line-height: 1.65; }
   .ep-hero-btns { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.5rem; }
-  .ep-btn-amber { display: inline-flex; align-items: center; gap: .4rem; background: #F59E0B; color: #102B4E; border-radius: 10px; padding: .7rem 1.5rem; font-size: .9rem; font-weight: 800; text-decoration: none; }
+  .ep-btn-amber { display: inline-flex; align-items: center; gap: .4rem; background: #f59e0b; color: #102B4E; border-radius: 10px; padding: .7rem 1.5rem; font-size: .9rem; font-weight: 800; text-decoration: none; box-shadow: 0 10px 22px rgba(245,158,11,.24); }
   .ep-btn-amber:hover { background: #d97706; color:#fff; }
   .ep-btn-outline { display: inline-flex; align-items: center; gap: .4rem; background: rgba(255,255,255,.12); color: #fff; border: 1.5px solid rgba(255,255,255,.3); border-radius: 10px; padding: .7rem 1.25rem; font-size: .88rem; font-weight: 600; text-decoration: none; }
   .ep-btn-outline:hover { background: rgba(255,255,255,.22); }
 
   /* Stats hero */
   .ep-hero-stats { display: flex; gap: 2rem; border-top: 1px solid rgba(255,255,255,.15); padding-top: 1.25rem; flex-wrap: wrap; }
-  .ep-hero-stat strong { display: block; font-size: 1.5rem; font-weight: 800; color: #F59E0B; }
-  .ep-hero-stat span { font-size: .72rem; opacity: .7; }
+  .ep-hero-stat strong { display: block; font-size: 1.5rem; font-weight: 800; color: #fbbf24; }
+  .ep-hero-stat span { font-size: .72rem; opacity: .82; }
 
   /* Sector chips */
   .ep-hero-right { display: flex; flex-direction: column; gap: .5rem; align-items: flex-end; }
   .ep-sector-chips { display: flex; flex-direction: column; gap: .4rem; }
-  .ep-sector-chip { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); border-radius: 10px; padding: .4rem .9rem; font-size: .78rem; color: #fff; font-weight: 600; text-decoration: none; text-align: center; transition: background .2s; }
-  .ep-sector-chip:hover { background: rgba(245,158,11,.3); border-color: #F59E0B; }
+  .ep-sector-chip { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.26); border-radius: 10px; padding: .4rem .9rem; font-size: .78rem; color: #fff; font-weight: 600; text-decoration: none; text-align: center; transition: background .2s, border-color .2s, transform .2s; }
+  .ep-sector-chip:hover { background: rgba(245,158,11,.3); border-color: #fbbf24; transform: translateY(-1px); }
 
   /* How it works */
   .ep-how { margin: 2.5rem 0; }
-  .ep-how-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #94a3b8; text-align: center; margin-bottom: 1.5rem; }
+  .ep-how-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #486985; text-align: center; margin-bottom: 1.5rem; }
   .ep-how-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
-  .ep-how-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; text-align: center; }
+  .ep-how-card { background: rgba(255,255,255,.88); border: 1px solid rgba(148,163,184,.32); border-radius: 14px; padding: 1.5rem; text-align: center; box-shadow: 0 14px 35px rgba(30, 64, 102, .08); }
   .ep-how-icon { font-size: 2rem; margin-bottom: .75rem; }
   .ep-how-step { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #F59E0B; margin-bottom: .3rem; }
   .ep-how-card h3 { font-size: .92rem; font-weight: 700; color: #102B4E; margin: 0 0 .4rem; }
   .ep-how-card p { font-size: .78rem; color: #64748b; line-height: 1.55; margin: 0; }
 
   /* ── Filters ── */
-  .ep-filters { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 1.75rem; }
+  .ep-filters { background: rgba(255,255,255,.92); border: 1px solid rgba(148,163,184,.35); border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 1.75rem; box-shadow: 0 16px 40px rgba(30, 64, 102, .08); }
   .ep-filters-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: .75rem; align-items: end; }
   .ep-filter-group { display: flex; flex-direction: column; gap: .3rem; }
   .ep-filter-group label { font-size: .75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .05em; }
-  .ep-input { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: .6rem .85rem; font-size: .88rem; color: #1e293b; font-family: inherit; outline: none; transition: border-color .2s; width: 100%; box-sizing: border-box; background: #fff; }
-  .ep-input:focus { border-color: #F59E0B; }
+  .ep-input { border: 1.5px solid #d6e3f3; border-radius: 10px; padding: .6rem .85rem; font-size: .88rem; color: #1e293b; font-family: inherit; outline: none; transition: border-color .2s, box-shadow .2s; width: 100%; box-sizing: border-box; background: #fff; }
+  .ep-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
   .ep-btn-filter { background: #F59E0B; color: #102B4E; border: none; border-radius: 10px; padding: .65rem 1.25rem; font-size: .88rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
   .ep-btn-filter:hover { background: #d97706; color: #fff; }
   .ep-btn-reset { display: inline-block; background: #f1f5f9; color: #475569; border-radius: 10px; padding: .65rem 1rem; font-size: .85rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
@@ -76,14 +83,14 @@
   /* ── Results header ── */
   .ep-results-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: .5rem; }
   .ep-results-title { font-size: 1rem; font-weight: 700; color: #102B4E; }
-  .ep-results-count { font-size: .82rem; color: #64748b; }
+  .ep-results-count { font-size: .82rem; color: #486985; }
 
   /* ── Cards grid ── */
   .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
 
   /* ── Talent card ── */
-  .ep-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.35rem; display: flex; flex-direction: column; gap: .9rem; transition: border-color .2s, box-shadow .2s; }
-  .ep-card:hover { border-color: #F59E0B; box-shadow: 0 4px 16px rgba(245,158,11,.1); }
+  .ep-card { background: rgba(255,255,255,.94); border: 1px solid rgba(148,163,184,.38); border-radius: 16px; padding: 1.35rem; display: flex; flex-direction: column; gap: .9rem; transition: border-color .2s, box-shadow .2s, transform .2s; box-shadow: 0 12px 30px rgba(30, 64, 102, .07); }
+  .ep-card:hover { border-color: #38bdf8; box-shadow: 0 18px 42px rgba(15,47,87,.14); transform: translateY(-2px); }
 
   .ep-card-top { display: flex; align-items: flex-start; gap: .85rem; }
   .ep-avatar { width: 52px; height: 52px; border-radius: 50%; background: #102B4E; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; color: #F59E0B; overflow: hidden; }
@@ -98,12 +105,12 @@
   .ep-badge-level { background: #EFF6FF; color: #1d4ed8; border: 1px solid #bfdbfe; }
 
   .ep-card-headline { font-size: .88rem; color: #334155; font-weight: 600; line-height: 1.4; }
-  .ep-card-bio { font-size: .78rem; color: #64748b; line-height: 1.55; }
+  .ep-card-bio { font-size: .78rem; color: #52677f; line-height: 1.55; }
 
   .ep-card-skills { display: flex; flex-wrap: wrap; gap: .3rem; }
   .ep-skill-chip { background: #f1f5f9; color: #475569; border-radius: 6px; padding: .15rem .5rem; font-size: .7rem; font-weight: 600; }
 
-  .ep-card-stats { display: flex; gap: 1rem; padding: .7rem 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+  .ep-card-stats { display: flex; gap: 1rem; padding: .7rem 0; border-top: 1px solid #e8eef7; border-bottom: 1px solid #e8eef7; }
   .ep-stat { text-align: center; flex: 1; }
   .ep-stat-val { font-size: .9rem; font-weight: 800; color: #102B4E; }
   .ep-stat-key { font-size: .65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; }
@@ -123,13 +130,13 @@
 
   /* ── Pagination ── */
   .ep-pagination { display: flex; justify-content: center; gap: .5rem; margin-top: 2rem; }
-  .ep-page { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: 9px; background: #fff; border: 1.5px solid #e2e8f0; font-size: .85rem; font-weight: 600; color: #475569; text-decoration: none; transition: border-color .2s; }
+  .ep-page { display: inline-flex; align-items: center; padding: .5rem 1rem; border-radius: 9px; background: rgba(255,255,255,.92); border: 1.5px solid #d6e3f3; font-size: .85rem; font-weight: 600; color: #475569; text-decoration: none; transition: border-color .2s; }
   .ep-page:hover { border-color: #F59E0B; color: #102B4E; }
   .ep-page-current { border-color: #F59E0B; color: #102B4E; background: #FFFBEB; }
   .ep-page-disabled { color: #cbd5e1; cursor: default; }
 
   /* ── SEO section ── */
-  .ep-seo { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 2rem; margin-top: 3rem; }
+  .ep-seo { background: rgba(255,255,255,.9); border: 1px solid rgba(148,163,184,.35); border-radius: 16px; padding: 2rem; margin-top: 3rem; box-shadow: 0 14px 35px rgba(30, 64, 102, .07); }
   .ep-seo h2 { font-size: 1.1rem; font-weight: 800; color: #102B4E; margin: 0 0 .75rem; }
   .ep-seo h3 { font-size: .95rem; font-weight: 700; color: #334155; margin: 1.5rem 0 .4rem; }
   .ep-seo p { font-size: .88rem; color: #475569; line-height: 1.7; margin: 0; }

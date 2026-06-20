@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Préparation entretien — {{ lead.title|default:"Offre" }} | Job Agent{% endblock %}
+{% block body_class %}job-agent{% endblock %}
+{% block app_scope %}job-agent{% endblock %}
+
+{% block extra_css %}
+{% include "job_agent/_ja_critical.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'job_agent/job_agent.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+  <div class="ja-container">
+    <div class="ja-pagehead">
+      <div class="ja-pagehead__title">
+        <h1>Préparation entretien</h1>
+        <p>
+          <span class="ja-muted">{{ lead.title|default:"Offre" }}</span>
+          <span class="ja-muted-2"> • {{ lead.company|default:"Entreprise" }}</span>
+        </p>
+      </div>
+      <div class="ja-pagehead__actions">
+        <a class="c-btn" href="{% url 'job_agent:lead_detail' lead.id %}">Détail offre</a>
+        <a class="c-btn" href="{% url 'job_agent:pack_detail' lead.id %}">Pack</a>
+        <a class="c-btn c-btn--primary" href="{% url 'job_agent:kanban' %}">Kanban</a>
+      </div>
+    </div>
+
+    <div class="ja-layout">
+      {% include "job_agent/_menu.html" with active="pack" %}
+
+      <div class="ja-content">
+        <section class="ja-card" style="margin-bottom:18px;">
+          <div class="ja-card__head">
+            <h2>Coach entretien</h2>
+            <span class="ja-muted-2">Pitch, questions probables, réponses et relance.</span>
+          </div>
+          <div class="ja-card__body">
+            <div class="ja-calloutgrid">
+              <div class="ja-callout">
+                <p class="ja-callout__k">1. Pitch</p>
+                <p class="ja-callout__v">Prépare une présentation claire en 60 secondes.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">2. Preuves</p>
+                <p class="ja-callout__v">Choisis 2 expériences concrètes liées à l’offre.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">3. Objections</p>
+                <p class="ja-callout__v">Prépare les points faibles sans inventer.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">4. Questions</p>
+                <p class="ja-callout__v">Pose des questions sur priorités, outils et processus.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="ja-card" style="margin-bottom:18px;">
+          <div class="ja-card__head">
+            <h2>Guide complet</h2>
+            <button class="c-btn c-btn--primary" type="button" data-copy data-copy-target="#interview-guide" data-copy-toast="Guide entretien copié">
+              Copier le guide
+            </button>
+          </div>
+          <div class="ja-card__body">
+            <pre id="interview-guide">{{ guide|default:"Génère le pack candidature pour obtenir le guide entretien complet." }}</pre>
+          </div>
+        </section>
+
+        <section class="ja-card" style="margin-bottom:18px;">
+          <div class="ja-card__head">
+            <h2>Réponses rapides</h2>
+            <button class="c-btn" type="button" data-copy data-copy-target="#quick-answers" data-copy-toast="Réponses copiées">
+              Copier réponses
+            </button>
+          </div>
+          <div class="ja-card__body">
+            <pre id="quick-answers">{% for key, value in quick_answers.items %}
+{{ key }} :
+{{ value }}
+
+{% empty %}
+Génère le pack candidature pour obtenir les réponses d'entretien.
+{% endfor %}</pre>
+          </div>
+        </section>
+
+        <section class="ja-card">
+          <div class="ja-card__head">
+            <h2>Après entretien</h2>
+            <span class="ja-muted-2">Ne laisse pas une candidature sans suivi.</span>
+          </div>
+          <div class="ja-card__body">
+            <div class="ja-actions ja-actions--wrap">
+              <a class="c-btn c-btn--primary" href="{% url 'job_agent:lead_detail' lead.id %}">Mettre à jour le statut</a>
+              <a class="c-btn" href="{% url 'job_agent:pack_detail' lead.id %}">Revoir le pack</a>
+              <a class="c-btn" href="{% url 'job_agent:lead_list' %}">Toutes mes offres</a>
+            </div>
+          </div>
+        </section>
+
+        <div class="ja-toast" role="status" aria-live="polite" aria-atomic="true">
+          <span class="ja-toast__msg">Copié</span>
+          <button class="ja-toast__btn" type="button" data-toast-dismiss>OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

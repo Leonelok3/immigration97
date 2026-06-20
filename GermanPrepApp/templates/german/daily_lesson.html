@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Leçon allemande du jour | Immigration97{% endblock %}
+{% block body_class %}german-prep{% endblock %}
+
+{% block content %}
+<main class="container" style="padding:2rem 1rem 4rem;max-width:960px;">
+  <h1>Leçon allemande du jour</h1>
+  <p>Leçon et exercices sélectionnés automatiquement depuis la base Immigration97.</p>
+  {% if is_sunday %}
+    <p><a href="{% url 'germanprep:mock_hub' %}">Examen blanc du dimanche: choisir un niveau</a></p>
+  {% endif %}
+
+  {% if selection.lesson %}
+    <section style="margin:1rem 0;padding:1rem;border:1px solid rgba(0,0,0,.12);border-radius:8px;">
+      <p><strong>{{ selection.lesson.get_skill_display }}</strong> · {{ selection.level }}</p>
+      <h2>{{ selection.lesson.title }}</h2>
+      {% if selection.lesson.intro %}<p>{{ selection.lesson.intro }}</p>{% endif %}
+      {% if selection.lesson.content %}<div>{{ selection.lesson.content|linebreaks }}</div>{% endif %}
+    </section>
+
+    <section>
+      <h2>Exercices du jour</h2>
+      {% for exercise in selection.exercises %}
+        <article style="margin:.75rem 0;padding:1rem;border:1px solid rgba(0,0,0,.1);border-radius:8px;">
+          <h3>{{ forloop.counter }}. {{ exercise.question_text }}</h3>
+          <ul>
+            <li>A. {{ exercise.option_a }}</li>
+            <li>B. {{ exercise.option_b }}</li>
+            {% if exercise.option_c %}<li>C. {{ exercise.option_c }}</li>{% endif %}
+            {% if exercise.option_d %}<li>D. {{ exercise.option_d }}</li>{% endif %}
+          </ul>
+          <p><strong>Réponse:</strong> {{ exercise.correct_option }}</p>
+        </article>
+      {% empty %}
+        <p>Aucun exercice lié à cette leçon pour le moment.</p>
+      {% endfor %}
+    </section>
+  {% else %}
+    <p>{{ selection.empty_reason }}</p>
+  {% endif %}
+</main>
+{% endblock %}

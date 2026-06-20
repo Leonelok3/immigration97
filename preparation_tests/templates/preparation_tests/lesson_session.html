@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static prep_content %}
 
 {% block title %}{{ lesson.title }} — {{ section|upper }} {{ lesson.level }} | Immigration97{% endblock %}
 {% block meta_description %}{{ section|upper }} niveau {{ lesson.level }} : {{ lesson.title }} — exercices progressifs CECR pour réussir le TEF, TCF et DELF.{% endblock %}
@@ -19,6 +19,8 @@
   {% else %}--accent:#10b981;--accent-lt:#4ade80;--accent-bg:rgba(16,185,129,.12);--accent-bd:rgba(16,185,129,.3);
   {% endif %}
 }
+.fr-prep-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.fr-prep-page a{text-decoration:none;}
 
 /* ── BREADCRUMB ── */
 .ls-breadcrumb{max-width:1080px;margin:0 auto;padding:1.25rem 1.25rem 0;display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:rgba(255,255,255,.35);flex-wrap:wrap;}
@@ -55,6 +57,23 @@
 .ls-passage__body{font-size:.92rem;line-height:1.8;color:rgba(255,255,255,.8);}
 .ls-passage__body p{margin:0 0 .9rem;}
 .ls-passage__body p:last-child{margin-bottom:0;}
+.ls-passage,
+.ls-passage__body,
+.ls-ex-card,
+.ls-ex-card__question,
+.ls-ex-card__instruction,
+.ls-ex-card__points,
+.ls-option{max-width:100%;min-width:0;overflow-wrap:anywhere;word-break:normal;}
+.ls-passage__body pre,
+.ls-ex-card__question pre,
+.ls-ex-card__instruction pre{
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  max-width:100%;
+  margin:0 0 1rem;
+  font-family:inherit;
+}
 
 /* ── EXERCISES SECTION ── */
 .ls-ex-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;}
@@ -76,6 +95,10 @@
 .ls-option:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.04);}
 .ls-option input[type="radio"]{accent-color:var(--accent);width:16px;height:16px;flex-shrink:0;}
 .ls-option__letter{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:rgba(255,255,255,.5);flex-shrink:0;}
+.ls-option.is-correct{background:rgba(16,185,129,.13);border-color:rgba(16,185,129,.55);color:#d1fae5;}
+.ls-option.is-correct .ls-option__letter{background:#10b981;border-color:#34d399;color:#031b13;}
+.ls-option.is-incorrect{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.45);color:#fecaca;}
+.ls-option.is-incorrect .ls-option__letter{background:#ef4444;border-color:#f87171;color:#fff;}
 
 /* ── AUDIO PLAYER ── */
 .ls-audio{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem;}
@@ -135,6 +158,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="fr-prep-page">
 
 <!-- BREADCRUMB -->
 <div class="ls-breadcrumb">
@@ -205,7 +229,7 @@
       <div class="ls-passage__label">
         {% if section == "ce" %}📄 Texte de compréhension{% elif section == "co" %}📝 Contexte de l'audio{% else %}📘 Introduction{% endif %}
       </div>
-      <div class="ls-passage__body">{{ lesson.content_html|safe }}</div>
+      <div class="ls-passage__body">{{ lesson.content_html|prep_rich }}</div>
     </div>
     {% endif %}
 
@@ -234,17 +258,17 @@
         <span>{{ forloop.counter }}</span> Sujet {{ forloop.counter }}
       </div>
 
-      <div class="ls-ex-card__question">{{ exercise.question_text }}</div>
+      <div class="ls-ex-card__question">{{ exercise.question_text|prep_plain }}</div>
 
       {% if exercise.instruction %}
       <div class="ls-ex-card__instruction">
-        <strong>Consignes :</strong> {{ exercise.instruction }}
+        <strong>Consignes :</strong> {{ exercise.instruction|prep_plain }}
       </div>
       {% endif %}
 
       {% if exercise.summary %}
       <div class="ls-ex-card__points">
-        <strong>Points à aborder :</strong> {{ exercise.summary }}
+        <strong>Points à aborder :</strong> {{ exercise.summary|prep_plain }}
       </div>
       {% endif %}
 
@@ -275,11 +299,11 @@
         <span>{{ forloop.counter }}</span> Sujet {{ forloop.counter }}
       </div>
 
-      <div class="ls-ex-card__question">{{ exercise.question_text }}</div>
+      <div class="ls-ex-card__question">{{ exercise.question_text|prep_plain }}</div>
 
       {% if exercise.instruction %}
       <div class="ls-ex-card__instruction">
-        <strong>Consignes :</strong> {{ exercise.instruction }}
+        <strong>Consignes :</strong> {{ exercise.instruction|prep_plain }}
       </div>
       {% endif %}
 
@@ -306,10 +330,10 @@
       </div>
 
       {% if exercise.instruction %}
-      <div class="ls-ex-card__instruction">{{ exercise.instruction }}</div>
+      <div class="ls-ex-card__instruction">{{ exercise.instruction|prep_plain }}</div>
       {% endif %}
 
-      <div class="ls-ex-card__question">{{ exercise.question_text }}</div>
+      <div class="ls-ex-card__question">{{ exercise.question_text|prep_plain }}</div>
 
       <form class="pt-exercise-form ls-options"
             data-correct="{{ exercise.correct_option|upper }}"
@@ -320,28 +344,28 @@
         <label class="ls-option">
           <input type="radio" name="q{{ exercise.id }}" value="A">
           <span class="ls-option__letter">A</span>
-          {{ exercise.option_a }}
+          {{ exercise.option_a|prep_plain }}
         </label>
         {% endif %}
         {% if exercise.option_b %}
         <label class="ls-option">
           <input type="radio" name="q{{ exercise.id }}" value="B">
           <span class="ls-option__letter">B</span>
-          {{ exercise.option_b }}
+          {{ exercise.option_b|prep_plain }}
         </label>
         {% endif %}
         {% if exercise.option_c %}
         <label class="ls-option">
           <input type="radio" name="q{{ exercise.id }}" value="C">
           <span class="ls-option__letter">C</span>
-          {{ exercise.option_c }}
+          {{ exercise.option_c|prep_plain }}
         </label>
         {% endif %}
         {% if exercise.option_d %}
         <label class="ls-option">
           <input type="radio" name="q{{ exercise.id }}" value="D">
           <span class="ls-option__letter">D</span>
-          {{ exercise.option_d }}
+          {{ exercise.option_d|prep_plain }}
         </label>
         {% endif %}
 
@@ -364,7 +388,7 @@
       </div>
 
       {% if exercise.instruction %}
-      <div class="ls-ex-card__instruction">{{ exercise.instruction }}</div>
+      <div class="ls-ex-card__instruction">{{ exercise.instruction|prep_plain }}</div>
       {% endif %}
 
       <!-- AUDIO -->
@@ -386,7 +410,7 @@
       <div class="ls-audio ls-audio--locked">⚠️ Aucun audio disponible pour cet exercice</div>
       {% endif %}
 
-      <div class="ls-ex-card__question">{{ exercise.question_text }}</div>
+      <div class="ls-ex-card__question">{{ exercise.question_text|prep_plain }}</div>
 
       <form class="pt-exercise-form ls-options"
             data-correct="{{ exercise.correct_option|upper }}"
@@ -397,28 +421,28 @@
         <label class="ls-option">
           <input type="radio" name="q{{ exercise.id }}" value="A">
           <span class="ls-option__letter">A</span>
-          {{ exercise.option_a }}
+          {{ exercise.option_a|prep_plain }}
         </label>
         {% endif %}
         {% if exercise.option_b %}
         <label class="ls-option">
           <input type="radio" name="q{{ exercise.id }}" value="B">
           <span class="ls-option__letter">B</span>
-          {{ exercise.option_b }}
+          {{ exercise.option_b|prep_plain }}
         </label>
         {% endif %}
         {% if exercise.option_c %}
         <label class="ls-option">
           <input type="radio" name="q{{ exercise.id }}" value="C">
           <span class="ls-option__letter">C</span>
-          {{ exercise.option_c }}
+          {{ exercise.option_c|prep_plain }}
         </label>
         {% endif %}
         {% if exercise.option_d %}
         <label class="ls-option">
           <input type="radio" name="q{{ exercise.id }}" value="D">
           <span class="ls-option__letter">D</span>
-          {{ exercise.option_d }}
+          {{ exercise.option_d|prep_plain }}
         </label>
         {% endif %}
 
@@ -512,8 +536,118 @@
   {% endif %}
 </div>
 
-{% endblock %}
+<script src="{% static 'js/preparation_tests.js' %}?v=20260612-exercise-fix-2"></script>
+<script>
+(function () {
+  "use strict";
+  if (window.__imm97LessonCheckReady) return;
+  window.__imm97LessonCheckReady = true;
 
-{% block extra_js %}
-<script src="{% static 'js/preparation_tests.js' %}?v=20260422" defer></script>
+  function csrf() {
+    var el = document.getElementById("csrf-token");
+    return el ? el.value : "";
+  }
+
+  function optionText(form, value) {
+    var input = form.querySelector('input[type="radio"][value="' + value + '"]');
+    var label = input ? input.closest(".ls-option") : null;
+    if (!label) return "";
+    return (label.textContent || "").replace(/^\s*[A-D]\s*/, "").replace(/\s+/g, " ").trim();
+  }
+
+  function setProgress(data) {
+    var done = document.getElementById("ptProgressDone");
+    var total = document.getElementById("ptProgressTotal");
+    var pct = document.getElementById("ptProgressPct");
+    var fill = document.getElementById("ptProgressFill");
+    if (done) done.textContent = data.completed_exercises;
+    if (total) total.textContent = data.total_exercises;
+    if (pct) pct.textContent = data.percent;
+    if (fill) {
+      fill.style.width = data.percent + "%";
+      var bar = fill.closest(".ls-progress__track");
+      if (bar) bar.setAttribute("aria-valuenow", String(data.percent));
+    }
+  }
+
+  function feedback(form, message, ok) {
+    var p = form.querySelector(".pt-feedback");
+    if (!p) return;
+    p.hidden = false;
+    p.textContent = message;
+    p.className = "pt-feedback " + (ok ? "correct pt-feedback--ok" : "incorrect pt-feedback--bad");
+  }
+
+  document.addEventListener("click", function (event) {
+    var btn = event.target.closest && event.target.closest(".pt-check-answer");
+    if (!btn) return;
+    event.preventDefault();
+
+    var form = btn.closest(".pt-exercise-form");
+    if (!form || form.dataset.locked === "1") return;
+
+    var checked = form.querySelector('input[type="radio"]:checked');
+    var selected = checked ? String(checked.value || "").toUpperCase() : "";
+    var correct = String(form.dataset.correct || "").toUpperCase();
+    var exerciseId = parseInt(form.dataset.exerciseId || "0", 10);
+
+    if (!selected) {
+      feedback(form, "Choisis une réponse avant de vérifier.", false);
+      return;
+    }
+
+    var ok = selected === correct;
+    var correctText = optionText(form, correct);
+    var selectedText = optionText(form, selected);
+
+    form.querySelectorAll(".ls-option").forEach(function (label) {
+      var input = label.querySelector('input[type="radio"]');
+      var value = input ? String(input.value || "").toUpperCase() : "";
+      label.classList.toggle("is-correct", value === correct);
+      label.classList.toggle("is-incorrect", value === selected && value !== correct);
+      if (input) input.disabled = true;
+    });
+
+    if (ok) {
+      feedback(form, "Bonne réponse : " + selected + (selectedText ? " — " + selectedText : "") + ".", true);
+    } else {
+      feedback(form, "Mauvaise réponse. Bonne réponse : " + correct + (correctText ? " — " + correctText : "") + ".", false);
+    }
+
+    form.dataset.locked = "1";
+    btn.disabled = true;
+    btn.textContent = ok ? "Réponse validée" : "Correction affichée";
+
+    if (!exerciseId || !csrf()) return;
+    fetch("/prep/exercise-progress/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrf()
+      },
+      body: JSON.stringify({ exercise_id: exerciseId, selected: selected, correct: ok })
+    })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (data && data.ok) {
+          setProgress(data);
+          if (data.explanation) {
+            var answerText = data.correct_text || correctText;
+            feedback(
+              form,
+              (data.correct ? "Bonne réponse." : "Mauvaise réponse.")
+                + " Bonne réponse : " + (data.correct_option || correct)
+                + (answerText ? " — " + answerText : "")
+                + ". Pourquoi : " + data.explanation,
+              data.correct
+            );
+          }
+        }
+      })
+      .catch(function () {});
+  });
+})();
+</script>
+
+</main>
 {% endblock %}

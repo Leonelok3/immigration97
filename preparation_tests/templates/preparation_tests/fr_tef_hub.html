@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="{% static 'css/preparation_tests.css' %}?v=20260329">
 <style>
 :root{--h-gold:#D4A843;--h-gold-lt:#F0C060;--h-glass:rgba(255,255,255,.04);}
+.fr-prep-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.fr-prep-page a{text-decoration:none;}
 
 /* BREADCRUMB */
 .th-breadcrumb{max-width:1080px;margin:0 auto;padding:1.25rem 1.25rem 0;display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:rgba(255,255,255,.35);}
@@ -86,6 +88,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="fr-prep-page">
 
 <!-- BREADCRUMB -->
 <div class="th-breadcrumb">
@@ -199,4 +202,5 @@
   <a href="{% url 'preparation_tests:dashboard_global' %}" class="th-btn-dash">📊 Ma progression globale</a>
 </div>
 
+</main>
 {% endblock %}

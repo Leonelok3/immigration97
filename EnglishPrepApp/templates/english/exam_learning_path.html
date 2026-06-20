@@ -5,13 +5,15 @@
 
 {% block extra_css %}
 <style>
+  .ep-shell { min-height: 100vh; background: #050b18; color: #fff; padding: 1px 0 4rem; }
   .ep-wrap { max-width: 1000px; margin: 0 auto; padding: 0 1.25rem 4rem; }
-  .ep-bc { font-size: .82rem; color: #64748b; margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .ep-bc { font-size: .82rem; color: rgba(255,255,255,.45); margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
   .ep-bc a { color: #F59E0B; text-decoration: none; font-weight: 500; }
 
   .ep-page-header {
     background: linear-gradient(135deg, #102B4E 0%, #1a3d6b 100%);
     border-radius: 16px; padding: 2rem 2rem; color: #fff; margin-bottom: 2rem;
+    border: 1px solid rgba(255,255,255,.08);
   }
   .ep-page-header h1 { font-size: clamp(1.2rem, 3vw, 1.75rem); font-weight: 800; margin: 0 0 .35rem; }
   .ep-page-header p  { font-size: .88rem; opacity: .8; margin: 0 0 1.25rem; }
@@ -25,11 +27,11 @@
   .ep-skill-group { margin-bottom: 2rem; }
   .ep-skill-header {
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
-    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px 12px 0 0;
+    background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.11); border-radius: 12px 12px 0 0;
     padding: .9rem 1.25rem; border-bottom: none;
   }
-  .ep-skill-header-left h2 { font-size: .98rem; font-weight: 800; color: #102B4E; margin: 0 0 .15rem; }
-  .ep-skill-header-left p  { font-size: .78rem; color: #64748b; margin: 0; }
+  .ep-skill-header-left h2 { font-size: .98rem; font-weight: 800; color: #fff; margin: 0 0 .15rem; }
+  .ep-skill-header-left p  { font-size: .78rem; color: rgba(255,255,255,.55); margin: 0; }
   .ep-skill-count {
     background: #F59E0B; color: #102B4E;
     border-radius: 20px; padding: .2rem .7rem; font-size: .72rem; font-weight: 800;
@@ -38,14 +40,14 @@
   /* Lesson cards */
   .ep-lessons-grid {
     display: flex; flex-direction: column; gap: .75rem;
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 0 0 12px 12px;
+    background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.09); border-radius: 0 0 12px 12px;
     padding: 1rem;
   }
   .ep-lesson-card {
-    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 12px;
     overflow: hidden; transition: border-color .2s;
   }
-  .ep-lesson-card.open { border-color: #F59E0B; background: #fff; }
+  .ep-lesson-card.open { border-color: #F59E0B; background: rgba(255,255,255,.06); }
   .ep-lesson-card-head {
     display: flex; align-items: center; gap: .75rem;
     padding: 1rem 1.1rem; cursor: pointer; user-select: none;
@@ -57,8 +59,8 @@
   }
   .ep-lesson-card.open .ep-lesson-num { background: #F59E0B; color: #102B4E; }
   .ep-lesson-head-body { flex: 1; min-width: 0; }
-  .ep-lesson-title { font-size: .9rem; font-weight: 700; color: #102B4E; transition: color .2s; }
-  .ep-lesson-desc  { font-size: .78rem; color: #64748b; line-height: 1.4; margin-top: .15rem; }
+  .ep-lesson-title { font-size: .9rem; font-weight: 700; color: #fff; transition: color .2s; }
+  .ep-lesson-desc  { font-size: .78rem; color: rgba(255,255,255,.55); line-height: 1.4; margin-top: .15rem; }
   .ep-lesson-toggle {
     font-size: .75rem; font-weight: 700; color: #F59E0B; white-space: nowrap;
     background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px;
@@ -66,19 +68,19 @@
   }
 
   /* Lesson body (expanded) */
-  .ep-lesson-body { display: none; padding: 0 1.1rem 1.1rem; border-top: 1px solid #e2e8f0; }
+  .ep-lesson-body { display: none; padding: 0 1.1rem 1.1rem; border-top: 1px solid rgba(255,255,255,.09); }
   .ep-lesson-card.open .ep-lesson-body { display: block; }
   .ep-lesson-content {
-    font-size: .85rem; color: #334155; line-height: 1.7;
+    font-size: .85rem; color: rgba(255,255,255,.72); line-height: 1.7;
     padding: .9rem 0;
   }
   .ep-lesson-content p { margin: 0 0 .6rem; }
-  .ep-lesson-content h1,.ep-lesson-content h2,.ep-lesson-content h3 { color: #102B4E; margin: .75rem 0 .35rem; }
+  .ep-lesson-content h1,.ep-lesson-content h2,.ep-lesson-content h3 { color: #fff; margin: .75rem 0 .35rem; }
   .ep-lesson-content ul,.ep-lesson-content ol { padding-left: 1.25rem; margin: .4rem 0 .75rem; }
   .ep-lesson-content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border-collapse: collapse; font-size: .82rem; margin: .75rem 0; }
   .ep-lesson-content th,.ep-lesson-content td { border: 1px solid #e2e8f0; padding: .4rem .65rem; text-align: left; }
   .ep-lesson-content th { background: #f1f5f9; font-weight: 700; color: #102B4E; }
-  .ep-lesson-content strong { color: #102B4E; }
+  .ep-lesson-content strong { color: #f0c060; }
   .ep-lesson-video {
     display: inline-flex; align-items: center; gap: .35rem; margin-bottom: .75rem;
     font-size: .78rem; color: #F59E0B; text-decoration: none; font-weight: 600;
@@ -90,7 +92,7 @@
   .ep-exercises { margin-top: .5rem; }
   .ep-exercises-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; margin-bottom: .5rem; }
   .ep-exercise-item {
-    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+    background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.1); border-radius: 10px;
     padding: .75rem .9rem; margin-bottom: .5rem;
   }
   .ep-exercise-item:last-child { margin-bottom: 0; }
@@ -101,29 +103,29 @@
   .ep-diff-easy   { background: #F0FDF4; color: #15803d; }
   .ep-diff-medium { background: #FEF3C7; color: #92400e; }
   .ep-diff-hard   { background: #FEF2F2; color: #b91c1c; }
-  .ep-exercise-name { font-size: .82rem; font-weight: 700; color: #102B4E; flex: 1; }
+  .ep-exercise-name { font-size: .82rem; font-weight: 700; color: #fff; flex: 1; }
   .ep-exercise-link { color: #F59E0B; text-decoration: none; font-weight: 600; font-size: .75rem; }
   .ep-exercise-link:hover { text-decoration: underline; }
-  .ep-exercise-desc { font-size: .78rem; color: #475569; line-height: 1.5; }
-  .ep-exercise-content { font-size: .78rem; color: #334155; line-height: 1.6; margin-top: .35rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: .6rem .75rem; }
+  .ep-exercise-desc { font-size: .78rem; color: rgba(255,255,255,.62); line-height: 1.5; }
+  .ep-exercise-content { font-size: .78rem; color: rgba(255,255,255,.72); line-height: 1.6; margin-top: .35rem; background: rgba(5,11,24,.45); border: 1px solid rgba(255,255,255,.09); border-radius: 8px; padding: .6rem .75rem; }
   .ep-exercise-content p { margin: 0 0 .4rem; }
   .ep-exercise-content ul,.ep-exercise-content ol { padding-left: 1.1rem; margin: .3rem 0; }
 
   /* Empty state */
   .ep-empty {
-    text-align: center; padding: 3rem 1rem; color: #94a3b8;
-    background: #f8fafc; border-radius: 14px;
+    text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,.58);
+    background: rgba(255,255,255,.035); border: 1px dashed rgba(255,255,255,.12); border-radius: 14px;
   }
-  .ep-empty h3 { font-size: 1rem; color: #64748b; margin: 0 0 .5rem; }
+  .ep-empty h3 { font-size: 1rem; color: #fff; margin: 0 0 .5rem; }
   .ep-empty p  { font-size: .85rem; margin: 0 0 1.25rem; }
   .ep-btn-primary { background: #102B4E; color: #fff; border-radius: 10px; padding: .7rem 1.4rem; font-weight: 700; font-size: .88rem; text-decoration: none; }
   .ep-btn-primary:hover { background: #1a3d6b; color: #fff; }
-  .ep-btn-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 10px; padding: .7rem 1.4rem; font-weight: 600; font-size: .88rem; text-decoration: none; }
+  .ep-btn-secondary { background: rgba(255,255,255,.045); color: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: .7rem 1.4rem; font-weight: 600; font-size: .88rem; text-decoration: none; }
 
   /* EO / EE blocks */
-  .ep-eo-block, .ep-ee-block { background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 12px; padding: 1rem 1.1rem; margin-top: .85rem; }
+  .ep-eo-block, .ep-ee-block { background: rgba(16,185,129,.08); border: 1.5px solid rgba(16,185,129,.25); border-radius: 12px; padding: 1rem 1.1rem; margin-top: .85rem; }
   .ep-eo-title, .ep-ee-title { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #15803d; margin-bottom: .4rem; }
-  .ep-eo-block p, .ep-ee-block p { font-size: .83rem; color: #334155; margin: 0 0 .75rem; }
+  .ep-eo-block p, .ep-ee-block p { font-size: .83rem; color: rgba(255,255,255,.68); margin: 0 0 .75rem; }
   .ep-recorder-controls { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
   .ep-record-btn { background: #102B4E; color: #fff; border: none; border-radius: 8px; padding: .55rem 1.1rem; font-size: .82rem; font-weight: 700; cursor: pointer; transition: background .2s; }
   .ep-record-btn:hover { background: #1a3d6b; }
@@ -131,7 +133,7 @@
   .ep-btn-submit { background: #F59E0B; color: #102B4E; border: none; border-radius: 8px; padding: .55rem 1.2rem; font-size: .82rem; font-weight: 700; cursor: pointer; transition: background .2s; margin-top: .5rem; }
   .ep-btn-submit:hover:not(:disabled) { background: #d97706; }
   .ep-btn-submit:disabled { opacity: .5; cursor: not-allowed; }
-  .ep-ee-textarea { width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: .75rem; font-size: .85rem; font-family: inherit; resize: vertical; outline: none; transition: border-color .2s; box-sizing: border-box; }
+  .ep-ee-textarea { width: 100%; border: 1.5px solid rgba(255,255,255,.12); border-radius: 10px; padding: .75rem; font-size: .85rem; font-family: inherit; resize: vertical; outline: none; transition: border-color .2s; box-sizing: border-box; background: rgba(5,11,24,.55); color:#fff; }
   .ep-ee-textarea:focus { border-color: #F59E0B; }
   .ep-word-counter { font-size: .75rem; color: #94a3b8; text-align: right; margin: .2rem 0 .4rem; }
   .ep-eo-result, .ep-ee-result { margin-top: .75rem; }
@@ -154,6 +156,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="ep-shell">
 <div class="ep-wrap">
 
   <div class="ep-bc">
@@ -294,6 +297,7 @@
   {% endif %}
 
 </div>
+</main>
 
 <script>
 const CSRF = '{{ csrf_token }}';

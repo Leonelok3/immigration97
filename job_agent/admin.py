@@ -103,6 +103,7 @@ class JobLeadAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
 
     ordering = ("-created_at",)
+    actions = ("publish_selected_to_public",)
 
     # ---------- Custom Columns ----------
 
@@ -128,6 +129,38 @@ class JobLeadAdmin(admin.ModelAdmin):
     has_pack.boolean = True
     has_pack.short_description = "Pack"
 
+    @admin.action(description="Publier les offres sélectionnées en offres publiques")
+    def publish_selected_to_public(self, request, queryset):
+        created = 0
+        updated = 0
+        skipped = 0
+
+        for lead in queryset.exclude(url=""):
+            if not (lead.title or "").strip():
+                skipped += 1
+                continue
+
+            _offer, was_created = PublicJobOffer.objects.update_or_create(
+                url=lead.url,
+                defaults={
+                    "source": lead.source or "Job Agent",
+                    "title": (lead.title or "Offre")[:220],
+                    "company": (lead.company or "Entreprise")[:220],
+                    "location": (lead.location or "International")[:220],
+                    "description_text": lead.description_text or lead.title or "Offre",
+                    "is_active": True,
+                },
+            )
+            if was_created:
+                created += 1
+            else:
+                updated += 1
+
+        self.message_user(
+            request,
+            f"Publication terminée: {created} créées, {updated} mises à jour, {skipped} ignorées.",
+        )
+
 
 # =========================================================
 # Application Pack
@@ -137,6 +170,8 @@ class ApplicationPackAdmin(admin.ModelAdmin):
     list_display = (
         "user",
         "lead",
+        "ats_score",
+        "ai_status",
         "has_email",
         "has_letter",
         "updated_at",
@@ -166,12 +201,13 @@ class PublicJobOfferAdmin(admin.ModelAdmin):
         "title",
         "company",
         "location",
+        "category",
         "source",
         "is_active",
         "created_at",
     )
-    search_fields = ("title", "company", "location", "source", "url")
-    list_filter = ("is_active", "source")
+    search_fields = ("title", "company", "location", "source", "url", "skills_keywords")
+    list_filter = ("is_active", "source", "category")
     readonly_fields = ("created_at", "updated_at")
 
 

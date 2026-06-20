@@ -63,6 +63,11 @@ class PREligibilityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # Le diagnostic actuel cible le Canada et le champ n'est pas affiché
+        # dans le template. On garde donc une valeur par défaut côté formulaire.
+        self.fields["country"].required = False
+        self.fields["country"].initial = "CA"
+
         # placeholders pro
         placeholders = {
             "age": "Ex : 29",

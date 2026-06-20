@@ -343,29 +343,6 @@ def create_cv(request, cv_id):
     cv.current_step = 1
     cv.save(update_fields=["current_step"])
     return redirect("cv_generator:create_cv", cv_id=cv.id)
-###############################################################################
-#########################
-############################3
-#########################
-
-from datetime import datetime
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
-
-from .models import CV, Experience, Formation, Competence, Langue
-from .forms import ExperienceForm
-
-
-def _parse_date_yyyy_mm_dd(value):
-    """Parse une date 'YYYY-MM-DD' -> date() ou None"""
-    value = (value or "").strip()
-    if not value:
-        return None
-    try:
-        return datetime.strptime(value, "%Y-%m-%d").date()
-    except ValueError:
-        return None
 
 
 @login_required
@@ -570,6 +547,12 @@ def delete_langue(request, cv_id, langue_id):
     langue.delete()
     messages.success(request, "✅ Langue supprimée.")
     return redirect("cv_generator:create_cv_step3", cv_id=cv.id)
+
+
+@login_required
+def delete_language(request, cv_id, lang_id):
+    """Alias compatible avec les routes/templates qui utilisent delete_language."""
+    return delete_langue(request, cv_id, lang_id)
 
 
 @login_required
@@ -1152,59 +1135,8 @@ def generate_experience_tasks(request, cv_id, experience_id):
     })
 
 
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
-
-from .models import CV, Formation, Competence, Langue
-
-
-@login_required
-def delete_formation(request, cv_id, formation_id):
-    cv = get_object_or_404(CV, id=cv_id, user=request.user)
-    formation = get_object_or_404(Formation, id=formation_id, cv=cv)
-    formation.delete()
-    messages.success(request, "✅ Formation supprimée.")
-    return redirect("cv_generator:create_cv_step3", cv_id=cv.id)
-
-
-@login_required
-def delete_competence(request, cv_id, competence_id):
-    cv = get_object_or_404(CV, id=cv_id, user=request.user)
-    comp = get_object_or_404(Competence, id=competence_id, cv=cv)
-    comp.delete()
-    messages.success(request, "✅ Compétence supprimée.")
-    return redirect("cv_generator:create_cv_step3", cv_id=cv.id)
-
-
-@login_required
-def delete_langue(request, cv_id, langue_id):
-    cv = get_object_or_404(CV, id=cv_id, user=request.user)
-    lang = get_object_or_404(Langue, id=langue_id, cv=cv)
-    lang.delete()
-    messages.success(request, "✅ Langue supprimée.")
-    return redirect("cv_generator:create_cv_step3", cv_id=cv.id)
-
-
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
-
-from .models import CV, Langue
-
-
-@login_required
-def delete_language(request, cv_id, lang_id):
-    cv = get_object_or_404(CV, id=cv_id, user=request.user)
-    lang = get_object_or_404(Langue, id=lang_id, cv=cv)
-    lang.delete()
-    messages.success(request, "✅ Langue supprimée.")
-    return redirect("cv_generator:create_cv_step3", cv_id=cv.id)
-
-
-
-
 from .forms import CVForm
+
 
 @login_required
 def edit_cv(request, cv_id):

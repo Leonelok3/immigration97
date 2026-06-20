@@ -96,13 +96,13 @@
       -webkit-backdrop-filter: blur(14px) saturate(160%);
     }
     .c-navbar__container {
-      width: min(1180px, calc(100% - 32px));
+      width: min(1380px, calc(100% - 32px));
       min-height: 76px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
+      gap: 14px;
     }
     .c-navbar__brand {
       display: inline-flex;
@@ -122,8 +122,10 @@
       height: 48px;
       display: block;
       border-radius: 12px;
+      overflow: hidden;
+      flex: 0 0 48px;
       background:
-        url("{% static 'img/LOGOIMM97.png' %}") center 38% / 178px 178px no-repeat,
+        url("{% static 'img/LOGOIMM97.png' %}") center center / 34px 34px no-repeat,
         #050a18;
       border: 1px solid rgba(16,185,129,0.34);
       box-shadow: 0 12px 30px rgba(16,185,129,0.16);
@@ -159,7 +161,7 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 12px;
+      gap: 8px;
       flex: 1 1 auto;
       min-width: 0;
     }
@@ -167,9 +169,9 @@
       display: inline-flex;
       align-items: center;
       min-height: 40px;
-      padding: 0 8px;
+      padding: 0 7px;
       color: rgba(255,255,255,0.82);
-      font-size: 0.92rem;
+      font-size: 0.84rem;
       font-weight: 650;
       text-decoration: none;
       white-space: nowrap;
@@ -186,10 +188,10 @@
       align-items: center;
       justify-content: center;
       min-height: 40px;
-      padding: 0 16px;
+      padding: 0 14px;
       border-radius: 999px;
       border: 1px solid transparent;
-      font-size: 0.9rem;
+      font-size: 0.84rem;
       font-weight: 700;
       text-decoration: none;
       white-space: nowrap;
@@ -209,12 +211,54 @@
     }
 
     /* Nav : cache les liens desktop sur mobile */
-    @media (max-width: 1024px) {
-      .c-navbar__nav { display: none !important; }
-      .c-navbar__nav.is-open { display: flex !important; }
-      .c-navbar__toggle { display: flex !important; }
-      .c-navbar__container { flex-wrap: nowrap; }
-      .brand-mark { width: 44px; height: 44px; }
+    @media (max-width: 1220px) {
+      .c-navbar__container {
+        width: min(100%, calc(100% - 24px));
+        min-height: 68px;
+        flex-wrap: nowrap;
+      }
+      .c-navbar__toggle {
+        display: flex !important;
+        position: relative;
+        z-index: 1101;
+      }
+      .c-navbar__nav {
+        position: fixed;
+        inset: 0;
+        z-index: 1050;
+        display: none !important;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        width: 100%;
+        min-width: 0;
+        padding: 94px max(18px, env(safe-area-inset-left)) 30px;
+        overflow-y: auto;
+        background: rgba(3, 7, 18, 0.98);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+      }
+      .c-navbar__nav.is-open {
+        display: flex !important;
+      }
+      .c-navbar__nav .c-nav-link,
+      .c-navbar__nav .c-nav-consult,
+      .c-navbar__nav .c-btn {
+        width: min(420px, 100%);
+        min-height: 46px;
+        margin: 0 auto;
+        justify-content: center;
+        font-size: 1rem;
+      }
+      body.nav-open {
+        overflow: hidden;
+      }
+      .brand-mark {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+        background-size: 31px 31px;
+      }
     }
     /* Sections qui peuvent déborder */
     @media (max-width: 768px) {
@@ -474,12 +518,149 @@
         width: 100%;
       }
     }
+
+    .home-footer {
+      border-top: 1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(8,20,38,.98), #030712);
+      padding: 3.5rem 1.5rem 1.5rem;
+      color: rgba(232,234,240,.72);
+    }
+    .home-footer__inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 2rem;
+    }
+    .home-footer__brand {
+      display: grid;
+      gap: 1rem;
+      align-content: start;
+    }
+    .home-footer .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: .85rem;
+      text-decoration: none;
+      color: #fff;
+    }
+    .home-footer .nav-logo__mark {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 58px;
+      border-radius: 18px;
+      border: 1px solid rgba(0,214,180,.3);
+      background-color: #020817;
+      background-image: url("{% static 'img/LOGOIMM97.png' %}");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 70% 70%;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .home-footer .nav-logo__text {
+      display: grid;
+      gap: .15rem;
+    }
+    .home-footer .nav-logo__name {
+      display: block;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 850;
+      line-height: 1;
+    }
+    .home-footer .nav-logo__tag {
+      display: block;
+      color: #f0c060;
+      font-size: .72rem;
+      font-weight: 850;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .home-footer__text {
+      font-size: .9rem;
+      line-height: 1.75;
+      color: rgba(232,234,240,.62);
+      max-width: 360px;
+    }
+    .home-footer__badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .home-footer__badge {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      padding: 0 .7rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: .74rem;
+      color: rgba(232,234,240,.74);
+    }
+    .home-footer__col h4 {
+      margin: 0 0 .8rem;
+      color: #fff;
+      font-size: .92rem;
+    }
+    .home-footer__col a {
+      display: block;
+      color: rgba(232,234,240,.58);
+      font-size: .86rem;
+      text-decoration: none;
+      margin: .55rem 0;
+      transition: color .2s;
+    }
+    .home-footer__col a:hover {
+      color: #F0C060;
+    }
+    .home-footer__bottom {
+      max-width: 1100px;
+      margin: 2rem auto 0;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: .78rem;
+      color: rgba(232,234,240,.42);
+    }
+    .home-footer__bottom a {
+      color: rgba(232,234,240,.5);
+      margin-left: 1rem;
+      text-decoration: none;
+    }
+    .home-footer__bottom a:hover {
+      color: #F0C060;
+    }
+    .c-footer[hidden] {
+      display: none !important;
+    }
+    @media (max-width: 820px) {
+      .home-footer__inner {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 560px) {
+      .home-footer {
+        padding: 2.5rem 1rem 1.25rem;
+      }
+      .home-footer__inner {
+        grid-template-columns: 1fr;
+      }
+      .home-footer__bottom {
+        flex-direction: column;
+      }
+      .home-footer__bottom a {
+        margin-left: 0;
+        margin-right: 1rem;
+      }
+    }
   </style>
 
-  {% if not has_premium and not has_temp_access %}
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8153544065381730"
        crossorigin="anonymous"></script>
-  {% endif %}
 
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -513,11 +694,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </button>
 
     <nav class="c-navbar__nav" id="nav-primary">
+      <a href="{% url 'easy_start' %}" class="c-nav-link">Commencer</a>
       <a href="{% url 'profiles:list' %}" class="c-nav-link">Talents</a>
+      <a href="{% url 'job_agent:public_offers' %}" class="c-nav-link">Offres d'emploi</a>
       <a href="/visa-etudes/" class="c-nav-link">Étudiants</a>
       <a href="/prep/" class="c-nav-link">Tests de langue</a>
       <a href="{% url 'residence_permanente' %}" class="c-nav-link">Résidence 🇨🇦</a>
       <a href="{% url 'actualite:list' %}" class="c-nav-link">Actualité</a>
+      <a href="{% url 'official_links' %}" class="c-nav-link">Liens officiels</a>
       <a href="{% url 'resources:library' %}" class="c-nav-link">Ressources</a>
       <a href="{% url 'consultation_request' %}" class="c-nav-consult" aria-label="Demander une consultation">
         <span class="c-nav-consult__dot" aria-hidden="true"></span>
@@ -544,7 +728,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 
-<footer class="c-footer">
+{% include "partials/site_footer.html" %}
+<footer class="c-footer" hidden aria-hidden="true">
   <div class="c-footer__main">
     <!-- (Ton footer inchangé, identique à ce que tu as collé) -->
     <!-- Brand & Mission -->
@@ -599,6 +784,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <ul class="c-footer__links">
         <li><a href="/residence-permanente/">🇨🇦 Canada RP</a></li>
         <li><a href="/visa-travail/">💼 Visa Travail</a></li>
+        <li><a href="{% url 'job_agent:public_offers' %}">💼 Offres d'emploi</a></li>
         <li><a href="/visa-etudes/">🎓 Visa Études</a></li>
         <li><a href="/usa-dv-lottery/">🇺🇸 USA DV Lottery</a></li>
         <li><a href="/europe-visa/">🇪🇺 Europe</a></li>
@@ -615,6 +801,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <li><a href="/success-stories/">⭐ Témoignages</a></li>
         <li><a href="/contact/">✉️ Contact Support</a></li>
         <li><a href="/arsenal-ia/">🤖 Arsenal IA</a></li>
+        <li><a href="{% url 'job_agent:public_offers' %}">🔎 Offres vérifiées</a></li>
       </ul>
     </div>
 

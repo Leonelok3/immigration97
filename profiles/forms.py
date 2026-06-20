@@ -2,6 +2,15 @@ from django import forms
 from .models import Profile, PortfolioItem, Skill
 
 
+MAX_PORTFOLIO_FILE_SIZE = 10 * 1024 * 1024
+ALLOWED_PORTFOLIO_CONTENT_TYPES = {
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+}
+
+
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
@@ -34,6 +43,20 @@ class PortfolioItemForm(forms.ModelForm):
             'file': forms.FileInput(attrs={'class': 'form-control'}),
             'description': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def clean_file(self):
+        file = self.cleaned_data.get("file")
+        if not file:
+            return file
+
+        if file.size > MAX_PORTFOLIO_FILE_SIZE:
+            raise forms.ValidationError("Fichier trop lourd : maximum 10 Mo.")
+
+        content_type = getattr(file, "content_type", "")
+        if content_type not in ALLOWED_PORTFOLIO_CONTENT_TYPES:
+            raise forms.ValidationError("Format accepté : PDF, JPG, PNG ou WebP.")
+
+        return file
 
 
 class SkillForm(forms.Form):

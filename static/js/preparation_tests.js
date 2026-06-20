@@ -16,8 +16,8 @@
     p.hidden = false;
     p.textContent = msg;
 
-    p.classList.remove("pt-feedback--ok", "pt-feedback--bad");
-    p.classList.add(ok ? "pt-feedback--ok" : "pt-feedback--bad");
+    p.classList.remove("correct", "incorrect", "pt-feedback--ok", "pt-feedback--bad");
+    p.classList.add(ok ? "correct" : "incorrect", ok ? "pt-feedback--ok" : "pt-feedback--bad");
   }
 
   function lockForm(form) {
@@ -40,6 +40,16 @@
     return String(form.dataset.correct || "").trim().toUpperCase();
   }
 
+  function getOptionText(form, value) {
+    const input = form.querySelector('input[type="radio"][value="' + value + '"]');
+    const label = input ? input.closest(".ls-option") : null;
+    if (!label) return "";
+    return String(label.textContent || "")
+      .replace(/^\s*[A-D]\s*/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
   function getCSRFToken() {
     const el = document.getElementById("csrf-token");
     return el ? el.value : "";
@@ -58,7 +68,7 @@
 
       if (fillEl && typeof data.percent === "number") {
         fillEl.style.width = `${data.percent}%`;
-        const bar = fillEl.closest(".pt-progress-bar");
+        const bar = fillEl.closest(".ls-progress__track, .pt-progress-bar");
         if (bar) bar.setAttribute("aria-valuenow", String(data.percent));
       }
     } catch (e) {}
@@ -120,24 +130,53 @@
     const ok = selected === correctVal;
 
     if (ok) {
-      setFeedback(form, "✅ Bonne réponse !", true);
+      const selectedText = getOptionText(form, selected);
+      setFeedback(
+        form,
+        "✅ Bonne réponse !" + (selectedText ? " Réponse : " + selected + " — " + selectedText : ""),
+        true
+      );
     } else {
-      setFeedback(form, `❌ Mauvaise réponse. La bonne réponse est : ${correctVal}.`, false);
+      const correctText = getOptionText(form, correctVal);
+      setFeedback(
+        form,
+        "❌ Mauvaise réponse. Bonne réponse : " + correctVal + (correctText ? " — " + correctText : "") + ".",
+        false
+      );
     }
+
+    form.querySelectorAll(".ls-option").forEach(function (label) {
+      const input = label.querySelector('input[type="radio"]');
+      const value = input ? String(input.value || "").toUpperCase() : "";
+      label.classList.toggle("is-correct", value === correctVal);
+      label.classList.toggle("is-incorrect", value === selected && selected !== correctVal);
+    });
 
     form.dataset.locked = "1";
     lockForm(form);
 
     const exerciseId = parseInt(form.dataset.exerciseId || "0", 10);
-    if (ok && exerciseId) {
+    if (exerciseId) {
+      btn.disabled = true;
       const data = await sendExerciseProgress({
         exerciseId,
         selected,
-        correct: true,
+        correct: ok,
       });
 
       if (data && data.ok) {
         updateProgressBar(data);
+        if (data.explanation) {
+          const answerText = data.correct_text || getOptionText(form, data.correct_option || correctVal);
+          setFeedback(
+            form,
+            (data.correct ? "✅ Bonne réponse !" : "❌ Mauvaise réponse.")
+              + " Bonne réponse : " + (data.correct_option || correctVal)
+              + (answerText ? " — " + answerText : "")
+              + ". Pourquoi : " + data.explanation,
+            data.correct
+          );
+        }
         softUnlockHint();
       }
     }

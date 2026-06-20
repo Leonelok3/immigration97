@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Paiement non confirmé - Immigration97{% endblock %}
+{% block body_class %}billing{% endblock %}
+
+{% block content %}
+<main style="min-height:70vh;display:grid;place-items:center;padding:4rem 1.25rem;background:#070b18;color:#fff;">
+  <section style="width:min(680px,100%);border:1px solid rgba(255,255,255,.14);border-radius:18px;background:linear-gradient(135deg,rgba(16,24,48,.96),rgba(8,12,28,.96));padding:2rem;box-shadow:0 24px 70px rgba(0,0,0,.35);">
+    <p style="margin:0 0 .75rem;color:#f5c85b;font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem;">Paiement non confirmé</p>
+    <h1 style="margin:0 0 1rem;font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.08;">On n'a pas pu activer ton Premium automatiquement.</h1>
+    <p style="margin:0 0 1.5rem;color:rgba(255,255,255,.72);line-height:1.7;">
+      Aucun accès n'a été perdu. Tu peux réessayer le paiement ou contacter Immigration97 sur WhatsApp pour qu'on vérifie rapidement.
+    </p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:.8rem;">
+      {% if transaction and transaction.plan %}
+      <a href="{% url 'billing:buy_plan' transaction.plan.slug %}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:12px;padding:.9rem 1.2rem;background:#f0c060;color:#050a18;font-weight:800;text-decoration:none;">Réessayer le paiement</a>
+      {% else %}
+      <a href="{% url 'billing:pricing' %}" style="display:inline-flex;align-items:center;justify-content:center;border-radius:12px;padding:.9rem 1.2rem;background:#f0c060;color:#050a18;font-weight:800;text-decoration:none;">Voir les abonnements</a>
+      {% endif %}
+      <a href="https://wa.me/237680625082?text=J%27ai%20des%20difficult%C3%A9s%20%C3%A0%20payer%20en%20ligne" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;border-radius:12px;padding:.9rem 1.2rem;background:#25D366;color:#06140b;font-weight:800;text-decoration:none;">Besoin d'aide ? WhatsApp</a>
+    </div>
+  </section>
+</main>
+{% endblock %}

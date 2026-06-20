@@ -43,6 +43,8 @@ from .models import (
     UserExerciseProgress,
     EOSubmission,
     EESubmission,
+    MonthlyTrainingPack,
+    PastExamSubject,
     FeaturedContent,
 )
 from billing.services import has_active_access
@@ -58,6 +60,7 @@ from preparation_tests.services.study_plan import (
     adapt_study_plan,
     advance_study_day,
 )
+from preparation_tests.services.error_revision import record_detailed_attempt
 
 # =========================================================
 # 🤖 IA
@@ -112,6 +115,58 @@ def _audio_url_from_question(q: Question):
     return None
 
 
+def _ensure_expression_exercise(lesson):
+    if lesson.section not in {"eo", "ee"}:
+        return
+    if lesson.exercises.filter(is_active=True).exists():
+        return
+
+    instruction = (
+        "Réponds au sujet en respectant le niveau demandé. "
+        "Structure ta réponse et donne des exemples précis."
+    )
+    if lesson.section == "ee":
+        instruction = (
+            "Rédige une réponse complète et structurée. "
+            "Relis ton texte avant de demander la correction IA."
+        )
+
+    CourseExercise.objects.create(
+        lesson=lesson,
+        title=lesson.title,
+        instruction=instruction,
+        question_text=lesson.title,
+        option_a="Réponse libre",
+        option_b="Réponse libre",
+        option_c="",
+        option_d="",
+        correct_option="A",
+        summary=lesson.content_html or "",
+        order=1,
+        is_active=True,
+    )
+
+
+def _course_option_text(exercise, option):
+    return {
+        "A": exercise.option_a,
+        "B": exercise.option_b,
+        "C": exercise.option_c,
+        "D": exercise.option_d,
+    }.get((option or "").upper(), "")
+
+
+def _course_explanation(exercise):
+    if exercise.summary:
+        return exercise.summary
+    correct = (exercise.correct_option or "").upper()
+    return (
+        f"La bonne réponse est {correct}. {_course_option_text(exercise, correct)} "
+        "car cette option correspond à l'information attendue dans la leçon. "
+        "Relis la consigne, repère le mot-clé, puis compare chaque option avec le document."
+    )
+
+
 # =========================================================
 # 🏠 ACCUEIL & HUBS
 # =========================================================
@@ -122,7 +177,88 @@ def home(request):
 
 @login_required
 def french_exams(request):
-    return render(request, "preparation_tests/french_exams.html")
+    levels = ["A1", "A2", "B1", "B2", "C1", "C2"]
+    section_labels = {
+        "ce": "Compréhension écrite",
+        "ee": "Expression écrite",
+        "eo": "Expression orale",
+        "co": "Compréhension orale",
+    }
+    section_routes = {
+        "ce": "preparation_tests:ce_by_level",
+        "ee": "preparation_tests:ee_by_level",
+        "eo": "preparation_tests:eo_by_level",
+        "co": "preparation_tests:co_by_level",
+    }
+
+    level_cards = []
+    for level in levels:
+        lesson_total = CourseLesson.objects.filter(
+            level=level,
+            is_published=True,
+        ).count()
+        exercise_total = CourseExercise.objects.filter(
+            lesson__level=level,
+            lesson__is_published=True,
+            is_active=True,
+        ).count()
+        completed = _ulp_count(request.user, lesson__level=level, is_completed=True)
+
+        skills = []
+        for code, label in section_labels.items():
+            count = CourseLesson.objects.filter(
+                section=code,
+                level=level,
+                is_published=True,
+            ).count()
+            if count:
+                skills.append({
+                    "code": code,
+                    "label": label,
+                    "count": count,
+                    "url": reverse(section_routes[code], args=[level]),
+                })
+
+        first_skill = skills[0] if skills else None
+        level_cards.append({
+            "level": level,
+            "lessons": lesson_total,
+            "exercises": exercise_total,
+            "completed": completed,
+            "progress_pct": int((completed / lesson_total) * 100) if lesson_total else 0,
+            "skills": skills,
+            "start_url": first_skill["url"] if first_skill else reverse("preparation_tests:french_exams"),
+        })
+
+    section_cards = []
+    for code, label in section_labels.items():
+        total = CourseLesson.objects.filter(section=code, is_published=True).count()
+        exercises = CourseExercise.objects.filter(
+            lesson__section=code,
+            lesson__is_published=True,
+            is_active=True,
+        ).count()
+        section_cards.append({
+            "code": code,
+            "label": label,
+            "lessons": total,
+            "exercises": exercises,
+            "url": reverse(f"preparation_tests:{code}_hub"),
+        })
+
+    return render(
+        request,
+        "preparation_tests/french_exams.html",
+        {
+            "level_cards": level_cards,
+            "section_cards": section_cards,
+            "total_lessons": CourseLesson.objects.filter(is_published=True).count(),
+            "total_exercises": CourseExercise.objects.filter(
+                lesson__is_published=True,
+                is_active=True,
+            ).count(),
+        },
+    )
 
 
 @login_required
@@ -247,6 +383,7 @@ def lesson_session(request, exam_code, section, lesson_id):
     """
     lesson = get_object_or_404(CourseLesson, id=lesson_id)
     user = request.user
+    _ensure_expression_exercise(lesson)
 
     raw_exercises = CourseExercise.objects.filter(
         lesson=lesson,
@@ -288,7 +425,13 @@ def lesson_session(request, exam_code, section, lesson_id):
 # =========================================================
 @login_required
 def start_session_generic(request, exam_code):
-    exam = get_object_or_404(Exam, code__iexact=exam_code)
+    exam = Exam.objects.filter(code__iexact=exam_code).first()
+    if not exam:
+        code = (exam_code or "").lower()
+        if code in {"tef", "tcf", "delf", "dalf"}:
+            return redirect("preparation_tests:exam_format_hub", exam_code=code)
+        raise Http404()
+
     section = exam.sections.order_by("order").first()
 
     if not section:
@@ -798,6 +941,18 @@ def _build_skill_hub_context(user, section: str) -> dict:
     monthly_topic = base_qs.filter(content_type="monthly").first()
     official_subjects = base_qs.filter(content_type__in=["subject", "correction"]).order_by("order", "-created_at")
     tips = base_qs.filter(content_type="tip").order_by("order")
+    monthly_packs = MonthlyTrainingPack.objects.filter(
+        language="fr",
+        section=section,
+        is_published=True,
+    ).order_by("-month", "order")[:4]
+    if not monthly_topic and monthly_packs:
+        monthly_topic = monthly_packs[0]
+    past_exam_subjects = PastExamSubject.objects.filter(
+        language="fr",
+        section=section,
+        is_published=True,
+    ).order_by("-frequency_score", "order", "-created_at")[:6]
 
     has_access = has_active_access(user)
 
@@ -805,10 +960,50 @@ def _build_skill_hub_context(user, section: str) -> dict:
         "levels": levels_data,
         "monthly_topic": monthly_topic,
         "official_subjects": official_subjects,
+        "monthly_packs": monthly_packs,
+        "past_exam_subjects": past_exam_subjects,
         "tips": tips,
         "has_access": has_access,
         "section_code": section,
     }
+
+
+@login_required
+def monthly_packs_index(request):
+    from django.utils import timezone as tz
+
+    today = tz.localdate()
+    packs = MonthlyTrainingPack.objects.filter(language="fr", is_published=True).order_by("-month", "section", "level")
+    today_packs = packs.filter(month=today)
+    return render(
+        request,
+        "preparation_tests/monthly_packs_index.html",
+        {"packs": packs, "today_packs": today_packs, "today": today},
+    )
+
+
+@login_required
+def monthly_pack_detail(request, slug):
+    pack = get_object_or_404(MonthlyTrainingPack, slug=slug, is_published=True)
+    if pack.is_premium and not has_active_access(request.user):
+        messages.info(request, "Cette leçon du jour est réservée aux membres Premium.")
+        return redirect("billing:pricing")
+    return render(request, "preparation_tests/monthly_pack_detail.html", {"pack": pack})
+
+
+@login_required
+def past_exam_subjects_index(request):
+    subjects = PastExamSubject.objects.filter(language="fr", is_published=True).order_by("-frequency_score", "section", "level")
+    return render(request, "preparation_tests/past_exam_subjects_index.html", {"subjects": subjects})
+
+
+@login_required
+def past_exam_subject_detail(request, slug):
+    subject = get_object_or_404(PastExamSubject, slug=slug, is_published=True)
+    if subject.is_premium and not has_active_access(request.user):
+        messages.info(request, "Cet ancien sujet corrigé est réservé aux membres Premium.")
+        return redirect("billing:pricing")
+    return render(request, "preparation_tests/past_exam_subject_detail.html", {"subject": subject})
 
 
 # =========================================================
@@ -895,7 +1090,7 @@ def exercise_progress(request):
 
     exercise_id = payload.get("exercise_id")
     selected = (payload.get("selected") or "").upper()
-    correct = bool(payload.get("correct"))
+    client_correct = bool(payload.get("correct"))
 
     if not exercise_id:
         return JsonResponse({"ok": False, "error": "missing_exercise_id"}, status=400)
@@ -906,6 +1101,8 @@ def exercise_progress(request):
 
     lesson = exercise.lesson
     user = request.user
+    correct_option = (exercise.correct_option or "").upper()
+    correct = bool(selected and selected == correct_option)
 
     prog, _ = UserExerciseProgress.objects.get_or_create(
         user=user,
@@ -918,6 +1115,14 @@ def exercise_progress(request):
 
     prog.mark_attempt(selected=selected, correct=correct)
     prog.save()
+    record_detailed_attempt(
+        user=user,
+        exercise=exercise,
+        selected=selected,
+        is_correct=correct,
+        source="lesson",
+        explanation=_course_explanation(exercise),
+    )
 
     total = lesson.exercises.filter(is_active=True).count()
     completed = UserExerciseProgress.objects.filter(
@@ -949,6 +1154,13 @@ def exercise_progress(request):
     return JsonResponse({
         "ok": True,
         "lesson_id": lesson.id,
+        "selected": selected,
+        "correct": correct,
+        "client_correct": client_correct,
+        "correct_option": correct_option,
+        "correct_text": _course_option_text(exercise, correct_option),
+        "selected_text": _course_option_text(exercise, selected),
+        "explanation": _course_explanation(exercise),
         "total_exercises": total,
         "completed_exercises": completed,
         "percent": percent,
@@ -1121,6 +1333,15 @@ def submit_eo(request):
         prog.lesson = lesson
     prog.mark_attempt(selected="EO", correct=is_correct)
     prog.save()
+    record_detailed_attempt(
+        user=user,
+        exercise=exercise,
+        selected="EO",
+        is_correct=is_correct,
+        source="expression_orale",
+        explanation=result.get("feedback", "") or _course_explanation(exercise),
+        category="speaking",
+    )
 
     total = lesson.exercises.filter(is_active=True).count()
     completed = UserExerciseProgress.objects.filter(
@@ -1217,6 +1438,15 @@ def submit_ee(request):
         prog.lesson = lesson
     prog.mark_attempt(selected="EE", correct=is_correct)
     prog.save()
+    record_detailed_attempt(
+        user=user,
+        exercise=exercise,
+        selected="EE",
+        is_correct=is_correct,
+        source="expression_ecrite",
+        explanation=result.get("feedback", "") or _course_explanation(exercise),
+        category="writing",
+    )
 
     total = lesson.exercises.filter(is_active=True).count()
     completed = UserExerciseProgress.objects.filter(

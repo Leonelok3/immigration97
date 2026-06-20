@@ -34,6 +34,7 @@ class NewsItem(models.Model):
         ("US", "USA"),
         ("CA", "Canada"),
         ("DE", "Allemagne"),
+        ("EU", "Europe"),
         ("IT", "Italie"),
         ("FR", "France"),
     ]

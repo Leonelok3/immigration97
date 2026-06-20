@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+from services.ai_service import AIService
 from json import JSONDecodeError
 
 logger = logging.getLogger(__name__)
@@ -102,18 +103,7 @@ def transcribe_audio(audio_path: str, language: str = "fr") -> str:
         return _MOCK_TRANSCRIPT
 
     try:
-        import openai
-        api_key = os.getenv("OPENAI_API_KEY", "")
-        base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-        client = openai.OpenAI(api_key=api_key, base_url=base_url)
-
-        with open(audio_path, "rb") as f:
-            result = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=f,
-                language=language,
-            )
-        return result.text or ""
+        return AIService().transcribe_audio(audio_path, language=language)
     except Exception as e:
         logger.error("Whisper transcription failed: %s", e)
         raise RuntimeError(f"Transcription audio échouée: {e}") from e

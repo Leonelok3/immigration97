@@ -9,8 +9,9 @@
 
 {% block extra_css %}
 <style>
+  .ep-shell { min-height:100vh; background:#050b18; color:#fff; padding:1px 0 4rem; }
   .ep-wrap { max-width: 1000px; margin: 0 auto; padding: 0 1.25rem 4rem; }
-  .ep-bc { font-size: .82rem; color: #64748b; margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .ep-bc { font-size: .82rem; color: rgba(255,255,255,.45); margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
   .ep-bc a { color: #F59E0B; text-decoration: none; font-weight: 500; }
 
   .ep-hero { background: linear-gradient(135deg, #102B4E 0%, #1a3d6b 100%); border-radius: 20px; padding: 2.25rem 2rem; color: #fff; margin-bottom: 2rem; position: relative; overflow: hidden; }
@@ -23,18 +24,18 @@
   .ep-meta-pill { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); border-radius: 20px; padding: .3rem .9rem; font-size: .75rem; font-weight: 600; color: #fff; }
 
   .ep-quick { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.75rem; }
-  .ep-quick-link { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: .5rem 1rem; font-size: .82rem; font-weight: 600; color: #102B4E; text-decoration: none; transition: border-color .2s, box-shadow .2s; display: flex; align-items: center; gap: .4rem; }
+  .ep-quick-link { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: .5rem 1rem; font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.82); text-decoration: none; transition: border-color .2s, box-shadow .2s; display: flex; align-items: center; gap: .4rem; }
   .ep-quick-link:hover { border-color: #F59E0B; box-shadow: 0 2px 8px rgba(245,158,11,.15); }
 
   .ep-layout { display: grid; grid-template-columns: 260px 1fr; gap: 1.25rem; align-items: start; }
 
-  .ep-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+  .ep-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
   .ep-card:last-child { margin-bottom: 0; }
   .ep-card-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #94a3b8; margin-bottom: .75rem; }
 
-  .ep-skill-mini { padding: .9rem; background: #f8fafc; border-radius: 10px; margin-bottom: .75rem; }
-  .ep-skill-mini h3 { font-size: .9rem; font-weight: 700; color: #102B4E; margin: 0 0 .2rem; }
-  .ep-skill-mini p { font-size: .75rem; color: #64748b; margin: 0 0 .5rem; }
+  .ep-skill-mini { padding: .9rem; background: rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.1); border-radius: 10px; margin-bottom: .75rem; }
+  .ep-skill-mini h3 { font-size: .9rem; font-weight: 700; color: #fff; margin: 0 0 .2rem; }
+  .ep-skill-mini p { font-size: .75rem; color: rgba(255,255,255,.55); margin: 0 0 .5rem; }
   .ep-skill-mini .ep-pct { font-size: 1.75rem; font-weight: 800; }
   .blue { color: #1d4ed8; }
   .green { color: #15803d; }
@@ -46,10 +47,10 @@
   .ep-btn-outline { display: block; text-align: center; background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.25); border-radius: 8px; padding: .6rem 1rem; font-size: .82rem; font-weight: 600; text-decoration: none; transition: background .2s; }
   .ep-btn-outline:hover { background: rgba(255,255,255,.2); }
 
-  .ep-skill-row { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: .75rem 1rem; margin-bottom: .6rem; }
+  .ep-skill-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.09); border-radius: 10px; padding: .75rem 1rem; margin-bottom: .6rem; }
   .ep-skill-row:last-child { margin-bottom: 0; }
-  .ep-skill-row span { font-size: .88rem; font-weight: 600; color: #334155; }
-  .ep-skill-pct { font-size: .95rem; font-weight: 800; color: #102B4E; }
+  .ep-skill-row span { font-size: .88rem; font-weight: 600; color: rgba(255,255,255,.72); }
+  .ep-skill-pct { font-size: .95rem; font-weight: 800; color: #fff; }
 
   @media (max-width: 700px) {
     .ep-layout { grid-template-columns: 1fr; }
@@ -59,6 +60,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="ep-shell">
 <div class="ep-wrap">
 
   <nav class="ep-bc">
@@ -124,4 +126,5 @@
 
   </div>
 </div>
+</main>
 {% endblock %}

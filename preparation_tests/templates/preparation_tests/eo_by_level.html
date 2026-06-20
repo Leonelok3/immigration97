@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="{% static 'css/preparation_tests.css' %}?v=20260329">
 <style>
 :root{--h-gold:#D4A843;--h-gold-lt:#F0C060;--h-amber:#f59e0b;--h-glass:rgba(255,255,255,.04);}
+.fr-skill-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.fr-skill-page a{text-decoration:none;}
 .bl-breadcrumb{max-width:1080px;margin:0 auto;padding:1.25rem 1.25rem 0;display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:rgba(255,255,255,.4);}
 .bl-breadcrumb a{color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s;}
 .bl-breadcrumb a:hover{color:var(--h-gold-lt);}
@@ -58,6 +60,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="fr-skill-page">
 
 <div class="bl-breadcrumb">
   <a href="{% url 'preparation_tests:french_exams' %}">Tests de langue</a>
@@ -130,4 +133,5 @@
   {% endif %}
 </div>
 
+</main>
 {% endblock %}

@@ -5,12 +5,14 @@
 
 {% block extra_css %}
 <style>
+  .ep-shell { min-height: 100vh; background:#050b18; color:#fff; padding:1px 0 4rem; }
   .ep-wrap { max-width: 900px; margin: 0 auto; padding: 0 1.25rem 4rem; }
-  .ep-bc { font-size: .82rem; color: #64748b; margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .ep-bc { font-size: .82rem; color: rgba(255,255,255,.45); margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
   .ep-bc a { color: #F59E0B; text-decoration: none; font-weight: 500; }
 
   .ep-score-card {
     border-radius: 20px; padding: 2.5rem 2rem; color: #fff; text-align: center; margin-bottom: 2rem;
+    border:1px solid rgba(255,255,255,.08);
   }
   .ep-score-card.great  { background: linear-gradient(135deg, #16a34a, #15803d); }
   .ep-score-card.good   { background: linear-gradient(135deg, #F59E0B, #d97706); }
@@ -29,24 +31,24 @@
     display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 2rem;
   }
   .ep-stat-card {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem; text-align: center;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 1.1rem; text-align: center;
   }
-  .ep-stat-card span { display: block; font-size: .72rem; color: #64748b; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
-  .ep-stat-card strong { font-size: 1.6rem; font-weight: 800; color: #102B4E; }
+  .ep-stat-card span { display: block; font-size: .72rem; color: rgba(255,255,255,.48); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
+  .ep-stat-card strong { font-size: 1.6rem; font-weight: 800; color: #fff; }
 
   .ep-section-head { margin: 2rem 0 1rem; }
-  .ep-section-head h2 { font-size: 1.1rem; font-weight: 800; color: #102B4E; margin: 0; }
+  .ep-section-head h2 { font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0; }
 
   .ep-skill-list { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 2rem; }
   .ep-skill-row {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: .9rem 1.25rem;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: .9rem 1.25rem;
     display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
   }
-  .ep-skill-name { font-size: .85rem; font-weight: 700; color: #102B4E; min-width: 180px; flex: 1; }
+  .ep-skill-name { font-size: .85rem; font-weight: 700; color: #fff; min-width: 180px; flex: 1; }
   .ep-skill-bar-wrap { flex: 2; min-width: 120px; }
-  .ep-skill-bar { height: 8px; background: #f1f5f9; border-radius: 4px; }
+  .ep-skill-bar { height: 8px; background: rgba(255,255,255,.08); border-radius: 4px; }
   .ep-skill-fill { height: 100%; background: #F59E0B; border-radius: 4px; }
-  .ep-skill-pct { font-size: .9rem; font-weight: 800; color: #102B4E; min-width: 44px; text-align: right; }
+  .ep-skill-pct { font-size: .9rem; font-weight: 800; color: #fff; min-width: 44px; text-align: right; }
 
   .ep-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 2rem; }
   .ep-btn-primary {
@@ -55,11 +57,11 @@
   }
   .ep-btn-primary:hover { background: #1a3d6b; color: #fff; }
   .ep-btn-secondary {
-    background: #f1f5f9; color: #475569; border: 1.5px solid #e2e8f0;
+    background: rgba(255,255,255,.045); color: rgba(255,255,255,.72); border: 1.5px solid rgba(255,255,255,.12);
     border-radius: 10px; padding: .75rem 1.5rem;
     font-weight: 600; font-size: .88rem; text-decoration: none; transition: background .2s;
   }
-  .ep-btn-secondary:hover { background: #e2e8f0; }
+  .ep-btn-secondary:hover { background: rgba(255,255,255,.09); color:#fff; }
   .ep-btn-orange {
     background: #F59E0B; color: #102B4E; border-radius: 10px; padding: .75rem 1.5rem;
     font-weight: 700; font-size: .88rem; text-decoration: none; transition: background .2s;
@@ -67,16 +69,17 @@
   .ep-btn-orange:hover { background: #d97706; color: #fff; }
 
   .ep-xp-info {
-    background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 12px; padding: 1rem 1.25rem;
+    background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3); border-radius: 12px; padding: 1rem 1.25rem;
     display: flex; align-items: center; gap: .75rem; margin-bottom: 2rem;
   }
   .ep-xp-icon { font-size: 1.75rem; }
-  .ep-xp-text strong { display: block; color: #92400e; font-weight: 700; font-size: .92rem; }
-  .ep-xp-text span { font-size: .82rem; color: #78350f; }
+  .ep-xp-text strong { display: block; color: #f0c060; font-weight: 700; font-size: .92rem; }
+  .ep-xp-text span { font-size: .82rem; color: rgba(255,255,255,.65); }
 </style>
 {% endblock %}
 
 {% block content %}
+<main class="ep-shell">
 <div class="ep-wrap">
 
   <div class="ep-bc">
@@ -167,4 +170,5 @@
   </div>
 
 </div>
+</main>
 {% endblock %}

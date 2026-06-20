@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static prep_content %}
 
 {% block title %}Examen blanc Niveau {{ level }} | Immigration97{% endblock %}
 {% block meta_description %}Examen blanc niveau {{ level }} : CO, CE, EO et EE. Résultats instantanés avec Immigration97.{% endblock %}
@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="{% static 'css/preparation_tests.css' %}?v=20260329">
 <style>
 :root{--h-gold:#D4A843;--h-gold-lt:#F0C060;--h-glass:rgba(255,255,255,.04);}
+.fr-prep-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.fr-prep-page a{text-decoration:none;}
 
 .me-breadcrumb{max-width:1080px;margin:0 auto;padding:1.25rem 1.25rem 0;display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:rgba(255,255,255,.35);}
 .me-breadcrumb a{color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;}
@@ -84,6 +86,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="fr-prep-page">
 
 <div class="me-breadcrumb">
   <a href="{% url 'preparation_tests:french_exams' %}">Tests de langue</a>
@@ -134,12 +137,12 @@
             <audio controls src="{{ ex.audio_url }}" preload="none">Votre navigateur ne supporte pas l'audio.</audio>
           </div>
           {% endif %}
-          <div class="me-question__text">{{ ex.question_text }}</div>
+          <div class="me-question__text">{{ ex.question_text|prep_plain }}</div>
           <div class="me-choices">
-            {% if ex.option_a %}<label class="me-choice"><input type="radio" name="co_{{ ex.id }}" value="A" required><span>{{ ex.option_a }}</span></label>{% endif %}
-            {% if ex.option_b %}<label class="me-choice"><input type="radio" name="co_{{ ex.id }}" value="B"><span>{{ ex.option_b }}</span></label>{% endif %}
-            {% if ex.option_c %}<label class="me-choice"><input type="radio" name="co_{{ ex.id }}" value="C"><span>{{ ex.option_c }}</span></label>{% endif %}
-            {% if ex.option_d %}<label class="me-choice"><input type="radio" name="co_{{ ex.id }}" value="D"><span>{{ ex.option_d }}</span></label>{% endif %}
+            {% if ex.option_a %}<label class="me-choice"><input type="radio" name="co_{{ ex.id }}" value="A" required><span>{{ ex.option_a|prep_plain }}</span></label>{% endif %}
+            {% if ex.option_b %}<label class="me-choice"><input type="radio" name="co_{{ ex.id }}" value="B"><span>{{ ex.option_b|prep_plain }}</span></label>{% endif %}
+            {% if ex.option_c %}<label class="me-choice"><input type="radio" name="co_{{ ex.id }}" value="C"><span>{{ ex.option_c|prep_plain }}</span></label>{% endif %}
+            {% if ex.option_d %}<label class="me-choice"><input type="radio" name="co_{{ ex.id }}" value="D"><span>{{ ex.option_d|prep_plain }}</span></label>{% endif %}
           </div>
         </div>
         {% endfor %}
@@ -162,7 +165,7 @@
       {% if ce_lesson and ce_lesson.content_html %}
       <div class="me-passage">
         <div class="me-passage__label">📄 Texte de compréhension</div>
-        {{ ce_lesson.content_html|safe }}
+        {{ ce_lesson.content_html|prep_rich }}
       </div>
       {% endif %}
 
@@ -170,12 +173,12 @@
         {% for ex in ce_exercises %}
         <div class="me-question">
           <div class="me-question__num">CE — Question {{ forloop.counter }}</div>
-          <div class="me-question__text">{{ ex.question_text }}</div>
+          <div class="me-question__text">{{ ex.question_text|prep_plain }}</div>
           <div class="me-choices">
-            {% if ex.option_a %}<label class="me-choice"><input type="radio" name="ce_{{ ex.id }}" value="A" required><span>{{ ex.option_a }}</span></label>{% endif %}
-            {% if ex.option_b %}<label class="me-choice"><input type="radio" name="ce_{{ ex.id }}" value="B"><span>{{ ex.option_b }}</span></label>{% endif %}
-            {% if ex.option_c %}<label class="me-choice"><input type="radio" name="ce_{{ ex.id }}" value="C"><span>{{ ex.option_c }}</span></label>{% endif %}
-            {% if ex.option_d %}<label class="me-choice"><input type="radio" name="ce_{{ ex.id }}" value="D"><span>{{ ex.option_d }}</span></label>{% endif %}
+            {% if ex.option_a %}<label class="me-choice"><input type="radio" name="ce_{{ ex.id }}" value="A" required><span>{{ ex.option_a|prep_plain }}</span></label>{% endif %}
+            {% if ex.option_b %}<label class="me-choice"><input type="radio" name="ce_{{ ex.id }}" value="B"><span>{{ ex.option_b|prep_plain }}</span></label>{% endif %}
+            {% if ex.option_c %}<label class="me-choice"><input type="radio" name="ce_{{ ex.id }}" value="C"><span>{{ ex.option_c|prep_plain }}</span></label>{% endif %}
+            {% if ex.option_d %}<label class="me-choice"><input type="radio" name="ce_{{ ex.id }}" value="D"><span>{{ ex.option_d|prep_plain }}</span></label>{% endif %}
           </div>
         </div>
         {% endfor %}
@@ -197,9 +200,9 @@
         {% for item in eo_items %}
         <div class="me-eo-topic">
           <div class="me-eo-topic__num">🎤 Sujet {{ forloop.counter }}</div>
-          <div class="me-eo-topic__title">{{ item.exercise.title }}</div>
-          {% if item.exercise.instruction %}<div class="me-eo-topic__inst">{{ item.exercise.instruction }}</div>{% endif %}
-          {% if item.exercise.question_text %}<div class="me-eo-topic__q">📝 {{ item.exercise.question_text }}</div>{% endif %}
+          <div class="me-eo-topic__title">{{ item.exercise.title|prep_plain }}</div>
+          {% if item.exercise.instruction %}<div class="me-eo-topic__inst">{{ item.exercise.instruction|prep_plain }}</div>{% endif %}
+          {% if item.exercise.question_text %}<div class="me-eo-topic__q">📝 {{ item.exercise.question_text|prep_plain }}</div>{% endif %}
         </div>
         {% endfor %}
       {% else %}
@@ -219,9 +222,9 @@
       {% if ee_exercise %}
       <div class="me-ee-topic">
         <div class="me-ee-topic__num">✍️ Sujet de rédaction</div>
-        <div class="me-ee-topic__title">{{ ee_exercise.title }}</div>
-        {% if ee_exercise.instruction %}<div class="me-ee-topic__inst">{{ ee_exercise.instruction }}</div>{% endif %}
-        {% if ee_exercise.question_text %}<div class="me-ee-topic__q">📝 {{ ee_exercise.question_text }}</div>{% endif %}
+        <div class="me-ee-topic__title">{{ ee_exercise.title|prep_plain }}</div>
+        {% if ee_exercise.instruction %}<div class="me-ee-topic__inst">{{ ee_exercise.instruction|prep_plain }}</div>{% endif %}
+        {% if ee_exercise.question_text %}<div class="me-ee-topic__q">📝 {{ ee_exercise.question_text|prep_plain }}</div>{% endif %}
       </div>
       {% else %}
       <div class="me-empty">Aucun sujet EE disponible pour ce niveau.</div>
@@ -237,6 +240,7 @@
   </form>
 </div>
 
+</main>
 {% endblock %}
 
 {% block extra_js %}

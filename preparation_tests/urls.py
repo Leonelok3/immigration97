@@ -137,6 +137,12 @@ urlpatterns = [
     path("coach/history/", views.coach_ai_history, name="coach_ai_history"),
     path("coach/pdf/<int:report_id>/", views.coach_ai_pdf, name="coach_ai_pdf"),
     path("review/", views.session_review, name="session_review"),
+    path("fr/lecons-du-jour/", views.monthly_packs_index, name="daily_packs_index"),
+    path("fr/lecons-du-jour/<slug:slug>/", views.monthly_pack_detail, name="daily_pack_detail"),
+    path("fr/sujets-du-mois/", views.monthly_packs_index, name="monthly_packs_index"),
+    path("fr/sujets-du-mois/<slug:slug>/", views.monthly_pack_detail, name="monthly_pack_detail"),
+    path("fr/anciens-sujets/", views.past_exam_subjects_index, name="past_exam_subjects_index"),
+    path("fr/anciens-sujets/<slug:slug>/", views.past_exam_subject_detail, name="past_exam_subject_detail"),
 
     # =====================================================
     # 📅 PLAN D'ÉTUDE

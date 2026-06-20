@@ -260,6 +260,41 @@ body.actualite .a-grid--featured {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
+body.actualite .a-news__source {
+  display: inline-flex;
+  width: fit-content;
+  margin: .35rem 0 0;
+  padding: .28rem .55rem;
+  border: 1px solid rgba(34,197,94,.25);
+  border-radius: 999px;
+  color: #047857;
+  background: rgba(34,197,94,.08);
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+body.actualite .a-news__official {
+  padding: 0 1rem 1rem;
+}
+
+body.actualite .a-news__official a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: .55rem .8rem;
+  border-radius: 8px;
+  background: #102B4E;
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+body.actualite .a-news__official a:hover {
+  background: #1a3d6b;
+}
+
 /* ══════════════════════════════════════════════════════════
    CARD ARTICLE
 ══════════════════════════════════════════════════════════ */

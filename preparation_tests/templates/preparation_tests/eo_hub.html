@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="{% static 'css/preparation_tests.css' %}?v=20260329">
 <style>
 :root{--h-gold:#D4A843;--h-gold-lt:#F0C060;--h-green:#10b981;--h-glass:rgba(255,255,255,0.04);--h-eo:#f59e0b;}
+.fr-prep-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.fr-prep-page a{text-decoration:none;}
 .sh-hero{padding:3rem 0 2rem;text-align:center;}
 .sh-hero__icon{font-size:3rem;margin-bottom:.75rem;display:block;}
 .sh-hero__badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.35);border-radius:999px;padding:.3rem .9rem;font-size:.75rem;font-weight:700;color:#fbbf24;letter-spacing:.07em;text-transform:uppercase;margin-bottom:1rem;}
@@ -110,6 +112,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="fr-prep-page">
 {% include "preparation_tests/partials/_prep_nav.html" %}
 
 <div class="sh-hero">
@@ -124,6 +127,8 @@
     <div class="sh-stat"><div class="sh-stat__n">🎙</div><div class="sh-stat__l">Évaluation audio</div></div>
   </div>
 </div>
+
+{% include "preparation_tests/partials/_exam_resource_ctas.html" %}
 
 <div class="sh-section">
   <div class="sh-section-hd">
@@ -151,6 +156,8 @@
   <div class="sh-monthly__empty">📅 Aucun sujet du mois configuré pour cette compétence.</div>
   {% endif %}
 </div>
+
+{% include "preparation_tests/partials/_monthly_and_past_exam_blocks.html" %}
 
 {% if official_subjects %}
 <div class="sh-section">
@@ -278,6 +285,7 @@
   </div>
 </div>
 {% endif %}
+</main>
 {% endblock %}
 
 {% block extra_js %}

@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Je ne sais pas par ou commencer - Immigration97{% endblock %}
+{% block meta_description %}Parcours simple Immigration97 pour choisir entre visa etudes, travail, bourse, tests de langue et documents avec liens officiels.{% endblock %}
+
+{% block extra_css %}
+<style>
+  .easy-page{background:#f7faf9;min-height:100vh;color:#10201a}
+  .easy-wrap{width:min(1120px,100%);margin:0 auto;padding:28px 16px 54px}
+  .easy-hero{display:grid;gap:18px;padding:28px 0}
+  .easy-kicker{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#047857}
+  .easy-title{font-size:clamp(2rem,5vw,3.6rem);line-height:1.04;margin:0;color:#082018;max-width:760px}
+  .easy-sub{font-size:1.08rem;line-height:1.65;color:#49635a;max-width:720px}
+  .easy-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:start}
+  .easy-panel,.easy-result,.easy-mini{background:#fff;border:1px solid #dce8e3;border-radius:10px;box-shadow:0 16px 45px rgba(8,32,24,.08)}
+  .easy-panel{padding:18px}
+  .easy-result{padding:20px}
+  .easy-mini{padding:16px}
+  .easy-field{display:grid;gap:8px;margin-bottom:14px}
+  .easy-field label{font-weight:800;color:#17382d}
+  .easy-field input,.easy-field select{width:100%;border:1px solid #cddbd6;border-radius:8px;padding:14px 13px;font:inherit;background:#fff;color:#10201a}
+  .easy-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+  .easy-choice{position:relative}
+  .easy-choice input{position:absolute;opacity:0}
+  .easy-choice span{display:flex;align-items:center;justify-content:center;min-height:58px;border:2px solid #cddbd6;border-radius:9px;background:#fafffd;font-weight:900;text-align:center;padding:10px;color:#17382d}
+  .easy-choice input:checked+span{border-color:#059669;background:#e9fbf4;color:#065f46}
+  .easy-btn{display:inline-flex;align-items:center;justify-content:center;width:100%;min-height:56px;border:0;border-radius:9px;background:#059669;color:#fff;font-weight:900;font-size:1rem;cursor:pointer}
+  .easy-btn.secondary{background:#10201a}
+  .easy-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .easy-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+  .easy-step{background:#ecfdf5;border:1px solid #bbf7d0;border-radius:8px;padding:12px;font-weight:800;color:#075c44}
+  .easy-list{display:grid;gap:9px;margin:14px 0;padding:0;list-style:none}
+  .easy-list li{padding:10px 12px;border-radius:8px;background:#f4f8f6;border:1px solid #dfebe6}
+  .easy-links{display:grid;gap:9px;margin-top:10px}
+  .easy-links a{display:block;padding:11px 12px;border-radius:8px;background:#10201a;color:#fff;font-weight:800;text-decoration:none}
+  .easy-note{background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12;border-radius:8px;padding:12px;font-weight:800}
+  .easy-stack{display:grid;gap:18px}
+  .message{padding:10px 12px;border-radius:8px;margin-bottom:12px;background:#e9fbf4;color:#065f46;font-weight:800}
+  .assistant-answer{min-height:64px;background:#f4f8f6;border:1px solid #dfebe6;border-radius:8px;padding:12px;line-height:1.55}
+  @media (max-width:850px){
+    .easy-grid,.easy-actions,.easy-steps{grid-template-columns:1fr}
+    .easy-choice-grid{grid-template-columns:1fr}
+    .easy-wrap{padding:18px 12px 42px}
+    .easy-panel,.easy-result,.easy-mini{border-radius:8px}
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="easy-page">
+  <div class="easy-wrap">
+    <section class="easy-hero">
+      <div class="easy-kicker">Mode telephone facile</div>
+      <h1 class="easy-title">Je ne sais pas par ou commencer</h1>
+      <p class="easy-sub">Reponds a 5 questions. Immigration97 te donne une route simple, une checklist et des liens officiels. Cet assistant est local: aucun appel OpenAI.</p>
+      <div class="easy-actions">
+        <a class="easy-btn" href="#questions">Commencer</a>
+        <a class="easy-btn secondary" href="{% url 'official_links' %}">Liens officiels</a>
+      </div>
+    </section>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="message">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <section class="easy-grid" id="questions">
+      <form class="easy-panel" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="orientation">
+
+        <div class="easy-field">
+          <label for="age">1. Ton age</label>
+          <input id="age" name="age" inputmode="numeric" placeholder="Exemple: 24">
+        </div>
+
+        <div class="easy-field">
+          <label for="country">2. Pays vise</label>
+          <input id="country" name="country" placeholder="Canada, Allemagne, France, Europe...">
+        </div>
+
+        <div class="easy-field">
+          <label for="study_level">3. Niveau d'etude</label>
+          <select id="study_level" name="study_level">
+            <option value="">Choisir</option>
+            <option>Secondaire</option>
+            <option>Bac</option>
+            <option>Bac+2</option>
+            <option>Licence</option>
+            <option>Master</option>
+            <option>Doctorat</option>
+          </select>
+        </div>
+
+        <div class="easy-field">
+          <label for="job">4. Metier ou domaine</label>
+          <input id="job" name="job" placeholder="Informatique, sante, commerce, agriculture...">
+        </div>
+
+        <div class="easy-field">
+          <label>5. Objectif principal</label>
+          <div class="easy-choice-grid">
+            <label class="easy-choice"><input type="radio" name="goal" value="study" checked><span>Visa etudes</span></label>
+            <label class="easy-choice"><input type="radio" name="goal" value="work"><span>Travail</span></label>
+            <label class="easy-choice"><input type="radio" name="goal" value="scholarship"><span>Bourse</span></label>
+            <label class="easy-choice"><input type="radio" name="goal" value="language"><span>Test de langue</span></label>
+            <label class="easy-choice"><input type="radio" name="goal" value="documents"><span>Documents</span></label>
+          </div>
+        </div>
+
+        <div class="easy-field">
+          <label for="budget">Budget</label>
+          <select id="budget" name="budget">
+            <option value="very_low">Tres faible</option>
+            <option value="low">Faible</option>
+            <option value="medium">Moyen</option>
+            <option value="unknown">Je ne sais pas</option>
+          </select>
+        </div>
+
+        <button class="easy-btn" type="submit">Voir mon plan simple</button>
+      </form>
+
+      <div class="easy-stack">
+        {% if result %}
+          <article class="easy-result">
+            <div class="easy-kicker">Route conseillee</div>
+            <h2>{{ result.route_title }}</h2>
+            <p class="easy-note">{{ result.note }}</p>
+            <div class="easy-steps">
+              {% for step in result.steps %}
+                <div class="easy-step">{{ forloop.counter }}. {{ step }}</div>
+              {% endfor %}
+            </div>
+            <h3>Checklist automatique</h3>
+            <ul class="easy-list">
+              {% for item in result.checklist %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+            <div class="easy-actions">
+              <a class="easy-btn" href="{{ result.route_url }}">Ouvrir ma route</a>
+              <a class="easy-btn secondary" href="#alerts">Recevoir les alertes</a>
+            </div>
+            <h3>Liens officiels utiles</h3>
+            <div class="easy-links">
+              {% for link in result.official_links %}
+                <a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.label }}</a>
+              {% endfor %}
+            </div>
+          </article>
+        {% else %}
+          <article class="easy-result">
+            <div class="easy-kicker">Ce que tu vas obtenir</div>
+            <h2>Un plan clair en 3 etapes</h2>
+            <ul class="easy-list">
+              <li>La meilleure route pour ton profil.</li>
+              <li>Une checklist simple a suivre.</li>
+              <li>Des liens officiels pour eviter les arnaques.</li>
+            </ul>
+          </article>
+        {% endif %}
+
+        <article class="easy-mini" id="alerts">
+          <h2>Alertes email ou WhatsApp</h2>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="alerts">
+            <div class="easy-field"><label>Email</label><input name="email" type="email" placeholder="ton@email.com"></div>
+            <div class="easy-field"><label>WhatsApp</label><input name="whatsapp" placeholder="+237..."></div>
+            <div class="easy-field"><label>Pays vise</label><input name="country" placeholder="Canada, Allemagne..."></div>
+            <div class="easy-field">
+              <label>Projet</label>
+              <select name="project_type">
+                <option value="news">Actualites immigration</option>
+                <option value="study">Visa etudes</option>
+                <option value="work">Travail</option>
+                <option value="scholarship">Bourses</option>
+                <option value="language">Tests de langue</option>
+                <option value="documents">Documents</option>
+              </select>
+            </div>
+            <div class="easy-field">
+              <label>Canal</label>
+              <select name="channel">
+                <option value="email">Email</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="both">Email + WhatsApp</option>
+              </select>
+            </div>
+            <button class="easy-btn" type="submit">Activer mon alerte</button>
+          </form>
+        </article>
+
+        <article class="easy-mini">
+          <h2>Assistant local gratuit</h2>
+          <div class="easy-field"><label for="local-q">Question courte</label><input id="local-q" placeholder="Exemple: bourse Canada"></div>
+          <button class="easy-btn secondary" type="button" id="local-ask">Demander</button>
+          <p class="assistant-answer" id="local-answer">{{ local_answer }}</p>
+        </article>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+  (function(){
+    const button = document.getElementById("local-ask");
+    const input = document.getElementById("local-q");
+    const answer = document.getElementById("local-answer");
+    if(!button || !input || !answer) return;
+    button.addEventListener("click", async function(){
+      const q = encodeURIComponent(input.value || "");
+      const response = await fetch("{% url 'local_assistant_api' %}?q=" + q);
+      const data = await response.json();
+      answer.textContent = data.answer;
+    });
+  })();
+</script>
+{% endblock %}

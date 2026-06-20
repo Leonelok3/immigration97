@@ -124,6 +124,121 @@
     margin-top: 22px;
   }
 
+  .ia-orchestrator {
+    border-color: rgba(94, 138, 255, .45);
+    background:
+      linear-gradient(135deg, rgba(15, 27, 51, .96), rgba(5, 9, 20, .96)),
+      radial-gradient(circle at 95% 20%, rgba(94, 138, 255, .18), transparent 20rem);
+  }
+
+  .ia-orchestrator__form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: end;
+    margin-top: 18px;
+  }
+
+  .ia-orchestrator__field label {
+    color: #f0c060;
+    display: block;
+    font-size: .82rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .ia-orchestrator__field textarea {
+    width: 100%;
+    min-height: 118px;
+    resize: vertical;
+    color: #fff9e9;
+    background: rgba(3, 8, 19, .74);
+    border: 1px solid rgba(212, 168, 67, .28);
+    border-radius: 8px;
+    padding: 16px;
+    font: inherit;
+    line-height: 1.5;
+  }
+
+  .ia-orchestrator__submit {
+    align-items: center;
+    background: linear-gradient(135deg, #5d8cff, #8c7bff);
+    border: 0;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1rem;
+    font-weight: 900;
+    justify-content: center;
+    min-height: 56px;
+    padding: 0 22px;
+    white-space: nowrap;
+  }
+
+  .ia-decision {
+    display: grid;
+    grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
+    gap: 18px;
+    margin-top: 24px;
+  }
+
+  .ia-decision__primary,
+  .ia-decision__steps {
+    border: 1px solid rgba(212, 168, 67, .22);
+    border-radius: 8px;
+    background: rgba(3, 8, 19, .55);
+    padding: 20px;
+  }
+
+  .ia-decision__primary h3,
+  .ia-decision__steps h3 {
+    color: #fff9e9;
+    font-size: 1.45rem;
+    margin: 0 0 10px;
+  }
+
+  .ia-decision__primary p,
+  .ia-decision__steps li {
+    color: #cbd2df;
+    line-height: 1.5;
+  }
+
+  .ia-decision__steps ol {
+    margin: 0;
+    padding-left: 22px;
+  }
+
+  .ia-agent-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .ia-agent-mini {
+    border: 1px solid rgba(94, 138, 255, .28);
+    border-radius: 8px;
+    background: rgba(94, 138, 255, .08);
+    padding: 14px;
+  }
+
+  .ia-agent-mini strong {
+    color: #fff9e9;
+    display: block;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .ia-agent-mini span {
+    color: #aeb7c8;
+    display: block;
+    font-size: .86rem;
+    line-height: 1.35;
+  }
+
   .ia-panel__head {
     display: flex;
     align-items: end;
@@ -265,6 +380,8 @@
   @media (max-width: 1100px) {
     .ia-hero { grid-template-columns: 1fr; }
     .ia-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ia-decision { grid-template-columns: 1fr; }
+    .ia-agent-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
   @media (max-width: 720px) {
@@ -273,6 +390,8 @@
     .ia-stats, .ia-grid { grid-template-columns: 1fr; }
     .ia-roadmap { grid-template-columns: 1fr; }
     .ia-panel__head { align-items: start; flex-direction: column; }
+    .ia-orchestrator__form { grid-template-columns: 1fr; }
+    .ia-agent-strip { grid-template-columns: 1fr; }
   }
 </style>
 {% endblock %}
@@ -300,6 +419,7 @@
   </section>
 
   <nav class="ia-tabs" aria-label="Sections arsenal">
+    <a class="ia-tab" href="#orchestrateur">Orchestrateur</a>
     <a class="ia-tab" href="#agents">Tous les agents</a>
     <a class="ia-tab" href="#daily-command">Commande quotidienne</a>
     <a class="ia-tab" href="#verified-command">Vérification</a>
@@ -310,6 +430,57 @@
     <a class="ia-tab" href="{% url 'admin:outreach_recruitercontact_changelist' %}">Recruteurs</a>
     <a class="ia-tab" href="{% url 'job_agent:dashboard' %}">Job Agent</a>
   </nav>
+
+  <section class="ia-panel ia-orchestrator" id="orchestrateur">
+    <div class="ia-panel__head">
+      <div>
+        <p class="ia-kicker">Cerveau central Immigration97</p>
+        <h2>Agent Orchestrateur</h2>
+      </div>
+    </div>
+    <p class="ia-subtitle">
+      Donne un objectif utilisateur: l'orchestrateur choisit les bons agents, l'ordre des actions
+      et les modules Immigration97 a ouvrir. Mode gratuit: règles, mots-clés et contexte profil.
+    </p>
+    <form class="ia-orchestrator__form" method="post" action="#orchestrateur">
+      {% csrf_token %}
+      <div class="ia-orchestrator__field">
+        <label for="ia-goal">Objectif ou situation utilisateur</label>
+        <textarea id="ia-goal" name="goal" placeholder="Ex: Je veux étudier au Canada avec un petit budget, préparer le TCF et trouver les guides PDF nécessaires.">{{ orchestration_goal }}</textarea>
+      </div>
+      <button class="ia-orchestrator__submit" type="submit">Orchestrer maintenant</button>
+    </form>
+
+    {% if orchestration %}
+      <div class="ia-decision">
+        <div class="ia-decision__primary">
+          <p class="ia-kicker">Agent principal</p>
+          <h3>{{ orchestration.primary_agent.name }}</h3>
+          <p>{{ orchestration.primary_agent.description }}</p>
+          <div class="ia-links" style="margin-top:16px;">
+            <a class="ia-link" href="{{ orchestration.primary_agent.url }}">Ouvrir cet agent</a>
+          </div>
+        </div>
+        <div class="ia-decision__steps">
+          <p class="ia-kicker">Plan d'action recommandé</p>
+          <h3>Prochaines étapes</h3>
+          <ol>
+            {% for step in orchestration.next_steps %}
+              <li>{{ step }}</li>
+            {% endfor %}
+          </ol>
+        </div>
+      </div>
+      <div class="ia-agent-strip" aria-label="Agents recommandés">
+        {% for agent in orchestration.recommended_agents %}
+          <a class="ia-agent-mini" href="{{ agent.url }}">
+            <strong>{{ agent.name }}</strong>
+            <span>{{ agent.category }} · {{ agent.description }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
 
   <section class="ia-panel" id="daily-command">
     <div class="ia-panel__head">

@@ -38,6 +38,15 @@ HERO — PAYS
       <strong>bourses d'études</strong> et ressources officielles.
     </p>
 
+    <div class="ve-cta-group">
+      <a href="/ressources/?cat=guides_pdf&dest={{ resource_dest }}" class="ve-btn-primary">
+        📥 Télécharger les guides PDF
+      </a>
+      <a href="{% url 'visaetude:countries_list' %}" class="ve-btn-secondary">
+        ← Tous les pays
+      </a>
+    </div>
+
   </div>
 </section>
 
@@ -72,14 +81,51 @@ GUIDE STRUCTURÉ — GRATUIT
 
     <article class="ve-module-card" data-step="3">
       <h2>Bourses d'études disponibles</h2>
-      <ul>
-        <li>Bourses gouvernementales</li>
-        <li>Bourses universitaires</li>
-        <li>Programmes internationaux</li>
-      </ul>
-      <p>
-        Le Coach IA peut t'aider à optimiser CV et lettres.
-      </p>
+      {% if public_scholarships %}
+        <ul>
+          {% for offer in public_scholarships %}
+            <li>
+              <strong>{{ offer.title }}</strong><br>
+              <span class="small">{{ offer.organization|default:"Organisme officiel" }} · {{ offer.get_funding_type_display }}</span><br>
+              <a href="{{ offer.url }}" target="_blank" rel="noopener">Postuler officiellement →</a>
+            </li>
+          {% endfor %}
+        </ul>
+        <a href="{% url 'visaetude:scholarship_offers' %}?country={{ country }}" class="ve-module-link">
+          Voir toutes les bourses {{ country }} →
+        </a>
+      {% else %}
+        <ul>
+          <li>Bourses gouvernementales</li>
+          <li>Bourses universitaires</li>
+          <li>Programmes internationaux</li>
+        </ul>
+        <p>Le Coach IA peut t'aider à optimiser CV et lettres.</p>
+      {% endif %}
+    </article>
+
+    <article class="ve-module-card" data-step="PDF">
+      <h2>Guides téléchargeables</h2>
+      {% if guide_resources %}
+        <ul>
+          {% for resource in guide_resources %}
+            <li>
+              <strong>{{ resource.title }}</strong><br>
+              <span class="small">{{ resource.description }}</span><br>
+              <a href="{% url 'resources:detail_slug' resource.pk resource.slug %}">
+                Voir / télécharger dans Ressources →
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>
+          Les guides PDF pour {{ country }} seront ajoutés dans la bibliothèque Ressources.
+        </p>
+        <a href="/ressources/?cat=guides_pdf&dest={{ resource_dest }}" class="ve-module-link">
+          Ouvrir la bibliothèque Ressources →
+        </a>
+      {% endif %}
     </article>
 
   </div>

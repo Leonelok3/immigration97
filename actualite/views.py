@@ -139,6 +139,7 @@ def news_by_country(request, country_slug):
         "usa": ("US", "USA"),
         "canada": ("CA", "Canada"),
         "allemagne": ("DE", "Allemagne"),
+        "europe": ("EU", "Europe"),
         "italie": ("IT", "Italie"),
         "france": ("FR", "France"),
     }

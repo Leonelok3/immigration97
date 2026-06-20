@@ -291,10 +291,25 @@ EMAIL_TIMEOUT = 10
 
 
 # ======================================================
-# PAYMENTS — NOTCHPAY
+# PAYMENTS
 # ======================================================
 NOTCHPAY_PUBLIC_KEY = os.environ.get("NOTCHPAY_PUBLIC_KEY", "")
 NOTCHPAY_HASH_KEY = os.environ.get("NOTCHPAY_HASH_KEY", "")
+
+PAYUNIT_API_USERNAME = os.environ.get("PAYUNIT_API_USERNAME", "")
+PAYUNIT_API_PASSWORD = os.environ.get("PAYUNIT_API_PASSWORD", "")
+PAYUNIT_API_KEY = os.environ.get("PAYUNIT_API_KEY", "")
+PAYUNIT_MODE = os.environ.get("PAYUNIT_MODE", "test").strip().lower()
+PAYUNIT_CURRENCY = os.environ.get("PAYUNIT_CURRENCY", "XAF")
+PAYUNIT_AVAILABLE = all([PAYUNIT_API_USERNAME, PAYUNIT_API_PASSWORD, PAYUNIT_API_KEY])
+
+# ======================================================
+# OPENAI / AI SERVICE
+# ======================================================
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
+OPENAI_TIMEOUT_SECONDS = int(os.environ.get("OPENAI_TIMEOUT_SECONDS", "30"))
 
 # ======================================================
 # AUTH

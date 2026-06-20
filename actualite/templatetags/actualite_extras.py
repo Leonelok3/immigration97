@@ -12,6 +12,7 @@ def country_label(country_code):
         "US": "USA",
         "CA": "Canada",
         "DE": "Allemagne",
+        "EU": "Europe",
         "IT": "Italie",
         "FR": "France",
     }.get(country_code, country_code)
@@ -26,6 +27,7 @@ def country_slug(country_code):
         "US": "usa",
         "CA": "canada",
         "DE": "allemagne",
+        "EU": "europe",
         "IT": "italie",
         "FR": "france",
     }.get(country_code, "")

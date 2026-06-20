@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from urllib.parse import urlparse
 
-from outreach.ai_employer_scraper import POSITIVE_SIGNALS, SECTOR_KEYWORDS
+from outreach.ai_employer_scraper import POSITIVE_SIGNALS, SECTOR_KEYWORDS, is_direct_application_url
 
 
 TRUSTED_HOST_HINTS = {
@@ -11,12 +11,31 @@ TRUSTED_HOST_HINTS = {
     "smartrecruiters.com": 10,
     "successfactors": 8,
     "jobbank.gc.ca": 18,
+    "guichetemplois.gc.ca": 18,
+    "placeauxjeunes.qc.ca": 10,
+    "saskjobs.ca": 10,
+    "emploisnb.ca": 8,
+    "nbjobs.ca": 8,
+    "workbc.ca": 8,
+    "emplois.ca": 6,
     "canada.ca": 18,
     "immigration.govt.nz": 18,
     "seek.co.nz": 8,
     "seek.com.au": 8,
     "gov.uk": 16,
     "make-it-in-germany.com": 12,
+    "arbeitsagentur.de": 18,
+    "ausbildung.de": 10,
+    "azubiyo.de": 10,
+    "aubi-plus.de": 8,
+    "ihk-lehrstellenboerse.de": 12,
+    "eures.europa.eu": 16,
+    "sepe.es": 14,
+    "empleate.gob.es": 14,
+    "sistemanacionalempleo.es": 12,
+    "infojobs.net": 7,
+    "turijobs.com": 7,
+    "hosteleo.com": 7,
 }
 
 COUNTRY_SIGNAL_TERMS = {
@@ -25,11 +44,17 @@ COUNTRY_SIGNAL_TERMS = {
     "AU": ["australia", "sydney", "melbourne", "brisbane", "482 visa", "tss visa"],
     "GB": ["united kingdom", "uk", "england", "skilled worker visa", "certificate of sponsorship"],
     "FR": ["france", "paris", "lyon"],
-    "DE": ["germany", "deutschland", "berlin", "make it in germany"],
+    "DE": ["germany", "deutschland", "berlin", "make it in germany", "ausbildung", "berufsausbildung", "arbeitsagentur"],
     "BE": ["belgium", "belgique", "brussels"],
     "CH": ["switzerland", "suisse", "zurich", "geneva"],
     "IE": ["ireland", "dublin", "critical skills"],
     "NL": ["netherlands", "amsterdam", "highly skilled migrant"],
+    "ES": [
+        "spain", "espana", "españa", "madrid", "barcelona", "andalucia",
+        "murcia", "valencia", "aragon", "castilla", "agricultura",
+        "hosteleria", "construccion", "fabrica", "zona rural",
+        "contratacion en origen", "permiso de trabajo",
+    ],
 }
 
 
@@ -64,6 +89,14 @@ def verify_employer_lead(lead) -> VerificationResult:
 
     score = int(getattr(lead, "confidence_score", 0) or 0)
     signals: list[str] = []
+
+    if not is_direct_application_url(lead.job_url):
+        return VerificationResult(
+            score=0,
+            decision="weak",
+            signals=["lien non direct"],
+            notes="Rejeté: la page n'est pas une offre directe, une page carrière officielle ou un ATS reconnu.",
+        )
 
     if lead.company_name:
         score += 8

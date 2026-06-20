@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="{% static 'css/preparation_tests.css' %}?v=20260329">
 <style>
 :root{--h-gold:#D4A843;--h-gold-lt:#F0C060;--h-glass:rgba(255,255,255,.04);}
+.french-prep-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.french-prep-page a{text-decoration:none;}
 
 /* HERO */
 .fe-hero{max-width:1080px;margin:0 auto;padding:3rem 1.25rem 2.5rem;text-align:center;}
@@ -18,12 +20,40 @@
 .fe-hero h1{font-size:2.4rem;font-weight:900;color:#fff;margin:0 0 .75rem;line-height:1.15;}
 .fe-hero h1 span{color:var(--h-gold-lt);}
 .fe-hero__lead{font-size:.98rem;color:rgba(255,255,255,.5);max-width:480px;margin:0 auto;line-height:1.7;}
+.fe-hero__stats{display:flex;justify-content:center;gap:.8rem;flex-wrap:wrap;margin-top:1.25rem;}
+.fe-stat{display:inline-flex;align-items:center;gap:.35rem;border-radius:999px;padding:.45rem .9rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:.8rem;color:rgba(255,255,255,.62);}
+.fe-stat strong{color:var(--h-gold-lt);}
 
 /* SECTION */
 .fe-section{max-width:1080px;margin:0 auto 3rem;padding:0 1.25rem;}
 .fe-section-hd{text-align:center;margin-bottom:1.75rem;}
 .fe-section-hd h2{font-size:1.1rem;font-weight:800;color:#fff;margin:0 0 .35rem;}
 .fe-section-hd p{font-size:.82rem;color:rgba(255,255,255,.38);margin:0;}
+
+/* LEVEL DASHBOARD */
+.fe-level-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;}
+.fe-level-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.25rem;display:flex;flex-direction:column;gap:1rem;transition:transform .18s,border-color .18s;}
+.fe-level-card:hover{transform:translateY(-3px);border-color:rgba(212,168,67,.34);}
+.fe-level-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.fe-level-badge{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:12px;background:rgba(212,168,67,.15);border:1px solid rgba(212,168,67,.35);color:var(--h-gold-lt);font-weight:900;font-size:1rem;flex-shrink:0;}
+.fe-level-title{min-width:0;flex:1;}
+.fe-level-title h3{font-size:1rem;color:#fff;margin:0 0 .25rem;font-weight:850;}
+.fe-level-title p{font-size:.78rem;color:rgba(255,255,255,.48);margin:0;}
+.fe-progress{height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;}
+.fe-progress span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#f59e0b,#facc15);}
+.fe-skill-list{display:flex;gap:.45rem;flex-wrap:wrap;min-height:32px;}
+.fe-skill-pill{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .65rem;border-radius:999px;background:rgba(59,130,246,.11);border:1px solid rgba(59,130,246,.22);font-size:.72rem;font-weight:700;color:#bfdbfe;}
+.fe-level-actions{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:auto;}
+.fe-btn-start,.fe-btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;border-radius:9px;padding:.58rem .95rem;font-size:.82rem;font-weight:800;transition:all .18s;}
+.fe-btn-start{background:rgba(212,168,67,.16);border:1.5px solid rgba(212,168,67,.42);color:var(--h-gold-lt);}
+.fe-btn-start:hover{background:rgba(212,168,67,.25);}
+.fe-btn-ghost{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.11);color:rgba(255,255,255,.7);}
+.fe-btn-ghost:hover{background:rgba(255,255,255,.08);color:#fff;}
+.fe-section-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.8rem;}
+.fe-section-card{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:1rem;}
+.fe-section-card strong{display:block;color:#fff;font-size:.9rem;}
+.fe-section-card span{display:block;color:rgba(255,255,255,.45);font-size:.75rem;margin-top:.2rem;}
+.fe-section-card a{color:var(--h-gold-lt);font-size:.78rem;font-weight:800;white-space:nowrap;}
 
 /* EXAM GRID */
 .fe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;}
@@ -60,13 +90,79 @@
 {% endblock %}
 
 {% block content %}
+<main class="french-prep-page">
 
 <!-- HERO -->
 <div class="fe-hero">
   <div class="fe-hero__eyebrow">🇫🇷 Tests officiels de français</div>
   <h1>Choisis ton <span>test de français</span></h1>
   <p class="fe-hero__lead">Sélectionne l'examen le plus adapté à ton objectif : immigration, études ou naturalisation.</p>
+  <div class="fe-hero__stats">
+    <span class="fe-stat"><strong>{{ total_lessons }}</strong> leçons importées</span>
+    <span class="fe-stat"><strong>{{ total_exercises }}</strong> exercices disponibles</span>
+    <span class="fe-stat"><strong>A1-C2</strong> progression CECR</span>
+  </div>
 </div>
+
+<!-- LEVEL DASHBOARD -->
+<section class="fe-section">
+  <div class="fe-section-hd">
+    <h2>Parcours par niveau A1-C2</h2>
+    <p>Commence au bon niveau, continue tes leçons et valide avec un examen blanc.</p>
+  </div>
+
+  <div class="fe-level-grid">
+    {% for item in level_cards %}
+    <article class="fe-level-card">
+      <div class="fe-level-top">
+        <div class="fe-level-badge">{{ item.level }}</div>
+        <div class="fe-level-title">
+          <h3>Niveau {{ item.level }}</h3>
+          <p>{{ item.lessons }} leçons · {{ item.exercises }} exercices · {{ item.completed }} terminées</p>
+        </div>
+      </div>
+
+      <div class="fe-progress" aria-label="Progression {{ item.level }}">
+        <span style="width:{{ item.progress_pct }}%"></span>
+      </div>
+
+      <div class="fe-skill-list">
+        {% for skill in item.skills %}
+          <a href="{{ skill.url }}" class="fe-skill-pill">{{ skill.code|upper }} · {{ skill.count }}</a>
+        {% empty %}
+          <span class="fe-skill-pill">Contenu en préparation</span>
+        {% endfor %}
+      </div>
+
+      <div class="fe-level-actions">
+        <a href="{{ item.start_url }}" class="fe-btn-start">
+          {% if item.progress_pct %}Continuer{% else %}Commencer{% endif %}
+        </a>
+        <a href="{% url 'preparation_tests:level_mock_exam' item.level %}" class="fe-btn-ghost">Examen blanc</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- SKILL SHORTCUTS -->
+<section class="fe-section">
+  <div class="fe-section-hd">
+    <h2>Compétences disponibles</h2>
+    <p>Accès direct aux cours importés par compétence.</p>
+  </div>
+  <div class="fe-section-grid">
+    {% for section in section_cards %}
+    <div class="fe-section-card">
+      <div>
+        <strong>{{ section.label }}</strong>
+        <span>{{ section.lessons }} leçons · {{ section.exercises }} exercices</span>
+      </div>
+      <a href="{{ section.url }}">{% if section.lessons %}Ouvrir{% else %}Bientôt{% endif %} →</a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
 
 <!-- EXAM CARDS -->
 <div class="fe-section">
@@ -142,4 +238,5 @@
   </div>
 </div>
 
+</main>
 {% endblock %}

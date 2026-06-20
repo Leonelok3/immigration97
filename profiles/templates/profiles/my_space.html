@@ -708,8 +708,55 @@ body.profiles .app-main {
       <p class="ms-card__text">Aucun CV généré pour le moment.</p>
     {% endif %}
     <div class="ms-card__btns">
+      <a class="ms-btn ms-btn--gold" href="{% url 'job_agent:documents_edit' %}">Importer mon CV pour postuler</a>
       <a class="ms-btn ms-btn--ghost" href="/cv-generator/">➕ Créer un CV international</a>
     </div>
+  </div>
+
+  <!-- ── OFFRES RECOMMANDÉES ── -->
+  <div class="ms-card ms-card--full">
+    <div class="ms-card__accent"></div>
+    <div class="ms-card__kicker">Opportunités</div>
+    <h2 class="ms-card__title">Offres liées à mon profil</h2>
+
+    {% if profile.category %}
+      <p class="ms-card__text" style="margin-bottom:1rem;">
+        Offres disponibles pour la catégorie <strong style="color:var(--ms-gold);">{{ profile.category.name }}</strong>.
+      </p>
+
+      {% if recommended_offers %}
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          {% for offer in recommended_offers %}
+            <div style="display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1rem;">
+              <div>
+                <div style="font-size:0.95rem;font-weight:700;color:var(--ms-text);">{{ offer.title }}</div>
+                <div style="font-size:0.8rem;color:var(--ms-text-muted);margin-top:0.25rem;">
+                  {{ offer.company|default:"Entreprise" }}{% if offer.location %} • {{ offer.location }}{% endif %}
+                </div>
+                {% if offer.skills_keywords %}
+                  <div style="font-size:0.72rem;color:rgba(212,168,67,0.78);margin-top:0.45rem;">{{ offer.skills_keywords }}</div>
+                {% endif %}
+              </div>
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:flex-end;">
+                <a class="ms-btn ms-btn--ghost" href="{{ offer.url }}" target="_blank" rel="noopener">Voir l'offre</a>
+                <a class="ms-btn ms-btn--gold" href="{% url 'job_agent:adapt_public_offer' offer.id %}">Adapter mon CV</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="ms-card__text">
+          Aucune nouvelle offre active dans cette catégorie pour le moment. Les offres déjà importées ne sont pas répétées ici.
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="ms-card__text">
+        Choisissez votre métier/catégorie dans votre profil pour recevoir des offres recommandées.
+      </p>
+      <div class="ms-card__btns">
+        <a class="ms-btn ms-btn--gold" href="{% url 'profiles:edit' profile.pk %}">Choisir ma catégorie</a>
+      </div>
+    {% endif %}
   </div>
 
   <!-- ── COMPÉTENCES ── -->

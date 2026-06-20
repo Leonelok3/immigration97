@@ -2,6 +2,49 @@ from django.db import models
 from django.conf import settings
 
 
+class HomeSlide(models.Model):
+    THEME_CHOICES = [
+        ("gold", "Or - Immigration97"),
+        ("blue", "Bleu - Études"),
+        ("green", "Vert - Résidence"),
+        ("purple", "Violet - IA"),
+        ("orange", "Orange - Ressources"),
+    ]
+
+    kicker = models.CharField("Petit label", max_length=80)
+    title_before = models.CharField("Titre principal", max_length=140)
+    title_accent = models.CharField("Titre accentué", max_length=90)
+    subtitle = models.TextField("Description courte")
+    primary_label = models.CharField("Bouton principal", max_length=60)
+    primary_url = models.CharField("Lien bouton principal", max_length=220)
+    secondary_label = models.CharField("Bouton secondaire", max_length=60, blank=True)
+    secondary_url = models.CharField("Lien bouton secondaire", max_length=220, blank=True)
+    background_image = models.ImageField(
+        "Image de fond",
+        upload_to="home/slides/",
+        blank=True,
+        null=True,
+        help_text="Format recommandé : 1920 x 900 px, WebP ou JPG, moins de 350 Ko.",
+    )
+    theme = models.CharField("Style visuel", max_length=20, choices=THEME_CHOICES, default="gold")
+    order = models.PositiveSmallIntegerField("Ordre", default=1, db_index=True)
+    is_active = models.BooleanField("Actif", default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Slide accueil"
+        verbose_name_plural = "Slides accueil"
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return f"{self.order}. {self.kicker} - {self.title_before}"
+
+    @property
+    def title_before_lines(self):
+        return [line.strip() for line in self.title_before.split("|") if line.strip()]
+
+
 class ConsultationRequest(models.Model):
     TYPE_CHOICES = [
         ("visa_etude", "Visa Etudes"),
@@ -109,3 +152,56 @@ class ConsultationRequest(models.Model):
             "autre": "💬",
         }
         return icons.get(self.consultation_type, "📋")
+
+
+class ImmigrationAlertSubscriber(models.Model):
+    """Contact qui veut recevoir des alertes utiles pour son projet immigration."""
+
+    PROJECT_CHOICES = [
+        ("study", "Visa études"),
+        ("work", "Travail"),
+        ("scholarship", "Bourses"),
+        ("language", "Tests de langue"),
+        ("documents", "Documents"),
+        ("news", "Actualités immigration"),
+    ]
+
+    CHANNEL_CHOICES = [
+        ("email", "Email"),
+        ("whatsapp", "WhatsApp"),
+        ("both", "Email + WhatsApp"),
+    ]
+
+    email = models.EmailField("Email", blank=True)
+    whatsapp = models.CharField("WhatsApp", max_length=40, blank=True)
+    country = models.CharField("Pays visé", max_length=80, blank=True)
+    project_type = models.CharField(
+        "Projet",
+        max_length=30,
+        choices=PROJECT_CHOICES,
+        default="news",
+        db_index=True,
+    )
+    channel = models.CharField(
+        "Canal",
+        max_length=20,
+        choices=CHANNEL_CHOICES,
+        default="email",
+    )
+    is_active = models.BooleanField("Actif", default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Abonné alerte immigration"
+        verbose_name_plural = "Abonnés alertes immigration"
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "whatsapp", "project_type", "country"],
+                name="uniq_core_alert_subscriber_contact_project_country",
+            )
+        ]
+
+    def __str__(self):
+        contact = self.email or self.whatsapp or "contact sans coordonnée"
+        return f"{contact} - {self.get_project_type_display()}"

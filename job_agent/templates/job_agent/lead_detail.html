@@ -34,6 +34,9 @@
           <a class="c-btn c-btn--primary" href="{% url 'job_agent:pack_detail' lead.id %}">
             Voir le pack
           </a>
+          <a class="c-btn" href="{% url 'job_agent:interview_coach' lead.id %}">
+            Préparer entretien
+          </a>
         {% endif %}
       </div>
     </div>
@@ -42,6 +45,32 @@
       {% include "job_agent/_menu.html" with active="leads" %}
 
       <div class="ja-content">
+        <section class="ja-card" style="margin-bottom:18px;" aria-label="Plan d'action candidature">
+          <div class="ja-card__head">
+            <h2>Plan d’action</h2>
+            <span class="ja-muted-2">Une offre doit finir en candidature suivie.</span>
+          </div>
+          <div class="ja-card__body">
+            <div class="ja-calloutgrid">
+              <div class="ja-callout">
+                <p class="ja-callout__k">Score</p>
+                <p class="ja-callout__v">Vérifie si ton CV correspond aux mots-clés de l’annonce.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">Pack</p>
+                <p class="ja-callout__v">Génère CV ciblé, lettre solide, email et réponses entretien.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">Postuler</p>
+                <p class="ja-callout__v">Copie ou télécharge les documents puis marque l’offre postulée.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">Relance</p>
+                <p class="ja-callout__v">Ajoute l’email recruteur et relance après quelques jours.</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <!-- ========================= -->
         <!-- Résumé -->
@@ -149,6 +178,9 @@
                   {% if lead.pack %}
                     <a class="c-btn" href="{% url 'job_agent:pack_detail' lead.id %}">
                       Ouvrir le pack
+                    </a>
+                    <a class="c-btn" href="{% url 'job_agent:interview_coach' lead.id %}">
+                      Préparer entretien
                     </a>
                   {% endif %}
 

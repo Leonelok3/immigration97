@@ -15,6 +15,7 @@ urlpatterns = [
 
     path("buy/<slug:plan_slug>/", views.buy_plan, name="buy_plan"),
     path("payment/initiate/<int:transaction_id>/", views.initiate_payment, name="initiate_payment"),
+    path("payment/failed/", views.payment_failed, name="payment_failed"),
 
     # ✅ referral
     path("ref/<str:ref_code>/", views_affiliate.ref_redirect, name="ref_redirect"),
@@ -32,5 +33,7 @@ urlpatterns = [
     # NotchPay
     path("notchpay/callback/", views.notchpay_callback, name="notchpay_callback"),
     path("notchpay/webhook/", views.notchpay_webhook, name="notchpay_webhook"),
+    path("payunit/return/", views.payunit_return, name="payunit_return"),
+    path("payunit/notify/", views.payunit_notify, name="payunit_notify"),
     path("receipt/<uuid:pk>/pdf/", views.receipt_pdf, name="receipt_pdf"),
 ]

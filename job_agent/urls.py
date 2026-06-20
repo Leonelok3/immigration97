@@ -30,7 +30,18 @@ urlpatterns = [
     path("offres/ajout-masse/", views.lead_bulk_add, name="lead_bulk_add"),
 
     path("offres/<int:lead_id>/", views.lead_detail, name="lead_detail"),
+    path("offres/<int:lead_id>/entretien/", views.interview_coach, name="interview_coach"),
     path("offres/<int:lead_id>/pack/", views.pack_detail, name="pack_detail"),
+    path(
+        "offres/<int:lead_id>/pack/<str:kind>/pdf/",
+        views.pack_download_pdf,
+        name="pack_download_pdf",
+    ),
+    path(
+        "offres/<int:lead_id>/pack/<str:kind>/docx/",
+        views.pack_download_docx,
+        name="pack_download_docx",
+    ),
 
     # =========================
     # OFFRES PUBLIQUES (ADMIN)
@@ -44,6 +55,21 @@ urlpatterns = [
         "offres-publiques/<int:offer_id>/importer/",
         views.import_public_offer,
         name="import_public_offer",
+    ),
+    path(
+        "offres-publiques/<int:offer_id>/adapter/",
+        views.adapt_public_offer,
+        name="adapt_public_offer",
+    ),
+    path(
+        "admin/offres-a-revoir/",
+        views.review_detected_offers,
+        name="review_detected_offers",
+    ),
+    path(
+        "admin/offres-a-revoir/<int:lead_id>/publier/",
+        views.publish_detected_offer,
+        name="publish_detected_offer",
     ),
 
     # =========================

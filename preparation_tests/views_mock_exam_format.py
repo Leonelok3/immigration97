@@ -28,7 +28,12 @@ from django.shortcuts import render
 
 from billing.decorators import subscription_required
 
-from .models import CourseLesson, CourseExercise, ExamFormatResult
+from .models import CourseLesson, CourseExercise, ExamFormatResult, UserExerciseProgress
+from preparation_tests.services.error_revision import (
+    due_errors,
+    error_stats,
+    record_detailed_attempt,
+)
 
 # ─── CONFIGURATION OFFICIELLE PAR EXAMEN ──────────────────────────────────────
 
@@ -121,6 +126,92 @@ def _pick_exercises(section: str, level: str, count: int) -> list:
     )
     random.shuffle(all_exs)
     return all_exs[:count]
+
+
+def _option_text(exercise: CourseExercise, option: str) -> str:
+    return {
+        "A": exercise.option_a,
+        "B": exercise.option_b,
+        "C": exercise.option_c,
+        "D": exercise.option_d,
+    }.get((option or "").upper(), "")
+
+
+def _explanation(exercise: CourseExercise) -> str:
+    if exercise.summary:
+        return exercise.summary
+    correct = (exercise.correct_option or "").upper()
+    correct_text = _option_text(exercise, correct)
+    lesson_title = exercise.lesson.title if exercise.lesson_id else "la leçon"
+    return (
+        f"La bonne réponse est {correct}. {correct_text} "
+        f"car c'est l'option qui correspond le mieux à l'objectif de {lesson_title}. "
+        "Relis la phrase clé du texte ou de l'audio, puis élimine les réponses qui ajoutent "
+        "une idée absente, trop générale ou contraire au document."
+    )
+
+
+def _remember_attempt(user, exercise: CourseExercise, answer: str, is_correct: bool) -> None:
+    if not user.is_authenticated:
+        return
+    prog, _ = UserExerciseProgress.objects.get_or_create(
+        user=user,
+        exercise=exercise,
+        defaults={"lesson": exercise.lesson},
+    )
+    if prog.lesson_id != exercise.lesson_id:
+        prog.lesson = exercise.lesson
+    prog.mark_attempt(selected=answer, correct=is_correct)
+    prog.save()
+    record_detailed_attempt(
+        user=user,
+        exercise=exercise,
+        selected=answer,
+        is_correct=is_correct,
+        source="official_mock",
+        explanation=_explanation(exercise),
+    )
+
+
+def _skill_cards(co_correct: int, co_total: int, ce_correct: int, ce_total: int, scores: dict) -> list:
+    cards = []
+    if co_total:
+        cards.append({
+            "code": "CO",
+            "label": "Compréhension orale",
+            "pct": scores["co_pct"],
+            "correct": co_correct,
+            "total": co_total,
+            "cefr": scores["cefr_co"],
+        })
+    if ce_total:
+        cards.append({
+            "code": "CE",
+            "label": "Compréhension écrite",
+            "pct": scores["ce_pct"],
+            "correct": ce_correct,
+            "total": ce_total,
+            "cefr": scores["cefr_ce"],
+        })
+    cards.extend([
+        {
+            "code": "EO",
+            "label": "Expression orale",
+            "pct": None,
+            "correct": None,
+            "total": None,
+            "cefr": "À évaluer par IA",
+        },
+        {
+            "code": "EE",
+            "label": "Expression écrite",
+            "pct": None,
+            "correct": None,
+            "total": None,
+            "cefr": "À évaluer par IA",
+        },
+    ])
+    return cards
 
 
 _LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"]
@@ -348,10 +439,15 @@ def exam_format_exam(request, exam_code: str, level: str):
             is_ok = answer == correct
             if is_ok:
                 co_correct += 1
+            _remember_attempt(request.user, ex, answer, is_ok)
             co_results.append({
                 "exercise": ex,
                 "answer": answer,
                 "is_correct": is_ok,
+                "correct_option": correct,
+                "correct_text": _option_text(ex, correct),
+                "answer_text": _option_text(ex, answer),
+                "explanation": _explanation(ex),
             })
 
         ce_correct = 0
@@ -362,10 +458,15 @@ def exam_format_exam(request, exam_code: str, level: str):
             is_ok = answer == correct
             if is_ok:
                 ce_correct += 1
+            _remember_attempt(request.user, ex, answer, is_ok)
             ce_results.append({
                 "exercise": ex,
                 "answer": answer,
                 "is_correct": is_ok,
+                "correct_option": correct,
+                "correct_text": _option_text(ex, correct),
+                "answer_text": _option_text(ex, answer),
+                "explanation": _explanation(ex),
             })
 
         scores = _calc_score(
@@ -425,6 +526,9 @@ def exam_format_exam(request, exam_code: str, level: str):
             "ce_correct": ce_correct,
             "ce_total": len(ce_exercises),
             "scores": scores,
+            "skill_cards": _skill_cards(
+                co_correct, len(co_exercises), ce_correct, len(ce_exercises), scores
+            ),
             "eo_items": eo_items,
             "ee_items": ee_items,
             "result_id": saved_result.id,
@@ -500,15 +604,16 @@ def exam_format_history(request):
 
 @login_required
 def smart_revision(request):
-    """Analyse les 20 derniers ExamFormatResult → cible le point le plus faible
-    → génère un pack de 15 exercices ciblés."""
+    """Analyse les examens + erreurs de leçons → génère un pack ciblé/adaptatif."""
     from collections import defaultdict
 
     last_results = list(
         ExamFormatResult.objects.filter(user=request.user).order_by("-taken_at")[:20]
     )
+    scheduled_errors = list(due_errors(request.user, limit=30))
+    revision_stats = error_stats(request.user)
 
-    if not last_results:
+    if not last_results and not scheduled_errors:
         return render(request, "preparation_tests/smart_revision.html", {"no_data": True})
 
     # ── Calcul des moyennes CO + CE par (exam_code, level) ──
@@ -517,23 +622,39 @@ def smart_revision(request):
         smap[(r.exam_code, r.level)]["co"].append(r.co_pct)
         smap[(r.exam_code, r.level)]["ce"].append(r.ce_pct)
 
+    for err in scheduled_errors:
+        if err.lesson.section in {"co", "ce"}:
+            smap[("cecr", err.lesson.level)][err.lesson.section].append(0)
+
     weakest_key = None
     weakest_score = 101.0
     weakest_section = "co"
     for key, vals in smap.items():
-        avg_co = sum(vals["co"]) / len(vals["co"])
-        avg_ce = sum(vals["ce"]) / len(vals["ce"])
-        if avg_co < weakest_score:
+        avg_co = sum(vals["co"]) / len(vals["co"]) if vals["co"] else None
+        avg_ce = sum(vals["ce"]) / len(vals["ce"]) if vals["ce"] else None
+        if avg_co is not None and avg_co < weakest_score:
             weakest_score, weakest_key, weakest_section = avg_co, key, "co"
-        if avg_ce < weakest_score:
+        if avg_ce is not None and avg_ce < weakest_score:
             weakest_score, weakest_key, weakest_section = avg_ce, key, "ce"
 
     if weakest_key is None:
         return render(request, "preparation_tests/smart_revision.html", {"no_data": True})
 
     weak_exam_code, weak_level = weakest_key
-    weak_exam_name = EXAM_CONFIGS.get(weak_exam_code, {}).get("name", weak_exam_code)
-    exercises = _pick_exercises(weakest_section, weak_level, 15)
+    weak_exam_name = EXAM_CONFIGS.get(weak_exam_code, {}).get("name", "CECR")
+
+    error_exercises = [
+        err.exercise for err in scheduled_errors
+        if err.lesson.section == weakest_section and err.lesson.level == weak_level
+    ]
+    seen_ids = {ex.id for ex in error_exercises}
+    fill = [ex for ex in _pick_exercises(weakest_section, weak_level, 15) if ex.id not in seen_ids]
+    exercises = (error_exercises + fill)[:15]
+    adaptive_note = (
+        "Pack prioritaire basé sur tes erreurs dues en révision espacée."
+        if error_exercises else
+        "Pack basé sur la compétence la plus faible dans tes examens blancs."
+    )
 
     # ── POST : correction du pack soumis ──
     if request.method == "POST":
@@ -550,7 +671,16 @@ def smart_revision(request):
             is_ok = ans == ex.correct_option.upper()
             if is_ok:
                 correct += 1
-            rev.append({"exercise": ex, "answer": ans, "is_correct": is_ok})
+            _remember_attempt(request.user, ex, ans, is_ok)
+            rev.append({
+                "exercise": ex,
+                "answer": ans,
+                "is_correct": is_ok,
+                "correct_option": ex.correct_option.upper(),
+                "correct_text": _option_text(ex, ex.correct_option),
+                "answer_text": _option_text(ex, ans),
+                "explanation": _explanation(ex),
+            })
 
         return render(request, "preparation_tests/smart_revision.html", {
             "submitted": True,
@@ -562,6 +692,8 @@ def smart_revision(request):
             "weak_level": weak_level,
             "weak_section": weakest_section.upper(),
             "avg_score": round(weakest_score),
+            "adaptive_note": adaptive_note,
+            "revision_stats": revision_stats,
         })
 
     # ── GET : afficher le pack ──
@@ -572,4 +704,8 @@ def smart_revision(request):
         "weak_section": weakest_section.upper(),
         "avg_score": round(weakest_score),
         "total_analyzed": len(last_results),
+        "error_count": revision_stats["active"],
+        "due_count": revision_stats["due"],
+        "revision_stats": revision_stats,
+        "adaptive_note": adaptive_note,
     })

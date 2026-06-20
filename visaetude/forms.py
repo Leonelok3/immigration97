@@ -79,6 +79,44 @@ class ChecklistUpdateForm(forms.ModelForm):
 # Formulaire Profil Étudiant (Diagnostic Visa Études)
 # ============================================================
 class StudentProfileForm(forms.ModelForm):
+    education_level = forms.ChoiceField(
+        label=_("Niveau d’études actuel"),
+        required=False,
+        choices=[
+            ("", "Choisir un niveau"),
+            ("secondaire", "Secondaire / Bac"),
+            ("bts_dut", "BTS / DUT / Bac+2"),
+            ("licence", "Licence / Bachelor"),
+            ("master", "Master"),
+            ("doctorat", "Doctorat"),
+            ("autre", "Autre"),
+        ],
+    )
+    budget_range = forms.ChoiceField(
+        label=_("Budget estimatif (par an)"),
+        required=False,
+        choices=[
+            ("", "Choisir un budget"),
+            ("moins_3m", "Moins de 3 000 000 FCFA"),
+            ("3m_6m", "3 000 000 - 6 000 000 FCFA"),
+            ("6m_10m", "6 000 000 - 10 000 000 FCFA"),
+            ("10m_plus", "Plus de 10 000 000 FCFA"),
+        ],
+    )
+    language_level = forms.ChoiceField(
+        label=_("Niveau de langue principal"),
+        required=False,
+        choices=[
+            ("", "Choisir un niveau"),
+            ("a1_a2", "A1 - A2"),
+            ("b1", "B1"),
+            ("b2", "B2"),
+            ("c1", "C1"),
+            ("c2", "C2"),
+            ("ielts_tef", "Score IELTS / TEF / TCF disponible"),
+        ],
+    )
+
     class Meta:
         model = StudentProfile
         fields = [
@@ -100,18 +138,8 @@ class StudentProfileForm(forms.ModelForm):
             "language_level": _("Niveau de langue principal"),
         }
         widgets = {
-            "country_of_origin": forms.TextInput(attrs={"class": "form-control"}),
-            "education_level": forms.Select(attrs={"class": "form-select"}),
-            "field_of_study": forms.TextInput(attrs={"class": "form-control"}),
-            "study_goal": forms.TextInput(attrs={"class": "form-control"}),
-            "target_year": forms.NumberInput(attrs={"class": "form-control", "min": "2025"}),
-            "budget_range": forms.Select(attrs={"class": "form-select"}),
-            "language_level": forms.Select(attrs={"class": "form-select"}),
+            "country_of_origin": forms.TextInput(attrs={"class": "form-control", "placeholder": "Ex: Cameroun, Sénégal, Côte d'Ivoire..."}),
+            "field_of_study": forms.TextInput(attrs={"class": "form-control", "placeholder": "Ex: Informatique, santé, gestion, génie civil..."}),
+            "study_goal": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Ex: Faire un Master au Canada puis demander un permis post-diplôme."}),
+            "target_year": forms.NumberInput(attrs={"class": "form-control", "min": "2026", "placeholder": "Ex: 2027"}),
         }
-from django import forms
-from .models import StudentProfile
-
-class StudentProfileForm(forms.ModelForm):
-    class Meta:
-        model = StudentProfile
-        fields = ['school', 'program', 'start_date']

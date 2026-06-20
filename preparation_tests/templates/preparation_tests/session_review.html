@@ -1,280 +1,129 @@
 {% extends "base.html" %}
 {% load static %}
 
-{# ==================================================
-   SCOPE STRICT APP
-================================================== #}
 {% block body_class %}preparation-tests{% endblock %}
 {% block app_scope %}preparation-tests{% endblock %}
 
-{# ==================================================
-   SEO — TITLE & META
-================================================== #}
-{% block title %}
-Mes résultats & progression CECR | Immigration97
-{% endblock %}
-
-{% block meta_description %}
-Tableau de bord des performances TEF et TCF :
-scores, progression CECR, statistiques détaillées
-et historique complet des sessions Immigration97.
-{% endblock %}
+{% block title %}Mes résultats & progression CECR | Immigration97{% endblock %}
+{% block meta_description %}Tableau de bord des performances TEF et TCF : scores, progression CECR, statistiques et historique.{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/preparation_tests.css' %}?v=20260329">
+<style>
+.sr-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.sr-page a{text-decoration:none;}
+.sr-hero,.sr-section{max-width:1080px;margin:0 auto;padding-left:1.25rem;padding-right:1.25rem;}
+.sr-hero{padding-top:2rem;padding-bottom:1.4rem;}
+.sr-badge{display:inline-flex;align-items:center;gap:.4rem;border:1px solid rgba(212,168,67,.3);background:rgba(212,168,67,.1);color:#f0c060;border-radius:999px;padding:.35rem .85rem;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
+.sr-title{font-size:2rem;line-height:1.15;margin:.9rem 0 .65rem;color:#fff;font-weight:900;}
+.sr-lead{max-width:680px;color:rgba(255,255,255,.64);line-height:1.7;margin:0;font-size:.95rem;}
+.sr-section{margin-bottom:1.25rem;}
+.sr-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1.2rem;align-items:start;}
+.sr-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.35rem;color:#fff;min-width:0;}
+.sr-card h2{font-size:1rem;margin:0 0 1rem;color:#fff;}
+.sr-muted{color:rgba(255,255,255,.55);line-height:1.55;font-size:.9rem;}
+.sr-profile{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;}
+.sr-score{width:92px;height:92px;border-radius:999px;border:6px solid rgba(212,168,67,.35);display:grid;place-items:center;font-size:1.35rem;font-weight:900;color:#f0c060;background:rgba(212,168,67,.08);flex:0 0 auto;}
+.sr-pills{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.75rem;}
+.sr-pill{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);border-radius:999px;padding:.28rem .65rem;color:rgba(255,255,255,.75);font-size:.78rem;font-weight:700;}
+.sr-bars{margin-top:1rem;display:grid;gap:.7rem;}
+.sr-row{display:grid;grid-template-columns:46px minmax(0,1fr) 46px;gap:.65rem;align-items:center;color:rgba(255,255,255,.72);font-size:.82rem;font-weight:700;}
+.sr-track{height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;}
+.sr-fill{height:100%;background:linear-gradient(90deg,#10b981,#f0c060);border-radius:999px;}
+.sr-badges{display:grid;gap:.7rem;}
+.sr-badge-card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);border-radius:12px;padding:.85rem;}
+.sr-table-wrap{overflow-x:auto;border:1px solid rgba(255,255,255,.08);border-radius:12px;}
+.sr-table{width:100%;border-collapse:collapse;min-width:680px;}
+.sr-table th,.sr-table td{padding:.8rem .9rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.07);font-size:.86rem;color:rgba(255,255,255,.72);}
+.sr-table th{color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;font-size:.72rem;}
+.sr-link{color:#f0c060;font-weight:800;}
+@media(max-width:860px){.sr-grid{grid-template-columns:1fr}.sr-title{font-size:1.65rem}}
+</style>
 {% endblock %}
 
 {% block content %}
+<main class="sr-page">
+  <section class="sr-hero">
+    <span class="sr-badge">📊 Tableau de bord</span>
+    <h1 class="sr-title">Mes performances</h1>
+    <p class="sr-lead">Centre de contrôle de tes entraînements <strong>TEF</strong> et <strong>TCF</strong> : progression, scores et historique.</p>
+  </section>
 
-<!-- ==================================================
-HERO — DASHBOARD
-================================================== -->
-<section class="pt-hero pt-hero--dashboard">
-  <div class="container pt-fade-up">
-
-    <span class="pt-badge">
-      📊 Tableau de bord
-    </span>
-
-    <h1 class="pt-title">
-      Mes performances
-    </h1>
-
-    <p class="pt-lead">
-      Centre de contrôle de tes entraînements
-      <strong>TEF</strong> et <strong>TCF</strong> :
-      progression, scores et historique.
-    </p>
-
-  </div>
-</section>
-
-<!-- ==================================================
-PROFIL GLOBAL
-================================================== -->
-<section class="pt-section">
-  <div class="container">
-
-    <div class="pt-grid-layout">
-
-      <!-- ================= PROFIL ================= -->
-      <div class="pt-main">
-
-        <article class="pt-card pt-card--profile">
-
-          <h2>🎯 Profil global</h2>
-
-          <div class="pt-profile-top">
-
-            <div class="pt-score-circle">
-              {% if global_stats.global_avg %}
-                <span>{{ global_stats.global_avg }}%</span>
-              {% else %}
-                <span>—</span>
-              {% endif %}
-            </div>
-
-            <div class="pt-profile-text">
-
-              {% if global_stats.total_sessions %}
-                <p>
-                  <strong>{{ global_stats.total_sessions }}</strong>
-                  session{% if global_stats.total_sessions > 1 %}s{% endif %}
-                </p>
-
-                {% if global_stats.last_pct %}
-                  <p>Dernière session :
-                    <strong>{{ global_stats.last_pct }}%</strong>
-                  </p>
-                {% endif %}
-
-                {% if global_stats.best_pct %}
-                  <p>Meilleur score :
-                    <strong>{{ global_stats.best_pct }}%</strong>
-                  </p>
-                {% endif %}
-              {% else %}
-                <p class="pt-muted">
-                  Aucune session enregistrée.
-                  Lance un entraînement pour démarrer.
-                </p>
-              {% endif %}
-
-              <div class="pt-pill-row">
-                {% if global_stats.global_avg %}
-                  <span class="pt-pill">
-                    Moyenne globale {{ global_stats.global_avg }}%
-                  </span>
-                {% endif %}
-                {% if global_stats.tef_avg %}
-                  <span class="pt-pill">
-                    TEF {{ global_stats.tef_avg }}%
-                  </span>
-                {% endif %}
-                {% if global_stats.tcf_avg %}
-                  <span class="pt-pill">
-                    TCF {{ global_stats.tcf_avg }}%
-                  </span>
-                {% endif %}
-              </div>
-
-            </div>
-          </div>
-
-          <!-- BARRES PAR EXAMEN -->
-          <div class="pt-exam-bars">
-
-            {% if global_stats.tef_avg %}
-            <div class="pt-exam-row">
-              <span>TEF</span>
-              <div class="pt-exam-track">
-                <div class="pt-exam-fill"
-                     style="width: {{ global_stats.tef_avg }}%;"></div>
-              </div>
-              <span>{{ global_stats.tef_avg }}%</span>
-            </div>
+  <section class="sr-section">
+    <div class="sr-grid">
+      <article class="sr-card">
+        <h2>🎯 Profil global</h2>
+        <div class="sr-profile">
+          <div class="sr-score">{% if global_stats.global_avg %}{{ global_stats.global_avg }}%{% else %}—{% endif %}</div>
+          <div>
+            {% if global_stats.total_sessions %}
+              <p><strong>{{ global_stats.total_sessions }}</strong> session{% if global_stats.total_sessions > 1 %}s{% endif %}</p>
+              {% if global_stats.last_pct %}<p>Dernière session : <strong>{{ global_stats.last_pct }}%</strong></p>{% endif %}
+              {% if global_stats.best_pct %}<p>Meilleur score : <strong>{{ global_stats.best_pct }}%</strong></p>{% endif %}
+            {% else %}
+              <p class="sr-muted">Aucune session enregistrée. Lance un entraînement pour démarrer.</p>
             {% endif %}
-
-            {% if global_stats.tcf_avg %}
-            <div class="pt-exam-row">
-              <span>TCF</span>
-              <div class="pt-exam-track">
-                <div class="pt-exam-fill"
-                     style="width: {{ global_stats.tcf_avg }}%;"></div>
-              </div>
-              <span>{{ global_stats.tcf_avg }}%</span>
+            <div class="sr-pills">
+              {% if global_stats.global_avg %}<span class="sr-pill">Moyenne {{ global_stats.global_avg }}%</span>{% endif %}
+              {% if global_stats.tef_avg %}<span class="sr-pill">TEF {{ global_stats.tef_avg }}%</span>{% endif %}
+              {% if global_stats.tcf_avg %}<span class="sr-pill">TCF {{ global_stats.tcf_avg }}%</span>{% endif %}
             </div>
-            {% endif %}
-
           </div>
+        </div>
 
-          <!-- STATS PAR COMPÉTENCE -->
-          {% if section_stats %}
-          <div class="pt-section-stats">
-            {% for sec in section_stats %}
-            <div class="pt-section-row">
-              <span class="pt-section-label">
-                {{ sec.code|upper }}
-              </span>
-              <div class="pt-section-track">
-                <div class="pt-section-fill"
-                     style="width: {{ sec.avg_pct }}%;"></div>
-              </div>
-              <span>{{ sec.avg_pct }}%</span>
-            </div>
-            {% endfor %}
-          </div>
+        <div class="sr-bars">
+          {% if global_stats.tef_avg %}
+          <div class="sr-row"><span>TEF</span><div class="sr-track"><div class="sr-fill" style="width:{{ global_stats.tef_avg }}%;"></div></div><span>{{ global_stats.tef_avg }}%</span></div>
           {% endif %}
-
-        </article>
-
-      </div>
-
-      <!-- ================= BADGES ================= -->
-      <aside class="pt-side">
-
-        <article class="pt-card pt-card--badges">
-          <h2>🏅 Badges & objectifs</h2>
-
-          {% if badges %}
-          <div class="pt-badges-grid">
-            {% for b in badges %}
-            <div class="pt-badge-card">
-              <strong>{{ b.title }}</strong>
-              <p class="pt-muted">{{ b.text }}</p>
-            </div>
-            {% endfor %}
-          </div>
-          {% else %}
-            <p class="pt-muted">
-              Aucun badge débloqué pour le moment.
-            </p>
+          {% if global_stats.tcf_avg %}
+          <div class="sr-row"><span>TCF</span><div class="sr-track"><div class="sr-fill" style="width:{{ global_stats.tcf_avg }}%;"></div></div><span>{{ global_stats.tcf_avg }}%</span></div>
           {% endif %}
+          {% for sec in section_stats %}
+          <div class="sr-row"><span>{{ sec.code|upper }}</span><div class="sr-track"><div class="sr-fill" style="width:{{ sec.avg_pct }}%;"></div></div><span>{{ sec.avg_pct }}%</span></div>
+          {% endfor %}
+        </div>
+      </article>
 
-        </article>
-
+      <aside class="sr-card">
+        <h2>🏅 Badges & objectifs</h2>
+        {% if badges %}
+        <div class="sr-badges">
+          {% for b in badges %}
+          <div class="sr-badge-card"><strong>{{ b.title }}</strong><p class="sr-muted">{{ b.text }}</p></div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="sr-muted">Aucun badge débloqué pour le moment.</p>
+        {% endif %}
       </aside>
-
     </div>
+  </section>
 
-  </div>
-</section>
-
-<!-- ==================================================
-HISTORIQUE DES SESSIONS
-================================================== -->
-<section class="pt-section">
-  <div class="container">
-
-    <article class="pt-card">
+  <section class="sr-section">
+    <article class="sr-card">
       <h2>📚 Historique des sessions</h2>
-
       {% if sessions %}
-      <div class="pt-table-wrapper">
-        <table class="pt-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Examen</th>
-              <th>Mode</th>
-              <th>Score</th>
-              <th>Questions</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+      <div class="sr-table-wrap">
+        <table class="sr-table">
+          <thead><tr><th>Date</th><th>Examen</th><th>Mode</th><th>Score</th><th>Questions</th><th>Actions</th></tr></thead>
           <tbody>
-
-            {% for s in sessions %}
+          {% for s in sessions %}
             <tr>
               <td>{{ s.started_at|date:"d/m/Y H:i" }}</td>
               <td>{{ s.exam.code|upper }}</td>
-              <td>
-                {% if s.mode == "mock" %}
-                  Examen blanc
-                {% else %}
-                  Entraînement
-                {% endif %}
-              </td>
-              <td>
-                {% if s.score_pct != None %}
-                  {{ s.score_pct }}%
-                {% else %}—{% endif %}
-              </td>
-              <td>
-                {% if s.total_items %}
-                  {{ s.total_correct }} / {{ s.total_items }}
-                {% else %}—{% endif %}
-              </td>
-              <td>
-                <a
-                  href="{% url "preparation_tests:session_result" s.id %}"
-                  class="pt-link"
-                >
-                  Résultat
-                </a>
-                ·
-                <a
-                  href="{% url "preparation_tests:session_correction" s.id %}"
-                  class="pt-link"
-                >
-                  Corrigé
-                </a>
-              </td>
+              <td>{% if s.mode == "mock" %}Examen blanc{% else %}Entraînement{% endif %}</td>
+              <td>{% if s.score_pct != None %}{{ s.score_pct }}%{% else %}—{% endif %}</td>
+              <td>{% if s.total_items %}{{ s.total_correct }} / {{ s.total_items }}{% else %}—{% endif %}</td>
+              <td><a href="{% url "preparation_tests:session_result" s.id %}" class="sr-link">Résultat</a> · <a href="{% url "preparation_tests:session_correction" s.id %}" class="sr-link">Corrigé</a></td>
             </tr>
-            {% endfor %}
-
+          {% endfor %}
           </tbody>
         </table>
       </div>
       {% else %}
-        <p class="pt-muted">
-          Aucune session enregistrée pour le moment.
-        </p>
+      <p class="sr-muted">Aucune session enregistrée pour le moment.</p>
       {% endif %}
-
     </article>
-
-  </div>
-</section>
-
+  </section>
+</main>
 {% endblock %}

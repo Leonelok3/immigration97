@@ -142,15 +142,14 @@
                 <div class="payment-methods">
                     <h3 class="methods-title">Choisissez votre mode de paiement</h3>
 
-                    {% if notchpay_available %}
                     <label class="payment-method is-selected">
-                        <input type="radio" name="payment_method" value="NOTCHPAY" required checked>
+                        <input type="radio" name="payment_method" value="PAYUNIT_MTN" required checked>
                         <div class="method-card">
                             <div class="method-header">
                                 <span class="method-icon">📱</span>
                                 <div class="method-info">
-                                    <h4 class="method-name">Mobile Money & Carte</h4>
-                                    <p class="method-desc">MTN MoMo, Orange Money, Visa, Mastercard via NotchPay</p>
+                                    <h4 class="method-name">MTN Mobile Money</h4>
+                                    <p class="method-desc">Paiement mobile MTN. Disponible selon votre pays via PayUnit.</p>
                                 </div>
                             </div>
                             <div class="method-badge">Recommandé</div>
@@ -161,43 +160,99 @@
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                <span>MTN MoMo & Orange Money Cameroun</span>
+                                <span>Redirection sécurisée PayUnit</span>
                             </div>
                             <div class="detail-item">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
-                                <span>Carte Visa / Mastercard internationale</span>
-                            </div>
-                            <div class="detail-item">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                <span>Activation immédiate après confirmation</span>
+                                <span>Confirmation automatique après paiement</span>
                             </div>
                         </div>
                     </label>
-                    {% endif %}
 
-                    {% if not notchpay_available and not cinetpay_available and not stripe_available %}
-                    <div class="maintenance-alert">
-                        <div class="alert-icon">⚠️</div>
-                        <div class="alert-content">
-                            <h4>Paiement en ligne bientôt disponible</h4>
-                            <p>Utilise un code d'activation en attendant.</p>
-                            <a href="{% url 'billing:redeem' %}?next={{ next|urlencode }}" class="btn btn-secondary">
-                                Utiliser un code d'activation →
-                            </a>
+                    <label class="payment-method">
+                        <input type="radio" name="payment_method" value="PAYUNIT_ORANGE" required>
+                        <div class="method-card">
+                            <div class="method-header">
+                                <span class="method-icon">🟠</span>
+                                <div class="method-info">
+                                    <h4 class="method-name">Orange Money</h4>
+                                    <p class="method-desc">Paiement Orange Money. Disponible selon votre pays via PayUnit.</p>
+                                </div>
+                            </div>
+                            <div class="radio-check"></div>
                         </div>
-                    </div>
-                    {% endif %}
+                        <div class="method-details">
+                            <div class="detail-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Orange Money Cameroun et pays supportés</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Activation après confirmation PayUnit</span>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="payment-method">
+                        <input type="radio" name="payment_method" value="PAYUNIT_CARD" required>
+                        <div class="method-card">
+                            <div class="method-header">
+                                <span class="method-icon">💳</span>
+                                <div class="method-info">
+                                    <h4 class="method-name">Carte bancaire</h4>
+                                    <p class="method-desc">Visa ou Mastercard internationale via PayUnit.</p>
+                                </div>
+                            </div>
+                            <div class="radio-check"></div>
+                        </div>
+                        <div class="method-details">
+                            <div class="detail-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Paiement sécurisé SSL</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Activation automatique après validation</span>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="payment-method">
+                        <input type="radio" name="payment_method" value="WHATSAPP_CODE" required>
+                        <div class="method-card">
+                            <div class="method-header">
+                                <span class="method-icon">💬</span>
+                                <div class="method-info">
+                                    <h4 class="method-name">WhatsApp - recevoir un code</h4>
+                                    <p class="method-desc">Contact direct pour payer et recevoir un code d'abonnement.</p>
+                                </div>
+                            </div>
+                            <div class="radio-check"></div>
+                        </div>
+                        <div class="method-details">
+                            <div class="detail-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Assistance humaine si le paiement en ligne ne passe pas</span>
+                            </div>
+                        </div>
                 </div>
 
                 <!-- ACTIONS -->
-                {% if notchpay_available or cinetpay_available or stripe_available %}
                 <div class="checkout-actions">
                     <button type="submit" class="btn-checkout-primary">
-                        <span class="btn-text">Confirmer et Payer</span>
+                        <span class="btn-text">Continuer vers le paiement</span>
                         <span class="btn-icon">🔒</span>
                     </button>
 
@@ -228,7 +283,6 @@
                         </div>
                     </div>
                 </div>
-                {% endif %}
             </form>
 
             <!-- SECTION FAQ RAPIDE -->

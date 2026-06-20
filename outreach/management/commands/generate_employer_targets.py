@@ -17,6 +17,7 @@ import time
 from collections import defaultdict
 
 from django.core.management.base import BaseCommand
+from services.ai_service import AIService, AIServiceError
 
 logger = logging.getLogger(__name__)
 
@@ -283,19 +284,14 @@ def build_gpt_prompt(sector: str, country: str, group_data: dict, count: int) ->
     return "\n".join(lines)
 
 
-def call_gpt(prompt: str, model: str, client) -> list:
+def call_gpt(prompt: str, model: str) -> list:
     for attempt in range(1, 4):
         try:
-            resp = client.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": prompt},
-                ],
-                temperature=0.75,
-                max_tokens=4000,
+            raw = AIService().chat_text(
+                system_prompt=SYSTEM_PROMPT,
+                user_prompt=prompt,
+                task_type="analyse",
             )
-            raw = resp.choices[0].message.content.strip()
             if raw.startswith("```"):
                 raw = raw.split("```")[1]
                 if raw.startswith("json"):
@@ -311,6 +307,9 @@ def call_gpt(prompt: str, model: str, client) -> list:
             logger.warning("JSON parse error attempt %d: %s", attempt, e)
             if attempt < 3:
                 time.sleep(2)
+        except AIServiceError as e:
+            logger.warning("AIService error: %s", e)
+            return []
         except Exception as e:
             logger.warning("GPT error attempt %d: %s", attempt, e)
             if attempt < 3:
@@ -379,14 +378,6 @@ class Command(BaseCommand):
             self._show_sample_prompt(eligible, per_group)
             return
 
-        # Init OpenAI
-        try:
-            import openai, os
-            client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        except Exception as e:
-            self.stderr.write(f"OpenAI init error: {e}")
-            return
-
         from outreach.models import RecruiterContact
 
         total_created = total_updated = total_skipped = 0
@@ -402,7 +393,7 @@ class Command(BaseCommand):
             )
 
             prompt = build_gpt_prompt(sector, country, data, per_group)
-            contacts = call_gpt(prompt, model, client)
+            contacts = call_gpt(prompt, model)
 
             if not contacts:
                 self.stderr.write(f"  ⚠️  Aucun contact généré pour ce groupe.")

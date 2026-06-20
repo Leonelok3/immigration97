@@ -1,3 +1,59 @@
+<style>
+.prep-subnav{
+  background:#050b18;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding:.9rem 1.25rem;
+}
+.prep-subnav .container{max-width:1080px;margin:0 auto;}
+.prep-subnav .row,.prep-subnav .col-12{display:block;}
+.prep-subnav__list{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  flex-wrap:wrap;
+}
+.prep-subnav__list li{margin:0;padding:0;}
+.prep-subnav__list a,
+.prep-subnav__list .nav-disabled{
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+  min-height:36px;
+  padding:.45rem .75rem;
+  border-radius:999px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.72);
+  font-size:.78rem;
+  font-weight:800;
+  text-decoration:none;
+  white-space:nowrap;
+}
+.prep-subnav__list a:hover{
+  background:rgba(212,168,67,.13);
+  border-color:rgba(212,168,67,.3);
+  color:#f0c060;
+}
+.prep-subnav__list .is-active a{
+  background:rgba(212,168,67,.16);
+  border-color:rgba(212,168,67,.42);
+  color:#f0c060;
+}
+.prep-subnav__list .nav-disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+@media(max-width:640px){
+  .prep-subnav{padding:.75rem;}
+  .prep-subnav__list{gap:.35rem;}
+  .prep-subnav__list a,
+  .prep-subnav__list .nav-disabled{font-size:.72rem;padding:.4rem .6rem;}
+}
+</style>
+
 <nav class="prep-subnav" aria-label="Navigation préparation">
   <div class="container">
     <div class="row">

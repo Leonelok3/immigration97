@@ -1,0 +1,57 @@
+{% if monthly_packs %}
+<div class="sh-section">
+  <div class="sh-section-hd">
+    <h2>🔥 Leçons & exercices du mois <span class="sh-free-chip">Nouveau</span></h2>
+    <span class="sh-section-hd__sub">Thèmes fréquents transformés en entraînement ciblé</span>
+  </div>
+  <div class="sh-subjects-grid">
+    {% for pack in monthly_packs %}
+    <div class="sh-subj-card">
+      <span class="sh-subj-card__type-badge sh-subj-card__type-badge--subject">{{ pack.section|upper }} · {{ pack.level }}</span>
+      <div class="sh-subj-card__title">{{ pack.title }}</div>
+      {% if pack.subtitle %}<div class="sh-subj-card__desc">{{ pack.subtitle }}</div>{% endif %}
+      {% if pack.objective %}<div class="sh-subj-card__desc">{{ pack.objective|truncatewords:22 }}</div>{% endif %}
+      <div class="sh-subj-card__actions">
+        <a href="{% url 'preparation_tests:monthly_pack_detail' pack.slug %}" class="sh-subj-card__btn">Ouvrir</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if past_exam_subjects %}
+<div class="sh-section">
+  <div class="sh-section-hd">
+    <h2>📚 Anciens sujets & corrections <span class="sh-prem-chip">Premium</span></h2>
+    <span class="sh-section-hd__sub">Sujets récurrents avec correction et exercices dérivés</span>
+  </div>
+  <div class="sh-subjects-grid">
+    {% for subject in past_exam_subjects %}
+      {% if subject.is_premium and not has_access %}
+      <div class="sh-lock">
+        <div class="sh-subj-card" style="filter:blur(2px);pointer-events:none;">
+          <span class="sh-subj-card__type-badge sh-subj-card__type-badge--correction">{{ subject.exam_code|upper }} · {{ subject.level }}</span>
+          <div class="sh-subj-card__title">{{ subject.title }}</div>
+          <div class="sh-subj-card__desc">{{ subject.recurring_theme|default:subject.source_label }}</div>
+        </div>
+        <div class="sh-lock__badge">
+          <span class="sh-lock__icon">🔒</span>
+          <span class="sh-lock__txt">Réservé Premium</span>
+        </div>
+      </div>
+      {% else %}
+      <div class="sh-subj-card">
+        <span class="sh-subj-card__type-badge sh-subj-card__type-badge--correction">{{ subject.exam_code|upper }} · {{ subject.level }}</span>
+        <div class="sh-subj-card__title">{{ subject.title }}</div>
+        <div class="sh-subj-card__desc">{{ subject.recurring_theme|default:subject.source_label }}</div>
+        <div class="sh-subj-card__desc">Récurrence: {{ subject.frequency_score }}/100</div>
+        <div class="sh-subj-card__actions">
+          <a href="{% url 'preparation_tests:past_exam_subject_detail' subject.slug %}" class="sh-subj-card__btn">Sujet + correction</a>
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

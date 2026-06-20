@@ -1,13 +1,7 @@
 # cv_generator/services/openai_service.py
 
 import logging
-from django.conf import settings
-
-try:
-    from openai import OpenAI
-    client = OpenAI(api_key=settings.OPENAI_API_KEY)
-except Exception:
-    client = None
+from services.ai_service import AIService
 
 logger = logging.getLogger(__name__)
 
@@ -19,18 +13,11 @@ class OpenAIService:
     """
 
     def _call(self, system_prompt: str, user_prompt: str, temperature=0.4):
-        if not client:
-            raise RuntimeError("Client OpenAI non initialisé")
-
-        response = client.chat.completions.create(
-            model=settings.OPENAI_MODEL,
-            temperature=temperature,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
+        return AIService().chat_text(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            task_type="visa",
         )
-        return response.choices[0].message.content.strip()
 
     # ==========================
     # 🧠 RÉSUMÉ PROFESSIONNEL

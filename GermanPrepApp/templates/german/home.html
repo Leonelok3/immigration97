@@ -9,6 +9,8 @@
 {% block extra_css %}
 <style>
 :root{--h-gold:#D4A843;--h-gold-lt:#F0C060;--h-glass:rgba(255,255,255,.04);--g-blue:#3b82f6;}
+.german-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.german-page a{text-decoration:none;}
 
 .gh-breadcrumb{max-width:1080px;margin:0 auto;padding:1.25rem 1.25rem 0;display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:rgba(255,255,255,.35);}
 
@@ -26,6 +28,8 @@
 .gh-stats{display:flex;flex-wrap:wrap;gap:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.08);}
 .gh-stat{font-size:.78rem;color:rgba(255,255,255,.5);}
 .gh-stat strong{color:var(--h-gold-lt);}
+.gh-level-counts{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;}
+.gh-count-pill{display:inline-flex;align-items:center;gap:.25rem;border-radius:999px;padding:.22rem .62rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:.72rem;font-weight:700;color:rgba(255,255,255,.62);}
 
 .gh-quicknav{max-width:1080px;margin:0 auto;padding:0 1.25rem 1.5rem;display:flex;gap:.5rem;flex-wrap:wrap;}
 .gh-quick-link{display:inline-flex;align-items:center;gap:.35rem;font-size:.82rem;font-weight:600;padding:.45rem .9rem;border-radius:8px;text-decoration:none;background:var(--h-glass);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.6);transition:all .18s;}
@@ -86,6 +90,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="german-page">
 
 <div class="gh-hero">
   <div class="gh-hero__eyebrow">🇩🇪 Allemand · A1 → C2</div>
@@ -101,6 +106,8 @@
     <span class="gh-stat">Niveau : <strong>{{ profile.level }}</strong></span>
     <span class="gh-stat">Tests passés : <strong>{{ profile.total_tests }}</strong></span>
     <span class="gh-stat">Meilleur score : <strong>{{ profile.best_score|default:0 }} %</strong></span>
+    <span class="gh-stat">Leçons : <strong>{{ total_lessons }}</strong></span>
+    <span class="gh-stat">Exercices : <strong>{{ total_exercises }}</strong></span>
     {% if profile.placement_level %}
     <span class="gh-stat">Niveau conseillé : <strong>{{ profile.placement_level }}</strong></span>
     {% endif %}
@@ -144,32 +151,40 @@
     <p>Sélectionne le niveau correspondant à ta situation actuelle.</p>
   </div>
 
-  {% for level, exams in exams_by_level.items %}
+  {% for item in levels_data %}
   <div class="gh-level-block">
     <div class="gh-level-header">
-      <div class="gh-level-badge gh-level-badge--{{ level|lower }}">{{ level }}</div>
+      <div class="gh-level-badge gh-level-badge--{{ item.level|lower }}">{{ item.level }}</div>
       <span class="gh-level-tagline">
-        {% if level == "A1" %}Début absolu — bases de la langue.
-        {% elif level == "A2" %}Communication simple du quotidien.
-        {% elif level == "B1" %}Niveau intermédiaire pour immigration.
-        {% elif level == "B2" %}Expression fluide pour travail et études.
-        {% elif level == "C1" %}Niveau universitaire avancé.
-        {% elif level == "C2" %}Maîtrise quasi native.
+        {% if item.level == "A1" %}Début absolu — bases de la langue.
+        {% elif item.level == "A2" %}Communication simple du quotidien.
+        {% elif item.level == "B1" %}Niveau intermédiaire pour immigration.
+        {% elif item.level == "B2" %}Expression fluide pour travail et études.
+        {% elif item.level == "C1" %}Niveau universitaire avancé.
+        {% elif item.level == "C2" %}Maîtrise quasi native.
         {% endif %}
       </span>
-      <a href="{% url 'germanprep:level_detail' level %}" class="gh-btn-level">Espace {{ level }} →</a>
+      <div class="gh-level-counts">
+        <span class="gh-count-pill">{{ item.lessons }} leçons</span>
+        <span class="gh-count-pill">{{ item.exercises }} exercices</span>
+      </div>
+      <a href="{% url 'germanprep:level_detail' item.level %}" class="gh-btn-level">Espace {{ item.level }} →</a>
     </div>
 
-    {% if exams %}
+    {% if item.exams %}
     <div class="gh-exam-grid">
-      {% for exam in exams %}
+      {% for exam in item.exams %}
       <article class="gh-exam-card">
         <span class="gh-exam-tag gh-tag-{{ exam.exam_type|lower }}">{{ exam.get_exam_type_display }}</span>
         <div class="gh-exam-name">{{ exam.title }}</div>
         <p class="gh-exam-desc">{{ exam.short_description }}</p>
+        <div class="gh-level-counts">
+          <span class="gh-count-pill">{{ exam.lesson_count }} leçons</span>
+          <span class="gh-count-pill">{{ exam.exercise_count }} exercices</span>
+        </div>
         <div class="gh-exam-actions">
-          <a href="{% url 'germanprep:exam_detail' exam.slug %}" class="gh-btn-sm-gold">Voir le programme</a>
-          <a href="{% url 'germanprep:take_practice_test' exam.id %}" class="gh-btn-sm-ghost">⚡ Simulation</a>
+          <a href="{% url 'germanprep:exam_detail' exam.slug %}" class="gh-btn-sm-gold">{% if exam.lesson_count %}Continuer{% else %}Voir le programme{% endif %}</a>
+          <a href="{% url 'germanprep:take_practice_test' exam.id %}" class="gh-btn-sm-ghost">Examen blanc</a>
         </div>
       </article>
       {% endfor %}
@@ -181,4 +196,5 @@
   {% endfor %}
 </div>
 
+</main>
 {% endblock %}

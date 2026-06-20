@@ -40,6 +40,15 @@ HERO — PAYS & PROGRAMMES
       et démarches officielles.
     </p>
 
+    <div class="ve-cta-group">
+      <a href="{% url 'visaetude:scholarship_offers' %}" class="ve-btn-primary">
+        Voir les bourses vérifiées
+      </a>
+      <a href="{% url 'visaetude:coach_ai' %}" class="ve-btn-secondary">
+        Préparer mon dossier
+      </a>
+    </div>
+
     {% if not has_premium %}
     <div class="ve-upsell-banner">
       🔒 Les guides détaillés, universités, bourses et ressources sont réservés aux abonnés Premium.
@@ -51,6 +60,38 @@ HERO — PAYS & PROGRAMMES
 
   </div>
 </section>
+
+{% if featured_scholarships %}
+<section class="ve-dashboard-modules">
+  <div class="container">
+    <div class="ve-section-head">
+      <h2>Bourses récentes vérifiées</h2>
+      <p>Liens officiels de candidature détectés par l'agent Immigration97.</p>
+    </div>
+    <div class="ve-scholarship-grid">
+      {% for offer in featured_scholarships %}
+        <article class="ve-scholarship-card">
+          <div class="ve-scholarship-card__top">
+            <span class="ve-scholarship-badge">{{ offer.verification_label|default:"Bourse vérifiée" }}</span>
+            <span class="ve-scholarship-score">{{ offer.confidence_score }}/100</span>
+          </div>
+          <h2>{{ offer.title }}</h2>
+          <p class="ve-scholarship-meta"><strong>{{ offer.organization|default:"Organisme officiel" }}</strong>{% if offer.country %} · {{ offer.country }}{% endif %}</p>
+          <div class="ve-scholarship-facts">
+            <span>{{ offer.get_study_level_display }}</span>
+            <span>{{ offer.get_funding_type_display }}</span>
+            {% if offer.deadline %}<span>Deadline: {{ offer.deadline }}</span>{% endif %}
+          </div>
+          <a href="{{ offer.url }}" target="_blank" rel="noopener" class="ve-module-link">Postuler officiellement →</a>
+        </article>
+      {% endfor %}
+    </div>
+    <p style="margin-top:14px;">
+      <a href="{% url 'visaetude:scholarship_offers' %}" class="ve-module-link">Voir toutes les bourses →</a>
+    </p>
+  </div>
+</section>
+{% endif %}
 
 <!-- ==================================================
 LISTE DES PAYS
@@ -88,6 +129,11 @@ LISTE DES PAYS
         <a href="{% url 'visaetude:country_detail' c.code %}"
            class="ve-module-link">
           Ouvrir le guide {{ c.nom }} →
+        </a>
+
+        <a href="/ressources/?cat=guides_pdf&dest={{ c.resource_dest }}"
+           class="ve-module-link ve-module-link--muted">
+          Télécharger les PDF {{ c.nom }} →
         </a>
 
       </article>

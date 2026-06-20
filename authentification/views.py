@@ -11,6 +11,10 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse, resolve
 from django.views.decorators.http import require_POST
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 # ============================================================
@@ -31,12 +35,14 @@ def _safe_next_url(request, fallback_name="home"):
         except Exception:
             pass
     return reverse(fallback_name)
-
+######################### sen activation mal
 
 def send_activation_email(request, user):
     """
-    Envoi de l'email d’activation de compte.
+    Envoi de l'email d'activation de compte.
     """
+    from django.utils import timezone
+
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
 
@@ -53,12 +59,29 @@ def send_activation_email(request, user):
         {
             "user": user,
             "activate_url": activate_url,
+            "now": timezone.now(),
         },
+        request=request,
     )
 
     email = EmailMessage(subject, message, to=[user.email])
     email.content_subtype = "html"
     email.send()
+
+#######################
+
+def _try_send_activation_email(request, user):
+    try:
+        send_activation_email(request, user)
+    except Exception:
+        logger.exception("Impossible d'envoyer l'email d'activation pour user_id=%s", user.pk)
+        messages.warning(
+            request,
+            "Votre compte a été créé, mais l'email d'activation n'a pas pu être envoyé. "
+            "Contactez le support si vous ne recevez rien.",
+        )
+        return False
+    return True
 
 
 # ============================================================
@@ -109,8 +132,8 @@ def register(request):
             except Exception:
                 pass
 
-            send_activation_email(request, user)
-            messages.success(request, "📩 Un email de confirmation vous a été envoyé.")
+            if _try_send_activation_email(request, user):
+                messages.success(request, "📩 Un email de confirmation vous a été envoyé.")
             return redirect("authentification:email_sent")
 
         except IntegrityError:
@@ -224,10 +247,10 @@ def resend_activation_email(request):
     try:
         user = User.objects.get(email=email)
         if not user.is_active:
-            send_activation_email(request, user)
-            messages.success(
-                request, "📩 Un nouvel email de confirmation vous a été envoyé."
-            )
+            if _try_send_activation_email(request, user):
+                messages.success(
+                    request, "📩 Un nouvel email de confirmation vous a été envoyé."
+                )
         else:
             messages.info(request, "✅ Ce compte est déjà activé.")
     except User.DoesNotExist:

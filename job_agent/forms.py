@@ -42,8 +42,10 @@ class CandidateDocumentsForm(forms.ModelForm):
         fields = ["cv_file", "cover_letter_file", "cv_text", "base_letter_text"]
 
         widgets = {
+            "cv_file": forms.FileInput(attrs={"accept": ".pdf,application/pdf"}),
+            "cover_letter_file": forms.FileInput(attrs={"accept": ".pdf,.doc,.docx,application/pdf"}),
             "cv_text": forms.Textarea(
-                attrs={"rows": 10, "placeholder": "Texte CV (auto si PDF). Tu peux corriger ici si besoin."}
+                attrs={"rows": 16, "placeholder": "Texte CV extrait automatiquement depuis le PDF. Corrigez ici si besoin."}
             ),
             "base_letter_text": forms.Textarea(
                 attrs={"rows": 10, "placeholder": "Ta lettre de motivation de base (optionnel)."}

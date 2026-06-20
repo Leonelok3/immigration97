@@ -174,6 +174,14 @@ class ApplicationPack(models.Model):
     email_subject = models.CharField(max_length=200, blank=True)
     generated_email = models.TextField(blank=True)
 
+    tailored_cv_text = models.TextField(blank=True)
+    ats_score = models.PositiveSmallIntegerField(default=0)
+    matched_keywords = models.JSONField(default=list, blank=True)
+    missing_keywords = models.JSONField(default=list, blank=True)
+    coach_notes = models.TextField(blank=True)
+    ai_status = models.CharField(max_length=30, blank=True)
+    ai_generated_at = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -192,11 +200,38 @@ class PublicJobOffer(models.Model):
     Les utilisateurs peuvent les importer dans leur espace.
     """
     source = models.CharField(max_length=60, blank=True)  # Indeed, Site entreprise, etc.
-    url = models.URLField(unique=True)
+    url = models.URLField(max_length=600, unique=True)
 
     title = models.CharField(max_length=220)
     company = models.CharField(max_length=220, blank=True)
     location = models.CharField(max_length=220, blank=True)
+    category = models.ForeignKey(
+        "profiles.Category",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="public_job_offers",
+        help_text="Métier/catégorie cible pour recommander cette offre aux candidats.",
+    )
+    skills_keywords = models.CharField(
+        max_length=300,
+        blank=True,
+        help_text="Mots-clés séparés par des virgules: Python, soudure, Excel...",
+    )
+    foreign_access_score = models.PositiveSmallIntegerField(
+        default=0,
+        help_text="Score 0-100 indiquant si l'offre semble accessible aux candidats étrangers.",
+    )
+    foreign_access_label = models.CharField(
+        max_length=80,
+        blank=True,
+        help_text="Badge lisible: Accessible étranger, LMIA/EIMT, À vérifier...",
+    )
+    salary = models.CharField(max_length=180, blank=True)
+    province = models.CharField(max_length=80, blank=True)
+    application_deadline = models.CharField(max_length=80, blank=True)
+    vacancies = models.CharField(max_length=80, blank=True)
+    who_can_apply = models.TextField(blank=True)
 
     description_text = models.TextField(blank=True)
 
@@ -209,6 +244,8 @@ class PublicJobOffer(models.Model):
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["is_active", "created_at"]),
+            models.Index(fields=["category", "is_active", "created_at"]),
+            models.Index(fields=["foreign_access_score", "is_active", "created_at"]),
         ]
 
     def __str__(self):

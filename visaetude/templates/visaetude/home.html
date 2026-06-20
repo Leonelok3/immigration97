@@ -489,6 +489,7 @@ body.visa-etude .app-main {
 
     <div class="ve2-hero__btns">
       <a href="#profil-form" class="ve2-btn ve2-btn--gold">📋 Compléter mon profil étudiant</a>
+      <a href="{% url 'visaetude:scholarship_offers' %}" class="ve2-btn ve2-btn--ghost">🎓 Bourses vérifiées</a>
       <a href="{% url 'visaetude:countries_list' %}" class="ve2-btn ve2-btn--ghost">🌍 Voir les pays</a>
       <a href="{% url 'visaetude:coach_ai' %}" class="ve2-btn ve2-btn--ghost">🤖 Coach IA</a>
     </div>
@@ -509,7 +510,9 @@ body.visa-etude .app-main {
         <span class="ve2-stat__icon">💰</span>
         <div>
           <div class="ve2-stat__num">200+</div>
-          <div class="ve2-stat__label">Bourses répertoriées</div>
+          <div class="ve2-stat__label">
+            <a href="{% url 'visaetude:scholarship_offers' %}" style="color:inherit;text-decoration:none;">Bourses répertoriées</a>
+          </div>
         </div>
       </div>
       <div class="ve2-stat">
@@ -690,6 +693,11 @@ body.visa-etude .app-main {
         <li><strong>Bourse DAAD</strong> — Allemagne, toutes disciplines</li>
         <li><strong>Bourse Chevening</strong> — Royaume-Uni, leaders</li>
       </ul>
+      <div style="margin-top:1.25rem;">
+        <a href="{% url 'visaetude:scholarship_offers' %}" class="ve2-btn ve2-btn--ghost" style="width:100%;justify-content:center;">
+          🎓 Voir les bourses vérifiées →
+        </a>
+      </div>
     </div>
   </div>
 
@@ -706,6 +714,7 @@ body.visa-etude .app-main {
       universités adaptées et une stratégie visa étudiant réussie.
     </p>
     <div class="ve2-cta__btns">
+      <a href="{% url 'visaetude:scholarship_offers' %}" class="ve2-btn ve2-btn--ghost">🎓 Explorer les bourses vérifiées</a>
       <a href="{% url 'visaetude:roadmap' %}" class="ve2-btn ve2-btn--gold">🗺️ Accéder à mon parcours Visa Études</a>
       <a href="{% url 'billing:access' %}" class="ve2-btn ve2-btn--ghost">⭐ Activer l'accompagnement Premium</a>
     </div>

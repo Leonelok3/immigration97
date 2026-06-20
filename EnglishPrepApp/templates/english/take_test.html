@@ -5,9 +5,10 @@
 
 {% block extra_css %}
 <style>
+  .ep-shell { min-height: 100vh; background: #050b18; color: #fff; padding: 1px 0 4rem; }
   .ep-wrap { max-width: 900px; margin: 0 auto; padding: 0 1.25rem 4rem; }
 
-  .ep-bc { font-size: .82rem; color: #64748b; margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .ep-bc { font-size: .82rem; color: rgba(255,255,255,.45); margin: 1.5rem 0 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
   .ep-bc a { color: #F59E0B; text-decoration: none; font-weight: 500; }
 
   /* Test header */
@@ -15,6 +16,7 @@
     background: linear-gradient(135deg, #102B4E 0%, #1a3d6b 100%);
     border-radius: 16px; padding: 1.75rem 2rem; color: #fff; margin-bottom: 1.5rem;
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+    border: 1px solid rgba(255,255,255,.08);
   }
   .ep-test-header h1 { font-size: 1.2rem; font-weight: 800; margin: 0 0 .25rem; }
   .ep-test-header p  { font-size: .83rem; opacity: .75; margin: 0; }
@@ -29,17 +31,17 @@
   /* Meta bar */
   .ep-meta-bar {
     display: flex; flex-wrap: wrap; gap: 1rem;
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 12px;
     padding: .9rem 1.25rem; margin-bottom: 1.75rem; font-size: .82rem;
   }
-  .ep-meta-item span { display: block; color: #94a3b8; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; }
-  .ep-meta-item strong { color: #102B4E; font-weight: 700; }
+  .ep-meta-item span { display: block; color: rgba(255,255,255,.42); font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; }
+  .ep-meta-item strong { color: #fff; font-weight: 700; }
 
   /* Question card */
   .ep-q-card {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 14px;
     padding: 1.5rem 1.75rem; margin-bottom: 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    box-shadow: 0 14px 34px rgba(0,0,0,.12);
   }
   .ep-q-num {
     font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
@@ -47,24 +49,25 @@
     display: flex; align-items: center; justify-content: space-between;
   }
   .ep-q-skill {
-    background: #F1F5F9; color: #475569;
+    background: rgba(255,255,255,.08); color: rgba(255,255,255,.72);
     border-radius: 20px; padding: .15rem .65rem; font-size: .68rem;
   }
   .ep-q-text {
-    font-size: .98rem; font-weight: 600; color: #102B4E;
+    font-size: .98rem; font-weight: 600; color: #fff;
     line-height: 1.55; margin: 0 0 1.1rem;
   }
   .ep-choices { display: flex; flex-direction: column; gap: .5rem; }
   .ep-choice-label {
     display: flex; align-items: center; gap: .8rem;
-    padding: .75rem 1rem; border: 1.5px solid #e2e8f0; border-radius: 10px;
-    cursor: pointer; transition: border-color .15s, background .15s; font-size: .9rem; color: #334155;
+    padding: .75rem 1rem; border: 1.5px solid rgba(255,255,255,.11); border-radius: 10px;
+    background: rgba(255,255,255,.025);
+    cursor: pointer; transition: border-color .15s, background .15s; font-size: .9rem; color: rgba(255,255,255,.78);
   }
-  .ep-choice-label:hover { border-color: #F59E0B; background: #FFFBEB; }
+  .ep-choice-label:hover { border-color: #F59E0B; background: rgba(245,158,11,.1); }
   .ep-choice-label input[type=radio] { accent-color: #F59E0B; width: 17px; height: 17px; flex-shrink: 0; }
   .ep-choice-letter {
     width: 24px; height: 24px; border-radius: 50%;
-    background: #F1F5F9; color: #475569;
+    background: rgba(255,255,255,.08); color: rgba(255,255,255,.72);
     display: flex; align-items: center; justify-content: center;
     font-size: .72rem; font-weight: 800; flex-shrink: 0;
   }
@@ -72,7 +75,7 @@
   /* Submit row */
   .ep-submit-row {
     display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 14px;
     padding: 1.25rem 1.5rem; margin-top: .5rem;
   }
   .ep-btn-submit {
@@ -82,7 +85,7 @@
     font-family: inherit; transition: background .2s;
   }
   .ep-btn-submit:hover { background: #d97706; color: #fff; }
-  .ep-submit-note { font-size: .8rem; color: #64748b; flex: 1; }
+  .ep-submit-note { font-size: .8rem; color: rgba(255,255,255,.55); flex: 1; }
 
   /* Tips sidebar (hidden on small) */
   .ep-layout { display: grid; gap: 1.5rem; }
@@ -91,15 +94,16 @@
     .ep-tips { align-self: start; position: sticky; top: 80px; }
   }
   .ep-tips {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 1.25rem;
   }
-  .ep-tips h3 { font-size: .92rem; font-weight: 800; color: #102B4E; margin: 0 0 .9rem; }
+  .ep-tips h3 { font-size: .92rem; font-weight: 800; color: #fff; margin: 0 0 .9rem; }
   .ep-tips ul { margin: 0; padding: 0 0 0 1.1rem; }
-  .ep-tips li { font-size: .83rem; color: #475569; margin-bottom: .5rem; line-height: 1.5; }
+  .ep-tips li { font-size: .83rem; color: rgba(255,255,255,.65); margin-bottom: .5rem; line-height: 1.5; }
 </style>
 {% endblock %}
 
 {% block content %}
+<main class="ep-shell">
 <div class="ep-wrap">
 
   <div class="ep-bc">
@@ -213,6 +217,7 @@
   </form>
 
 </div>
+</main>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {

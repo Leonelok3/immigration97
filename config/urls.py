@@ -24,7 +24,22 @@ def _serve_ads_txt(request):
     """Sert ads.txt depuis /ads.txt pour Google AdSense."""
     from django.http import HttpResponse
     content = "google.com, pub-8153544065381730, DIRECT, f08c47fec0942fa0\n"
-    return HttpResponse(content, content_type='text/plain')
+    resp = HttpResponse(content, content_type="text/plain; charset=utf-8")
+    resp["Cache-Control"] = "public, max-age=300"
+    return resp
+
+
+def _serve_robots_txt(request):
+    """Autorise les robots et expose les fichiers publics attendus."""
+    from django.http import HttpResponse
+    content = "\n".join([
+        "User-agent: *",
+        "Allow: /",
+        "Allow: /ads.txt",
+        "Sitemap: https://immigration97.com/sitemap.xml",
+        "",
+    ])
+    return HttpResponse(content, content_type="text/plain; charset=utf-8")
 
 def about_page(request):
     return render(request, "about.html")
@@ -41,6 +56,9 @@ from core.views import (
     arsenal_ia_page,
     consultation_request,
     consultation_success,
+    easy_start_view,
+    official_links_view,
+    local_assistant_api,
 )
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
@@ -52,6 +70,7 @@ from actualite.sitemaps import NewsItemSitemap
 def home(request):
     from billing.models import SubscriptionPlan
     from actualite.models import NewsItem
+    from core.models import HomeSlide
     from django.utils import timezone
     from datetime import timedelta
     now = timezone.now()
@@ -62,10 +81,12 @@ def home(request):
         top_week = NewsItem.objects.filter(is_published=True).order_by("-is_featured", "-views_count", "-publish_date")[:6]
     candidate_plans = list(SubscriptionPlan.objects.filter(is_active=True, plan_type="candidate").order_by("order", "price_xaf"))
     recruiter_plans = list(SubscriptionPlan.objects.filter(is_active=True, plan_type="recruiter").order_by("order"))
+    hero_slides = list(HomeSlide.objects.filter(is_active=True).order_by("order", "id"))
     return render(request, "home.html", {
         "top_week": top_week,
         "candidate_plans": candidate_plans,
         "recruiter_plans": recruiter_plans,
+        "hero_slides": hero_slides,
     })
 
 
@@ -75,6 +96,7 @@ sitemaps = {"actualite": NewsItemSitemap}
 urlpatterns = [
     path("sw.js", _serve_sw, name="service_worker"),
     path("ads.txt", _serve_ads_txt, name="ads_txt"),
+    path("robots.txt", _serve_robots_txt, name="robots_txt"),
     path("admin/", admin.site.urls),
     path("", home, name="home"),
 
@@ -122,6 +144,9 @@ urlpatterns = [
     path("api/radar/", include("radar.urls")),
 
     path("wizard/", wizard_page, name="wizard"),
+    path("commencer/", easy_start_view, name="easy_start"),
+    path("liens-officiels/", official_links_view, name="official_links"),
+    path("assistant-local/api/", local_assistant_api, name="local_assistant_api"),
     path("wizard/result/<int:session_id>/", wizard_result_page, name="wizard_result"),
     path("wizard/checklist.pdf", wizard_pdf, name="wizard_pdf"),
     path("wizard/steps/", wizard_steps_page, name="wizard_steps"),

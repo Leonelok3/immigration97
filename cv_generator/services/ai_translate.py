@@ -1,7 +1,4 @@
-from openai import OpenAI
-from django.conf import settings
-
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+from services.ai_service import AIService
 
 def translate_cv_text(text, source_lang, target_lang, job_title):
     """
@@ -31,11 +28,4 @@ Text:
 {text}
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.2,
-        max_tokens=600
-    )
-
-    return response.choices[0].message.content.strip()
+    return AIService().generate_response(prompt, task_type="visa")["response"]

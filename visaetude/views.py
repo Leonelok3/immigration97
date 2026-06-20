@@ -4,15 +4,31 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.db import models
 import json
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from .models import (
     VisaCountry, VisaResource, UserProfile,
     VisaProgress, UserProgress, University,
-    CountryAdvice, Scholarship, StudentProfile
+    CountryAdvice, Scholarship, StudentProfile,
+    PublicScholarshipOffer,
 )
 from .forms import UserProfileForm, StudentProfileForm
 from billing.services import has_candidate_access
+from outreach.scholarship_scraper import is_direct_scholarship_url
+from resources.models import Resource
+
+
+RESOURCE_DESTINATION_MAP = {
+    "canada": "canada",
+    "france": "france",
+    "belgique": "belgique",
+    "allemagne": "allemagne",
+    "italie": "italie",
+    "usa": "international",
+    "chine": "international",
+}
 
 
 # ── Helper paywall ──────────────────────────────────────────────
@@ -51,25 +67,169 @@ def countries_list(request):
     db_countries = list(VisaCountry.objects.filter(is_active=True))
     if db_countries:
         countries = [
-            {"code": c.slug, "nom": c.name, "short": c.short_label or ""}
+            {
+                "code": c.slug,
+                "nom": c.name,
+                "short": c.short_label or "",
+                "resource_dest": RESOURCE_DESTINATION_MAP.get(c.slug, "international"),
+            }
             for c in db_countries
         ]
     else:
         countries = [
-            {"code": "canada",    "nom": "Canada",       "short": ""},
-            {"code": "france",    "nom": "France",        "short": ""},
-            {"code": "belgique",  "nom": "Belgique",      "short": ""},
-            {"code": "usa",       "nom": "États-Unis",    "short": ""},
-            {"code": "allemagne", "nom": "Allemagne",     "short": ""},
-            {"code": "italie",    "nom": "Italie",        "short": ""},
-            {"code": "chine",     "nom": "Chine",         "short": ""},
+            {"code": "canada",    "nom": "Canada",       "short": "", "resource_dest": "canada"},
+            {"code": "france",    "nom": "France",        "short": "", "resource_dest": "france"},
+            {"code": "belgique",  "nom": "Belgique",      "short": "", "resource_dest": "belgique"},
+            {"code": "usa",       "nom": "États-Unis",    "short": "", "resource_dest": "international"},
+            {"code": "allemagne", "nom": "Allemagne",     "short": "", "resource_dest": "allemagne"},
+            {"code": "italie",    "nom": "Italie",        "short": "", "resource_dest": "italie"},
+            {"code": "chine",     "nom": "Chine",         "short": "", "resource_dest": "international"},
         ]
 
     has_premium = request.user.is_authenticated and has_candidate_access(request.user)
+    featured_scholarships = PublicScholarshipOffer.objects.filter(is_active=True).order_by(
+        "-confidence_score",
+        "-created_at",
+    )[:6]
+
     return render(request, "visaetude/countries_list.html", {
         "countries": countries,
         "has_premium": has_premium,
+        "featured_scholarships": featured_scholarships,
     })
+
+
+def scholarship_offers(request):
+    """Bourses vérifiées par l'agent Immigration97."""
+    offers = (
+        PublicScholarshipOffer.objects.filter(is_active=True)
+        .exclude(url="")
+        .order_by("-confidence_score", "-updated_at", "-created_at")
+    )
+    query = (request.GET.get("q") or "").strip()
+    country = (request.GET.get("country") or "").strip()
+    level = (request.GET.get("level") or "").strip()
+    funding = (request.GET.get("funding") or "").strip()
+
+    if query:
+        offers = offers.filter(
+            models.Q(title__icontains=query)
+            | models.Q(organization__icontains=query)
+            | models.Q(country__icontains=query)
+            | models.Q(description_text__icontains=query)
+            | models.Q(requirements__icontains=query)
+        )
+    if country:
+        offers = offers.filter(country__icontains=country)
+    if level:
+        offers = offers.filter(study_level=level)
+    if funding:
+        offers = offers.filter(funding_type=funding)
+
+    africa_candidate_signals = (
+        models.Q(confidence_score__gte=55)
+        | models.Q(eligible_countries__icontains="Afrique")
+        | models.Q(eligible_countries__icontains="Africa")
+        | models.Q(eligible_countries__icontains="African")
+        | models.Q(eligible_countries__icontains="Cameroun")
+        | models.Q(eligible_countries__icontains="Cameroon")
+        | models.Q(eligible_countries__icontains="International")
+        | models.Q(description_text__icontains="Africa")
+        | models.Q(description_text__icontains="Afrique")
+        | models.Q(description_text__icontains="African")
+        | models.Q(description_text__icontains="Cameroun")
+        | models.Q(description_text__icontains="Cameroon")
+        | models.Q(description_text__icontains="developing countries")
+        | models.Q(requirements__icontains="Africa")
+        | models.Q(requirements__icontains="Afrique")
+        | models.Q(requirements__icontains="developing countries")
+        | models.Q(source__icontains="daad")
+        | models.Q(source__icontains="campusfrance")
+        | models.Q(source__icontains="chevening")
+        | models.Q(source__icontains="commonwealth")
+        | models.Q(source__icontains="educanada")
+    )
+    offers = offers.filter(africa_candidate_signals)
+
+    countries = (
+        PublicScholarshipOffer.objects.filter(is_active=True)
+        .exclude(country="")
+        .order_by("country")
+        .values_list("country", flat=True)
+        .distinct()
+    )
+    offers = _dedupe_scholarship_offers(offers)
+    offers_count = len(offers)
+    for offer in offers:
+        parsed_url = urlparse(offer.url or "")
+        host = parsed_url.netloc.removeprefix("www.")
+        offer.website_label = host or "Source officielle"
+        offer.direct_apply_label = "Postuler sur la page officielle"
+        offer.africa_focus_note = _scholarship_focus_note(offer)
+    return render(request, "visaetude/scholarship_offers.html", {
+        "offers": offers[:120],
+        "offers_count": offers_count,
+        "query": query,
+        "selected_country": country,
+        "selected_level": level,
+        "selected_funding": funding,
+        "countries": countries,
+        "level_choices": PublicScholarshipOffer.LEVEL_CHOICES,
+        "funding_choices": PublicScholarshipOffer.FUNDING_CHOICES,
+    })
+
+
+def _dedupe_scholarship_offers(offers):
+    seen = set()
+    unique_offers = []
+    for offer in offers:
+        if not is_direct_scholarship_url(offer.url):
+            continue
+        key = _canonical_scholarship_url(offer.url)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        unique_offers.append(offer)
+    return unique_offers
+
+
+def _canonical_scholarship_url(url: str) -> str:
+    parsed = urlparse(url or "")
+    if not parsed.scheme or not parsed.netloc:
+        return (url or "").strip().lower()
+    ignored_prefixes = ("utm_",)
+    ignored_keys = {"fbclid", "gclid", "msclkid", "source", "ref", "referrer"}
+    query = [
+        (key, value)
+        for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+        if key.lower() not in ignored_keys and not key.lower().startswith(ignored_prefixes)
+    ]
+    normalized = parsed._replace(
+        scheme=parsed.scheme.lower(),
+        netloc=parsed.netloc.lower().removeprefix("www."),
+        query=urlencode(query, doseq=True),
+        fragment="",
+    )
+    return urlunparse(normalized).rstrip("/").lower()
+
+
+def _scholarship_focus_note(offer: PublicScholarshipOffer) -> str:
+    text = " ".join(
+        [
+            offer.eligible_countries or "",
+            offer.requirements or "",
+            offer.description_text or "",
+            offer.verification_label or "",
+            offer.url or "",
+        ]
+    ).lower()
+    if any(term in text for term in ("cameroon", "cameroun")):
+        return "Signal Cameroun"
+    if any(term in text for term in ("africa", "african", "afrique", "africain")):
+        return "Ouverte aux Africains"
+    if any(term in text for term in ("developing countries", "international", "global south")):
+        return "Ouverte international"
+    return "Éligibilité à vérifier"
 
 
 # ── PAGES PREMIUM ────────────────────────────────────────────────
@@ -147,14 +307,27 @@ def country_detail(request, country):
         return redirect("visaetude:countries_list")
 
     has_premium = request.user.is_authenticated and has_candidate_access(request.user)
+    resource_dest = RESOURCE_DESTINATION_MAP.get(country, "international")
+    guide_resources = Resource.objects.filter(
+        is_active=True,
+        category="guides_pdf",
+        destination=resource_dest,
+    )[:6]
+    public_scholarships = PublicScholarshipOffer.objects.filter(
+        is_active=True,
+        country__icontains=country_obj.name if country_obj else country,
+    ).order_by("-confidence_score", "-created_at")[:6]
 
     context = {
         "country": country_obj.name if country_obj else country.capitalize(),
         "country_slug": country,
+        "resource_dest": resource_dest,
+        "guide_resources": guide_resources,
         "guide": guides.get(country, guides.get("canada", "")),
         "universities": University.objects.filter(country=country_obj) if (country_obj and has_premium) else [],
         "advices": CountryAdvice.objects.filter(country=country_obj) if (country_obj and has_premium) else [],
         "scholarships": Scholarship.objects.filter(country=country_obj) if (country_obj and has_premium) else [],
+        "public_scholarships": public_scholarships,
         "resources": country_obj.resources.all() if (country_obj and has_premium) else [],
         "has_premium": has_premium,
     }

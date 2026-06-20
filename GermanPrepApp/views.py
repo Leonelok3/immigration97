@@ -4,12 +4,11 @@ from django.utils import timezone
 from django.db.models import Avg, Max
 import json, os, tempfile, logging
 _log = logging.getLogger(__name__)
-from django.conf import settings
-from openai import OpenAI, OpenAIError
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
+from django.db.models import Count
 
 from .models import (
     GERMAN_LEVEL_CHOICES,
@@ -24,12 +23,8 @@ from .models import (
     GermanEOSubmission,
     GermanEESubmission,
 )
-
-# =============================
-# CLIENT OPENAI - COACH IA ALLEMAND
-# =============================
-OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", None)
-german_client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+from services.ai_service import AIService, AIServiceError
+from preparation_tests.services.daily_content_agent import DailyContentAgent
 
 
 def _get_or_create_profile(user) -> GermanUserProfile:
@@ -65,6 +60,7 @@ def home(request):
     exams = (
         GermanExam.objects
         .filter(is_active=True)
+        .annotate(lesson_count=Count("lessons"), exercise_count=Count("lessons__exercises"))
         .order_by("level", "exam_type", "title")
     )
 
@@ -72,6 +68,17 @@ def home(request):
     exams_by_level = {lvl: [] for lvl in levels}
     for exam in exams:
         exams_by_level[exam.level].append(exam)
+
+    levels_data = []
+    for level in levels:
+        level_lessons = GermanLesson.objects.filter(exam__level=level, exam__is_active=True).count()
+        level_exercises = GermanExercise.objects.filter(lesson__exam__level=level, lesson__exam__is_active=True).count()
+        levels_data.append({
+            "level": level,
+            "exams": exams_by_level[level],
+            "lessons": level_lessons,
+            "exercises": level_exercises,
+        })
 
     last_sessions = (
         GermanTestSession.objects
@@ -83,6 +90,9 @@ def home(request):
     context = {
         "profile": profile,
         "exams_by_level": exams_by_level,
+        "levels_data": levels_data,
+        "total_lessons": GermanLesson.objects.filter(exam__is_active=True).count(),
+        "total_exercises": GermanExercise.objects.filter(lesson__exam__is_active=True).count(),
         "last_sessions": last_sessions,
     }
     return render(request, "german/home.html", context)
@@ -241,6 +251,23 @@ def lesson_detail(request, exam_slug, lesson_id):
         "exercises": exercises,
     }
     return render(request, "german/lesson_detail.html", context)
+
+
+@login_required
+def german_daily_lesson(request):
+    section = (request.GET.get("section") or "").strip().lower()
+    level = (request.GET.get("level") or "").strip().upper()
+    selection = DailyContentAgent().select_german_lesson(section=section, level=level)
+    return render(
+        request,
+        "german/daily_lesson.html",
+        {
+            "selection": selection,
+            "section": section,
+            "level": level,
+            "is_sunday": timezone.localdate().weekday() == 6,
+        },
+    )
 
 
 # =========================
@@ -994,15 +1021,6 @@ def german_ai_coach_api(request):
     if request.method != "POST":
         return JsonResponse({"error": "Only POST allowed"}, status=405)
 
-    if german_client is None:
-        return JsonResponse(
-            {
-                "error": "API key manquante",
-                "reply": "La clé OPENAI_API_KEY n'est pas configurée sur le serveur.",
-            },
-            status=500,
-        )
-
     try:
         data = json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
@@ -1081,13 +1099,13 @@ def german_ai_coach_api(request):
     messages.append({"role": "user", "content": user_message})
 
     try:
-        completion = german_client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=messages,
-            temperature=0.4,
+        result = AIService().generate_response(
+            user_input=user_message,
+            task_type="visa",
+            conversation_history=messages,
         )
-        reply_text = completion.choices[0].message.content
-    except OpenAIError as e:
+        reply_text = result["response"]
+    except AIServiceError as e:
         return JsonResponse(
             {
                 "error": "IA error",

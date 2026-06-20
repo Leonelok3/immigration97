@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static prep_content %}
 
 {% block body_class %}preparation-tests{% endblock %}
 {% block app_scope %}preparation-tests{% endblock %}
@@ -60,12 +60,18 @@ Entraîne-toi sur ton point faible identifié automatiquement :
         {{ weak_section }} {{ weak_level }} {{ weak_exam }}
       </span>
       (moy. <strong>{{ avg_score }}%</strong>).
+      {% if adaptive_note %}
+      <br><span style="opacity:.78;">{{ adaptive_note }}</span>
+      {% endif %}
     </p>
 
     <div class="pt-badges" role="list" style="margin-top:.75rem;">
       <span class="pt-badge pt-badge--soft" role="listitem">🎯 {{ exercises|length }} questions ciblées</span>
       <span class="pt-badge pt-badge--soft" role="listitem">{{ weak_section }} · {{ weak_level }}</span>
       <span class="pt-badge pt-badge--soft" role="listitem">{{ weak_exam }}</span>
+      {% if due_count %}
+      <span class="pt-badge pt-badge--soft" role="listitem">{{ due_count }} révision{{ due_count|pluralize }} due{{ due_count|pluralize }}</span>
+      {% endif %}
     </div>
     {% endif %}
 
@@ -112,7 +118,7 @@ Entraîne-toi sur ton point faible identifié automatiquement :
         border-left: 3px solid {% if r.is_correct %}#2ecc71{% else %}#e74c3c{% endif %};
         font-size:.87rem;
       ">
-        <strong>Q{{ forloop.counter }}</strong> — {{ r.exercise.question_text }}
+        <strong>Q{{ forloop.counter }}</strong> — {{ r.exercise.question_text|prep_plain }}
         <br>
         {% if r.is_correct %}
           ✅ <strong>{{ r.answer }}</strong> — Bonne réponse
@@ -120,16 +126,12 @@ Entraîne-toi sur ton point faible identifié automatiquement :
           ❌ Ta réponse : <strong>{{ r.answer|default:"(aucune)" }}</strong>
           &nbsp;|&nbsp;
           Correcte : <strong>{{ r.exercise.correct_option }}</strong> —
-          {% if r.exercise.correct_option == "A" %}{{ r.exercise.option_a }}
-          {% elif r.exercise.correct_option == "B" %}{{ r.exercise.option_b }}
-          {% elif r.exercise.correct_option == "C" %}{{ r.exercise.option_c }}
-          {% elif r.exercise.correct_option == "D" %}{{ r.exercise.option_d }}
-          {% endif %}
-          {% if r.exercise.summary %}
-          <div style="margin-top:.3rem; font-style:italic; color:#9ca3af; font-size:.82rem;">
-            💡 {{ r.exercise.summary }}
+          {{ r.correct_text|prep_plain }}
+          <div style="margin-top:.4rem; padding:.45rem .6rem; background:rgba(59,130,246,.08);
+                      border:1px solid rgba(59,130,246,.2); border-radius:6px;
+                      color:rgba(255,255,255,.72); font-size:.82rem; line-height:1.55;">
+            <strong>Pourquoi :</strong> {{ r.explanation|prep_plain }}
           </div>
-          {% endif %}
         {% endif %}
       </div>
       {% endfor %}
@@ -165,7 +167,20 @@ Entraîne-toi sur ton point faible identifié automatiquement :
       — Moyenne : <strong style="color:#ef4444;">{{ avg_score }}%</strong> sur tes {{ total_analyzed }} dernier{{ total_analyzed|pluralize }} examen{{ total_analyzed|pluralize }}.
       <span style="opacity:.7; font-size:.85rem;">
         Entraîne-toi sur ces {{ exercises|length }} questions ciblées pour progresser.
+        {% if error_count %}{{ error_count }} erreur{{ error_count|pluralize }} récente{{ error_count|pluralize }} analysée{{ error_count|pluralize }}.{% endif %}
       </span>
+      {% if adaptive_note %}
+      <div style="margin-top:.45rem;opacity:.82;font-size:.86rem;">{{ adaptive_note }}</div>
+      {% endif %}
+      {% if revision_stats.by_category %}
+      <div style="margin-top:.75rem;display:flex;gap:.4rem;flex-wrap:wrap;">
+        {% for code, item in revision_stats.by_category.items %}
+        <span style="font-size:.78rem;padding:.18rem .55rem;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);">
+          {{ item.label }} : {{ item.count }}
+        </span>
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
 
     <form method="post" id="smart-revision-form">
@@ -192,31 +207,31 @@ Entraîne-toi sur ton point faible identifié automatiquement :
         </div>
         {% endif %}
 
-        <p class="pt-question-text">{{ ex.question_text }}</p>
+        <p class="pt-question-text">{{ ex.question_text|prep_plain }}</p>
 
         <div class="pt-choices">
           {% if ex.option_a %}
           <label class="pt-choice">
             <input type="radio" name="q_{{ ex.id }}" value="A" required>
-            <span>{{ ex.option_a }}</span>
+            <span>{{ ex.option_a|prep_plain }}</span>
           </label>
           {% endif %}
           {% if ex.option_b %}
           <label class="pt-choice">
             <input type="radio" name="q_{{ ex.id }}" value="B">
-            <span>{{ ex.option_b }}</span>
+            <span>{{ ex.option_b|prep_plain }}</span>
           </label>
           {% endif %}
           {% if ex.option_c %}
           <label class="pt-choice">
             <input type="radio" name="q_{{ ex.id }}" value="C">
-            <span>{{ ex.option_c }}</span>
+            <span>{{ ex.option_c|prep_plain }}</span>
           </label>
           {% endif %}
           {% if ex.option_d %}
           <label class="pt-choice">
             <input type="radio" name="q_{{ ex.id }}" value="D">
-            <span>{{ ex.option_d }}</span>
+            <span>{{ ex.option_d|prep_plain }}</span>
           </label>
           {% endif %}
         </div>

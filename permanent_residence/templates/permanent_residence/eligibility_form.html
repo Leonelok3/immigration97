@@ -30,6 +30,7 @@ body.rp-canada::before{content:'';position:fixed;inset:0;pointer-events:none;z-i
 .rp-field textarea{resize:vertical;min-height:80px;}
 .rp-field .errorlist{font-size:.73rem;color:#fca5a5;list-style:none;padding:0;margin:.2rem 0 0;}
 .rp-alert-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:.75rem 1rem;font-size:.82rem;color:#fca5a5;margin-bottom:1.25rem;}
+.rp-alert-error ul{margin:.5rem 0 0;padding-left:1.1rem;}
 .rp-notice{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:9px;padding:.75rem .95rem;font-size:.79rem;color:rgba(147,197,253,.9);display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.9rem;}
 .rp-form-footer{text-align:center;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.06);margin-top:1.25rem;}
 .rp-form-footer p{font-size:.73rem;color:var(--rp-muted);margin-bottom:.9rem;}
@@ -53,7 +54,22 @@ body.rp-canada::before{content:'';position:fixed;inset:0;pointer-events:none;z-i
 <hr class="rp-divider">
 <form method="post" novalidate>
   {% csrf_token %}
-  {% if form.non_field_errors %}<div class="rp-alert-error">{{ form.non_field_errors }}</div>{% endif %}
+  <input type="hidden" name="country" value="CA">
+  {% if form.errors %}
+    <div class="rp-alert-error">
+      <strong>Le diagnostic n'a pas encore été envoyé.</strong>
+      <ul>
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li>{{ field.label }} : {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
 
   <div class="rp-card">
     <div class="rp-section-title">👤 Profil général</div>

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}visa-etude{% endblock %}
+
+{% block title %}Bourses d'études vérifiées | Immigration97{% endblock %}
+
+{% block meta_description %}
+Bourses d'études internationales vérifiées par Immigration97: organisme, pays, niveau, financement, deadline et lien officiel pour postuler.
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/visa_etude.css' %}?v=20260611-scholarships">
+{% endblock %}
+
+{% block content %}
+<section class="ve-dashboard-hero fade-in-up">
+  <div class="container">
+    <span class="ve-badge">Bourses vérifiées</span>
+    <h1>
+      Bourses d'études internationales<br>
+      <span class="ve-gradient">avec liens officiels pour postuler</span>
+    </h1>
+    <p class="ve-lead">
+      Immigration97 surveille les sources officielles et publie les bourses utiles pour les profils africains:
+      organisme, pays, niveau, financement, deadline et lien direct.
+    </p>
+    <div class="ve-cta-group">
+      <a href="{% url 'visaetude:countries_list' %}" class="ve-btn-secondary">Voir les pays études</a>
+      <a href="{% url 'visaetude:coach_ai' %}" class="ve-btn-primary">Préparer ma candidature</a>
+    </div>
+  </div>
+</section>
+
+<section class="ve-dashboard-modules">
+  <div class="container">
+    <article class="ve-module-card" style="margin-bottom:18px;">
+      <form method="get" class="ve-scholarship-filters">
+        <label>
+          <span>Recherche</span>
+          <input type="search" name="q" value="{{ query }}" placeholder="Master, Canada, fully funded, DAAD...">
+        </label>
+        <label>
+          <span>Pays</span>
+          <select name="country">
+            <option value="">Tous</option>
+            {% for country in countries %}
+              <option value="{{ country }}" {% if selected_country == country %}selected{% endif %}>{{ country }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <span>Niveau</span>
+          <select name="level">
+            <option value="">Tous</option>
+            {% for value, label in level_choices %}
+              <option value="{{ value }}" {% if selected_level == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <span>Financement</span>
+          <select name="funding">
+            <option value="">Tous</option>
+            {% for value, label in funding_choices %}
+              <option value="{{ value }}" {% if selected_funding == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <button class="ve-btn-primary" type="submit">Filtrer</button>
+      </form>
+    </article>
+
+    <div class="ve-section-head">
+      <h2>{{ offers_count }} bourse{{ offers_count|pluralize }} disponible{{ offers_count|pluralize }}</h2>
+      <p>Les liens ouvrent la page officielle ou la source institutionnelle de candidature.</p>
+    </div>
+
+    <div class="ve-scholarship-grid">
+      {% for offer in offers %}
+        <article class="ve-scholarship-card">
+          <div class="ve-scholarship-card__top">
+            <span class="ve-scholarship-badge">{{ offer.verification_label|default:"Bourse vérifiée" }}</span>
+            <span class="ve-scholarship-badge">{{ offer.africa_focus_note }}</span>
+            <span class="ve-scholarship-score">{{ offer.confidence_score }}/100</span>
+          </div>
+          <h2>{{ offer.title }}</h2>
+          <p class="ve-scholarship-meta">
+            <strong>{{ offer.organization|default:"Organisme officiel" }}</strong>
+            {% if offer.country %} · {{ offer.country }}{% endif %}
+          </p>
+          <div class="ve-scholarship-facts">
+            <span>{{ offer.get_study_level_display }}</span>
+            <span>{{ offer.get_funding_type_display }}</span>
+            {% if offer.deadline %}<span>Deadline: {{ offer.deadline }}</span>{% endif %}
+            {% if offer.amount %}<span>{{ offer.amount }}</span>{% endif %}
+          </div>
+          <p>{{ offer.description_text|striptags|truncatechars:240 }}</p>
+          {% if offer.eligible_countries %}
+            <p class="small"><strong>Éligibilité:</strong> {{ offer.eligible_countries }}</p>
+          {% endif %}
+          <p class="small">
+            <strong>Lien direct:</strong> {{ offer.website_label }} — ouvrez cette page pour vérifier les critères et postuler auprès de la source officielle.
+          </p>
+          <div class="ve-cta-group">
+            <a href="{{ offer.url }}" class="ve-btn-primary" target="_blank" rel="noopener">Postuler maintenant</a>
+            <a href="{% url 'visaetude:coach_ai' %}" class="ve-btn-secondary">Aide dossier</a>
+          </div>
+        </article>
+      {% empty %}
+        <article class="ve-module-card">
+          <h2>Aucune bourse ne correspond aux filtres</h2>
+          <p>Retire un filtre ou reviens après la prochaine mise à jour quotidienne.</p>
+          <a class="ve-module-link" href="{% url 'visaetude:scholarship_offers' %}">Voir toutes les bourses</a>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

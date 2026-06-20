@@ -26,6 +26,7 @@ urlpatterns = [
         views.german_exam_learning_path,
         name="exam_learning_path",
     ),
+    path("lecon-du-jour/", views.german_daily_lesson, name="daily_lesson"),
     path("examens/<int:exam_id>/test/", views.take_practice_test, name="take_practice_test"),
 
     # Résultats & analyse

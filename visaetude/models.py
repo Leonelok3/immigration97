@@ -144,6 +144,60 @@ class Scholarship(models.Model):
         return self.scholarship_name
 
 
+class PublicScholarshipOffer(models.Model):
+    FUNDING_CHOICES = [
+        ("full", "Bourse complète"),
+        ("partial", "Bourse partielle"),
+        ("tuition", "Frais de scolarité"),
+        ("stipend", "Allocation"),
+        ("unknown", "À vérifier"),
+    ]
+
+    LEVEL_CHOICES = [
+        ("licence", "Licence"),
+        ("master", "Master"),
+        ("doctorat", "Doctorat"),
+        ("postdoc", "Postdoctorat"),
+        ("short", "Formation courte"),
+        ("all", "Tous niveaux"),
+        ("unknown", "À vérifier"),
+    ]
+
+    source = models.CharField(max_length=80, blank=True)
+    url = models.URLField(max_length=700, unique=True)
+    title = models.CharField(max_length=260)
+    organization = models.CharField(max_length=220, blank=True)
+    country = models.CharField(max_length=120, blank=True)
+    region = models.CharField(max_length=120, blank=True)
+    study_level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default="unknown")
+    funding_type = models.CharField(max_length=20, choices=FUNDING_CHOICES, default="unknown")
+    amount = models.CharField(max_length=180, blank=True)
+    eligible_countries = models.CharField(max_length=260, blank=True)
+    deadline = models.CharField(max_length=100, blank=True)
+    requirements = models.TextField(blank=True)
+    description_text = models.TextField(blank=True)
+    confidence_score = models.PositiveSmallIntegerField(default=0)
+    verification_label = models.CharField(max_length=80, blank=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+    first_seen_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-confidence_score", "-created_at"]
+        indexes = [
+            models.Index(fields=["is_active", "created_at"]),
+            models.Index(fields=["country", "is_active", "created_at"]),
+            models.Index(fields=["study_level", "is_active", "created_at"]),
+            models.Index(fields=["funding_type", "is_active", "created_at"]),
+            models.Index(fields=["confidence_score", "is_active", "created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.title} - {self.organization or self.country}"
+
+
 # ==================================================
 # CHECKLIST UTILISATEUR (DOCUMENTS VISA)
 # ==================================================

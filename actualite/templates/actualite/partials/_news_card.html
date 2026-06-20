@@ -19,6 +19,9 @@
       </div>
       <h3 class="a-news__title">{{ item.title }}</h3>
       <p class="a-news__summary">{{ item.summary|truncatechars:140 }}</p>
+      {% if item.external_link %}
+        <p class="a-news__source">Source officielle vérifiée</p>
+      {% endif %}
       <div class="a-news__meta">
         <span>{{ item.publish_date|date:"d M Y" }}</span>
         <span>•</span>
@@ -27,6 +30,12 @@
       </div>
     </div>
   </a>
+
+  {% if item.external_link %}
+  <div class="a-news__official">
+    <a href="{{ item.external_link }}" target="_blank" rel="noopener">Lire la source officielle</a>
+  </div>
+  {% endif %}
 
   <!-- Boutons de partage social -->
   <div class="a-news__share">

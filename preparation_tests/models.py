@@ -491,6 +491,64 @@ class UserExerciseProgress(models.Model):
             self.completed_at = timezone.now()
 
 
+class DetailedError(models.Model):
+    """
+    Erreur pédagogique exploitable par la révision intelligente.
+    Une ligne suit une difficulté utilisateur sur un exercice donné, avec
+    catégorie, historique et planification de révision espacée.
+    """
+    CATEGORY_CHOICES = [
+        ("grammar", "Grammaire"),
+        ("lexical", "Lexique"),
+        ("comprehension", "Compréhension"),
+        ("listening", "Écoute"),
+        ("strategy", "Stratégie d'examen"),
+        ("writing", "Expression écrite"),
+        ("speaking", "Expression orale"),
+    ]
+    STATUS_CHOICES = [
+        ("active", "À revoir"),
+        ("resolved", "Maîtrisée"),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="detailed_errors")
+    lesson = models.ForeignKey("preparation_tests.CourseLesson", on_delete=models.CASCADE, related_name="detailed_errors")
+    exercise = models.ForeignKey("preparation_tests.CourseExercise", on_delete=models.CASCADE, related_name="detailed_errors")
+
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default="comprehension", db_index=True)
+    source = models.CharField(max_length=30, blank=True, default="lesson", db_index=True)
+    selected_answer = models.CharField(max_length=10, blank=True, default="")
+    correct_answer = models.CharField(max_length=10, blank=True, default="")
+    explanation = models.TextField(blank=True)
+
+    occurrences = models.PositiveIntegerField(default=1)
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default="active", db_index=True)
+
+    ease_factor = models.FloatField(default=2.5)
+    interval_days = models.PositiveIntegerField(default=1)
+    repetitions = models.PositiveIntegerField(default=0)
+    lapses = models.PositiveIntegerField(default=0)
+    last_reviewed_at = models.DateTimeField(null=True, blank=True)
+    next_review_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("user", "exercise")
+        indexes = [
+            models.Index(fields=["user", "status", "next_review_at"]),
+            models.Index(fields=["user", "category", "status"]),
+            models.Index(fields=["user", "lesson"]),
+        ]
+        ordering = ["next_review_at", "-occurrences", "-updated_at"]
+        verbose_name = "Erreur détaillée"
+        verbose_name_plural = "Erreurs détaillées"
+
+    def __str__(self):
+        return f"{self.user} — {self.get_category_display()} — {self.exercise_id}"
+
+
 # =====================================================
 # 🎤 SOUMISSIONS EO / EE
 # =====================================================
@@ -629,6 +687,123 @@ class ExamFormatResult(models.Model):
 
     def __str__(self):
         return f"{self.user} — {self.get_exam_code_display()} {self.level} — {self.global_pct}% ({self.taken_at:%Y-%m-%d})"
+
+
+# =====================================================
+# 📅 PACKS MENSUELS & ANCIENS SUJETS D'EXAMEN
+# =====================================================
+
+LANG_CHOICES_PREP = [
+    ("fr", "Français"),
+    ("de", "Allemand"),
+    ("en", "Anglais"),
+]
+SECTION_CHOICES_PREP = [
+    ("co", "Compréhension Orale"),
+    ("ce", "Compréhension Écrite"),
+    ("eo", "Expression Orale"),
+    ("ee", "Expression Écrite"),
+]
+LEVEL_CHOICES_PREP = [
+    ("A1", "A1"), ("A2", "A2"),
+    ("B1", "B1"), ("B2", "B2"),
+    ("C1", "C1"), ("C2", "C2"),
+]
+EXAM_CODE_CHOICES_PREP = [
+    ("cecr", "CECR"),
+    ("tef", "TEF Canada"),
+    ("tcf", "TCF Canada"),
+    ("delf", "DELF"),
+    ("dalf", "DALF"),
+]
+
+
+class MonthlyTrainingPack(models.Model):
+    language = models.CharField(max_length=5, choices=LANG_CHOICES_PREP, default="fr", db_index=True)
+    section = models.CharField(max_length=2, choices=SECTION_CHOICES_PREP, db_index=True)
+    level = models.CharField(max_length=2, choices=LEVEL_CHOICES_PREP, default="B1", db_index=True)
+    exam_code = models.CharField(max_length=10, choices=EXAM_CODE_CHOICES_PREP, default="cecr", db_index=True)
+    month = models.DateField(db_index=True)
+
+    title = models.CharField(max_length=220)
+    slug = models.SlugField(unique=True)
+    subtitle = models.CharField(max_length=300, blank=True)
+    objective = models.TextField(blank=True)
+    lesson_html = models.TextField(blank=True)
+    correction_html = models.TextField(blank=True)
+    recurring_theme = models.CharField(max_length=220, blank=True)
+
+    related_lesson = models.ForeignKey(
+        CourseLesson,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="monthly_packs",
+    )
+    exercises = models.ManyToManyField(CourseExercise, blank=True, related_name="monthly_packs")
+
+    is_premium = models.BooleanField(default=False)
+    is_published = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-month", "order", "-created_at"]
+        verbose_name = "Pack mensuel"
+        verbose_name_plural = "Packs mensuels"
+
+    def __str__(self):
+        return f"{self.get_section_display()} {self.level} — {self.title}"
+
+    @property
+    def description(self):
+        return self.objective
+
+    @property
+    def content_html(self):
+        return self.lesson_html
+
+
+class PastExamSubject(models.Model):
+    language = models.CharField(max_length=5, choices=LANG_CHOICES_PREP, default="fr", db_index=True)
+    exam_code = models.CharField(max_length=10, choices=EXAM_CODE_CHOICES_PREP, db_index=True)
+    section = models.CharField(max_length=2, choices=SECTION_CHOICES_PREP, db_index=True)
+    level = models.CharField(max_length=2, choices=LEVEL_CHOICES_PREP, default="B1", db_index=True)
+
+    title = models.CharField(max_length=220)
+    slug = models.SlugField(unique=True)
+    source_label = models.CharField(max_length=160, blank=True, help_text="Ex: TEF Canada 2024, DELF B2 session exemple")
+    recurring_theme = models.CharField(max_length=220, blank=True)
+    frequency_score = models.PositiveIntegerField(default=50, help_text="0-100 : probabilité/récurrence du thème")
+
+    subject_html = models.TextField(blank=True)
+    correction_html = models.TextField(blank=True)
+    pdf_subject = models.FileField(upload_to="past_exam_subjects/subjects/", blank=True, null=True)
+    pdf_correction = models.FileField(upload_to="past_exam_subjects/corrections/", blank=True, null=True)
+
+    related_lesson = models.ForeignKey(
+        CourseLesson,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="past_exam_subjects",
+    )
+    exercises = models.ManyToManyField(CourseExercise, blank=True, related_name="past_exam_subjects")
+
+    is_premium = models.BooleanField(default=True)
+    is_published = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-frequency_score", "order", "-created_at"]
+        verbose_name = "Ancien sujet d'examen"
+        verbose_name_plural = "Anciens sujets d'examen"
+
+    def __str__(self):
+        return f"{self.get_exam_code_display()} {self.section.upper()} {self.level} — {self.title}"
 
 
 # =====================================================

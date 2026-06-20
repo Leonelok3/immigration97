@@ -1,12 +1,413 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Offres publiques — Job Agent{% endblock %}
+{% block title %}Offres d'emploi internationales vérifiées | Immigration97{% endblock %}
+{% block meta_description %}Offres internationales mises à jour chaque matin par Immigration97: Canada, Europe, Australie, Nouvelle-Zélande. Adaptez votre CV et postulez plus vite.{% endblock %}
 {% block body_class %}job-agent{% endblock %}
 {% block app_scope %}job-agent{% endblock %}
 
 {% block extra_css %}
 {% include "job_agent/_ja_critical.html" %}
+<style>
+  body.job-agent .public-jobs-hero {
+    border: 1px solid rgba(212,168,67,.26);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 90% 10%, rgba(68,116,255,.22), transparent 22rem),
+      linear-gradient(135deg, rgba(15,32,64,.92), rgba(5,10,24,.96));
+    padding: clamp(22px, 4vw, 44px);
+    margin-bottom: 22px;
+    overflow: hidden;
+  }
+
+  body.job-agent .public-jobs-hero__kicker,
+  body.job-agent .public-jobs-label {
+    color: #D4A843;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  body.job-agent .public-jobs-hero h1 {
+    color: #FFF7E6;
+    font-size: clamp(34px, 6vw, 74px);
+    line-height: .96;
+    margin: 12px 0 14px;
+    max-width: 920px;
+  }
+
+  body.job-agent .public-jobs-hero p {
+    color: rgba(232,234,240,.76);
+    font-size: clamp(15px, 1.5vw, 19px);
+    line-height: 1.55;
+    max-width: 860px;
+    margin: 0;
+  }
+
+  body.job-agent .public-jobs-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  body.job-agent .public-jobs-metric {
+    border: 1px solid rgba(212,168,67,.22);
+    border-radius: 14px;
+    background: rgba(5,10,24,.58);
+    padding: 16px;
+  }
+
+  body.job-agent .public-jobs-metric strong {
+    color: #F0C060;
+    display: block;
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  body.job-agent .public-jobs-filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(150px, .4fr) minmax(150px, .4fr) minmax(180px, .5fr) auto;
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 18px;
+  }
+
+  body.job-agent .public-jobs-premium {
+    border: 1px solid rgba(94,230,168,.22);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(94,230,168,.16), transparent 18rem),
+      linear-gradient(135deg, rgba(7,19,35,.96), rgba(15,32,64,.82));
+    padding: clamp(20px, 3vw, 32px);
+    margin-bottom: 18px;
+  }
+
+  body.job-agent .public-jobs-premium__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, .75fr);
+    gap: 22px;
+    align-items: center;
+  }
+
+  body.job-agent .public-jobs-premium h2 {
+    color: #FFF7E6;
+    font-size: clamp(24px, 3vw, 40px);
+    line-height: 1.05;
+    margin: 8px 0 10px;
+  }
+
+  body.job-agent .public-jobs-premium p,
+  body.job-agent .public-jobs-premium li {
+    color: rgba(232,234,240,.76);
+    line-height: 1.55;
+  }
+
+  body.job-agent .public-jobs-agentbox {
+    border: 1px solid rgba(212,168,67,.22);
+    border-radius: 16px;
+    background: rgba(5,10,24,.58);
+    padding: 16px;
+  }
+
+  body.job-agent .public-jobs-agentbox textarea {
+    width: 100%;
+    min-height: 112px;
+    resize: vertical;
+    color: #FFF7E6;
+    background: rgba(5,10,24,.72);
+    border: 1px solid rgba(212,168,67,.24);
+    border-radius: 12px;
+    padding: 14px;
+    line-height: 1.45;
+  }
+
+  body.job-agent .public-jobs-field input,
+  body.job-agent .public-jobs-field select {
+    width: 100%;
+    min-height: 48px;
+    color: rgba(232,234,240,.92);
+    background: rgba(5,10,24,.78);
+    border: 1px solid rgba(212,168,67,.24);
+    border-radius: 12px;
+    padding: 0 14px;
+  }
+
+  body.job-agent .public-jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  body.job-agent .public-job-card {
+    border: 1px solid rgba(212,168,67,.18);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(15,32,64,.72), rgba(5,10,24,.9));
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  body.job-agent .public-job-card__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: start;
+  }
+
+  body.job-agent .public-job-card h3 {
+    color: #FFF7E6;
+    font-size: 20px;
+    line-height: 1.2;
+    margin: 0 0 8px;
+    overflow-wrap: anywhere;
+  }
+
+  body.job-agent .public-job-card__meta {
+    color: rgba(232,234,240,.66);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    font-size: 13px;
+  }
+
+  body.job-agent .public-job-badge {
+    color: #071323;
+    background: #5EE6A8;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  body.job-agent .public-job-badge--watch {
+    color: #FFF7E6;
+    background: rgba(240,192,96,.18);
+    border: 1px solid rgba(240,192,96,.35);
+  }
+
+  body.job-agent .public-job-type {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    padding: 7px 10px;
+    white-space: nowrap;
+  }
+
+  body.job-agent .public-job-type--formation {
+    color: #052316;
+    background: #7AF0B5;
+  }
+
+  body.job-agent .public-job-type--emploi {
+    color: #071323;
+    background: #8CB7FF;
+  }
+
+  body.job-agent .public-job-type-hint {
+    color: rgba(232,234,240,.66);
+    display: block;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  body.job-agent .public-job-score {
+    color: rgba(232,234,240,.72);
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    margin-top: 8px;
+  }
+
+  body.job-agent .public-job-date {
+    color: rgba(232,234,240,.62);
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    margin-top: 6px;
+    white-space: nowrap;
+  }
+
+  body.job-agent .public-job-facts {
+    color: rgba(232,234,240,.74);
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1.35;
+    margin-top: 10px;
+  }
+
+  body.job-agent .public-job-facts strong {
+    color: #F0C060;
+  }
+
+  body.job-agent .public-job-description {
+    color: rgba(232,234,240,.72);
+    line-height: 1.48;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  body.job-agent .public-job-section {
+    min-width: 0;
+  }
+
+  body.job-agent .public-job-company {
+    color: #FFF7E6;
+    display: block;
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+  }
+
+  body.job-agent .public-job-title {
+    color: #FFF7E6;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  body.job-agent .public-job-subtitle {
+    color: rgba(232,234,240,.66);
+    line-height: 1.4;
+    margin: 4px 0 0;
+  }
+
+  body.job-agent .public-job-chiprow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  body.job-agent .public-job-direct {
+    border: 1px solid rgba(140,183,255,.18);
+    border-radius: 14px;
+    background: rgba(140,183,255,.07);
+    padding: 12px;
+    min-width: 0;
+  }
+
+  body.job-agent .public-job-direct a:not(.c-btn) {
+    color: #8CB7FF;
+    font-weight: 900;
+  }
+
+  body.job-agent .public-job-direct p {
+    color: rgba(232,234,240,.72);
+    line-height: 1.45;
+    margin: 8px 0 0;
+    overflow-wrap: anywhere;
+  }
+
+  body.job-agent .public-job-actions {
+    margin-top: auto;
+  }
+
+  body.job-agent .public-job-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  body.job-agent .public-job-keywords span {
+    border: 1px solid rgba(212,168,67,.20);
+    border-radius: 999px;
+    color: #F0C060;
+    background: rgba(212,168,67,.08);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 9px;
+  }
+
+  body.job-agent .public-job-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  body.job-agent .public-jobs-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgba(212,168,67,.18);
+    border-radius: 16px;
+  }
+
+  body.job-agent .public-jobs-table {
+    width: 100%;
+    min-width: 1040px;
+    border-collapse: collapse;
+  }
+
+  body.job-agent .public-jobs-table th,
+  body.job-agent .public-jobs-table td {
+    border-bottom: 1px solid rgba(212,168,67,.14);
+    padding: 16px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  body.job-agent .public-jobs-table th {
+    color: #F0C060;
+    background: rgba(212,168,67,.08);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  body.job-agent .public-jobs-table td {
+    color: rgba(232,234,240,.78);
+    line-height: 1.45;
+  }
+
+  body.job-agent .public-jobs-table strong {
+    color: #FFF7E6;
+  }
+
+  body.job-agent .public-jobs-table a:not(.c-btn) {
+    color: #8CB7FF;
+    font-weight: 800;
+  }
+
+  body.job-agent .public-jobs-table__summary {
+    max-width: 340px;
+  }
+
+  @media (max-width: 1180px) {
+    body.job-agent .public-jobs-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 980px) {
+    body.job-agent .public-jobs-filters,
+    body.job-agent .public-jobs-metrics,
+    body.job-agent .public-jobs-premium__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    body.job-agent .public-jobs-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -16,65 +417,181 @@
 {% block content %}
 <div class="app-main job-agent">
   <div class="ja-container">
-
-    <div class="ja-pagehead">
-      <div class="ja-pagehead__title">
-        <h1>Job Agent</h1>
-        <p>Offres publiques — Importez une offre pour générer votre pack candidature.</p>
+    <section class="public-jobs-hero" aria-label="Offres internationales Immigration97">
+      <div class="public-jobs-hero__kicker">Offres internationales vérifiées</div>
+      <h1>Des offres récentes pour accélérer votre départ</h1>
+      <p>
+        Immigration97 recherche, vérifie et publie chaque matin des opportunités internationales.
+        Choisissez une offre, adaptez votre CV et votre lettre, puis postulez avec un dossier plus fort.
+      </p>
+      <div class="public-jobs-metrics">
+        <div class="public-jobs-metric">
+          <strong>{{ offers_count }}</strong>
+          <span>offres disponibles maintenant</span>
+        </div>
+        <div class="public-jobs-metric">
+          <strong>06:00</strong>
+          <span>mise à jour quotidienne UTC</span>
+        </div>
+        <div class="public-jobs-metric">
+          <strong>ATS</strong>
+          <span>CV + lettre adaptés à l'offre</span>
+        </div>
       </div>
-      <div class="ja-pagehead__actions">
-        <a class="c-btn" href="{% url 'job_agent:dashboard' %}" aria-label="Dashboard">Dashboard</a>
-        <a class="c-btn c-btn--primary" href="{% url 'job_agent:lead_add' %}" aria-label="Ajouter une offre">+ Ajouter</a>
+    </section>
+
+    <section class="public-jobs-premium" aria-label="Agent IA emploi Premium">
+      <div class="public-jobs-premium__grid">
+        <div>
+          <div class="public-jobs-label">Service Premium</div>
+          <h2>Demandez des offres ciblées, recevez un plan de candidature.</h2>
+          <p>
+            Exemple: “Je veux les offres d'emploi récentes au Canada pour Africains”.
+            L'agent travaille d'abord dans la base Immigration97 mise à jour chaque matin, puis prépare
+            les mots-clés, les consignes de candidature, le CV adapté, la lettre et l'email.
+          </p>
+          <ul>
+            <li>Base Immigration97 vérifiée + sources externes ajoutées par le pipeline emploi.</li>
+            <li>Instructions concrètes: où postuler, quoi modifier, quels mots-clés utiliser.</li>
+            <li>Accès réservé aux comptes Premium Candidat.</li>
+          </ul>
+        </div>
+        <div class="public-jobs-agentbox">
+          <form method="get">
+            <label class="public-jobs-label" for="premium-agent-query">Votre demande</label>
+            <textarea id="premium-agent-query" name="q" placeholder="Ex: offres récentes au Canada pour aide-soignant africain">{{ query }}</textarea>
+            <div class="public-job-actions" style="margin-top:12px;">
+              {% if has_candidate_premium %}
+                <button class="c-btn c-btn--primary" type="submit">Lancer la recherche</button>
+              {% else %}
+                <a class="c-btn c-btn--primary" href="{% url 'billing:pricing' %}">Débloquer Premium</a>
+              {% endif %}
+              <a class="c-btn" href="{% url 'job_agent:public_offers' %}?country=Canada">Voir Canada</a>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="ja-layout">
-      {% include "job_agent/_menu.html" with active="public" %}
-
-      <div class="ja-content">
-
-        <section class="ja-card" aria-label="Offres publiques disponibles">
+    <div class="ja-content ja-content--wide">
+        <section class="ja-card" aria-label="Filtres offres internationales">
           <div class="ja-card__head">
-            <h2>Offres disponibles</h2>
-            <span class="ja-muted-2">Cliquez "Importer" pour ajouter à votre pipeline.</span>
+            <h2>Trouver une offre</h2>
+            <span class="ja-muted-2">Pays, métier, mot-clé ou entreprise.</span>
+          </div>
+          <div class="ja-card__body">
+            <form class="public-jobs-filters" method="get">
+              <label class="public-jobs-field" style="grid-column:1 / -1;">
+                <span class="public-jobs-label">Recherche IA</span>
+                <input type="search" name="ai_query" value="{{ ai_query }}" placeholder="Ex: Trouve-moi des offres au Canada pour aide-soignant africain avec visa sponsor">
+              </label>
+              {% if ai_notes %}
+                <div class="ja-alert ja-alert--info" style="grid-column:1 / -1;margin-bottom:0;">
+                  <strong>Assistant IA :</strong>
+                  {% for note in ai_notes %}{{ note }}{% if not forloop.last %} • {% endif %}{% endfor %}
+                </div>
+              {% endif %}
+              <label class="public-jobs-field">
+                <span class="public-jobs-label">Recherche</span>
+                <input type="search" name="q" value="{{ query }}" placeholder="Développeur, aide-soignant, chauffeur...">
+              </label>
+              <label class="public-jobs-field">
+                <span class="public-jobs-label">Pays</span>
+                <select name="country">
+                  <option value="">Tous les pays</option>
+                  {% for value, label in countries %}
+                    <option value="{{ value }}" {% if selected_country == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label class="public-jobs-field">
+                <span class="public-jobs-label">Type</span>
+                <select name="type">
+                  <option value="">Tous les types</option>
+                  {% for value, label in opportunity_types %}
+                    <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label class="public-jobs-field">
+                <span class="public-jobs-label">Métier</span>
+                <select name="category">
+                  <option value="">Toutes catégories</option>
+                  {% for category in categories %}
+                    <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <button class="c-btn c-btn--primary" type="submit">Filtrer</button>
+            </form>
+            {% if query or selected_country or selected_category or selected_type or ai_query %}
+              <a class="c-btn" href="{% url 'job_agent:public_offers' %}">Réinitialiser</a>
+            {% endif %}
+          </div>
+        </section>
+
+        <section class="ja-card" aria-label="Offres publiques disponibles" style="margin-top:18px;">
+          <div class="ja-card__head">
+            <h2>Offres mises à jour chaque matin</h2>
+            <span class="ja-muted-2">{{ offers_count }} résultat{{ offers_count|pluralize }}</span>
           </div>
 
           <div class="ja-card__body">
             {% if offers %}
-              <div style="overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;">
-                  <thead>
-                    <tr style="border-bottom:1px solid rgba(212,168,67,0.18);">
-                      <th style="text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:rgba(212,168,67,0.7);font-weight:700;">Offre</th>
-                      <th style="text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:rgba(212,168,67,0.7);font-weight:700;">Entreprise</th>
-                      <th style="text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:rgba(212,168,67,0.7);font-weight:700;">Lieu</th>
-                      <th style="text-align:right;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:rgba(212,168,67,0.7);font-weight:700;">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for o in offers %}
-                      <tr style="border-bottom:1px solid rgba(212,168,67,0.07);transition:background .15s;" onmouseover="this.style.background='rgba(212,168,67,0.04)'" onmouseout="this.style.background=''">
-                        <td style="padding:12px;">
-                          <strong style="display:block;font-size:14px;color:rgba(232,234,240,0.92);line-height:1.3;">{{ o.title }}</strong>
-                          <a href="{{ o.url }}" target="_blank" rel="noopener"
-                             style="font-size:12px;color:rgba(212,168,67,0.7);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-top:4px;">
-                            ↗ Voir l'offre
-                          </a>
-                        </td>
-                        <td style="padding:12px;font-size:13px;color:rgba(232,234,240,0.65);">{{ o.company|default:"—" }}</td>
-                        <td style="padding:12px;font-size:13px;color:rgba(232,234,240,0.65);">{{ o.location|default:"—" }}</td>
-                        <td style="padding:12px;text-align:right;">
-                          <a class="c-btn c-btn--primary" href="{% url 'job_agent:import_public_offer' o.id %}"
-                             style="font-size:12px;padding:.5rem 1rem;">
-                            Importer →
-                          </a>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+              <div class="public-jobs-grid">
+                {% for o in offers %}
+                  <article class="public-job-card">
+                    <div class="public-job-card__top">
+                      <div class="public-job-section">
+                        <span class="public-job-company">{{ o.company|default:"Employeur vérifié" }}</span>
+                      <div class="public-job-chiprow">
+                        {% if o.foreign_access_score >= 80 %}
+                          <span class="public-job-badge">{{ o.foreign_access_label|default:"Accessible étranger" }}</span>
+                        {% else %}
+                          <span class="public-job-badge public-job-badge--watch">{{ o.foreign_access_label|default:"À vérifier" }}</span>
+                        {% endif %}
+                        <span class="public-job-badge public-job-badge--watch">{{ o.foreign_focus_note }}</span>
+                        <span class="public-job-type public-job-type--{{ o.opportunity_type }}">{{ o.opportunity_type_badge }}</span>
+                      </div>
+                      </div>
+                      <div>
+                        <span class="public-job-score">{{ o.foreign_access_score|default:"0" }}/100</span>
+                        <span class="public-job-date">Publié le {{ o.created_at|date:"d/m/Y" }}</span>
+                      </div>
+                    </div>
 
+                    <div class="public-job-section">
+                      <h3 class="public-job-title">{{ o.title }}</h3>
+                      <p class="public-job-subtitle">
+                        {% if o.category %}{{ o.category.name }} · {% endif %}{{ o.location|default:"International" }}
+                      </p>
+                    </div>
+
+                    {% if o.application_deadline %}
+                      <div class="public-job-facts">
+                        <span><strong>Date limite:</strong> {{ o.application_deadline }}</span>
+                      </div>
+                    {% endif %}
+
+                    {% if o.keyword_list %}
+                      <div class="public-job-keywords">
+                        {% for keyword in o.keyword_list %}
+                          <span>{{ keyword|truncatechars:28 }}</span>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+
+                    <div class="public-job-actions">
+                      <a class="c-btn c-btn--primary" href="{{ o.url }}" target="_blank" rel="noopener">
+                        Postuler maintenant
+                      </a>
+                      <a class="c-btn" href="{% url 'job_agent:adapt_public_offer' o.id %}">
+                        Adapter mon CV
+                      </a>
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
             {% else %}
               <div class="ja-empty" role="note">
                 <div class="ja-empty__inner">
@@ -82,13 +599,13 @@
                     <span class="ja-empty__glyph">✦</span>
                   </div>
                   <div>
-                    <h3 class="ja-empty__title">Aucune offre publique disponible</h3>
+                    <h3 class="ja-empty__title">Aucune offre ne correspond aux filtres</h3>
                     <p class="ja-empty__text">
-                      Ajoutez vos propres offres ou revenez plus tard pour découvrir les nouvelles opportunités.
+                      Essayez un autre pays, une autre catégorie ou retirez le mot-clé.
                     </p>
                     <div class="ja-empty__actions">
-                      <a class="c-btn c-btn--primary" href="{% url 'job_agent:lead_add' %}">Ajouter une offre</a>
-                      <a class="c-btn" href="{% url 'job_agent:dashboard' %}">Dashboard</a>
+                      <a class="c-btn c-btn--primary" href="{% url 'job_agent:public_offers' %}">Voir toutes les offres</a>
+                      <a class="c-btn" href="{% url 'job_agent:lead_add' %}">Ajouter une offre</a>
                     </div>
                   </div>
                 </div>
@@ -96,10 +613,7 @@
             {% endif %}
           </div>
         </section>
-
-      </div>
     </div>
-
   </div>
 </div>
 {% endblock %}

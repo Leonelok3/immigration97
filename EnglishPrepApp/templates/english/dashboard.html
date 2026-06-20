@@ -5,6 +5,7 @@
 
 {% block extra_css %}
 <style>
+  .ep-shell { min-height: 100vh; background: #050b18; color: #fff; padding: 1px 0 4rem; }
   /* ── Design system EnglishPrep ── */
   .ep-wrap       { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem 4rem; }
 
@@ -51,14 +52,14 @@
   /* Profile bar */
   .ep-profile-bar {
     display: flex; flex-wrap: wrap; gap: 1rem;
-    background: #fff; border: 1px solid #e2e8f0;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1);
     border-radius: 14px; padding: 1.25rem 1.5rem;
     margin-bottom: 2rem;
     align-items: center;
   }
   .ep-stat { text-align: center; flex: 1; min-width: 80px; }
-  .ep-stat span { display: block; font-size: .72rem; color: #64748b; text-transform: uppercase; letter-spacing: .06em; }
-  .ep-stat strong { font-size: 1.4rem; font-weight: 800; color: #102B4E; }
+  .ep-stat span { display: block; font-size: .72rem; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: .06em; }
+  .ep-stat strong { font-size: 1.4rem; font-weight: 800; color: #fff; }
   .ep-stat .ep-badge-list { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .35rem; }
   .ep-badge-pill {
     background: #FEF3C7; color: #92400e;
@@ -68,21 +69,21 @@
 
   /* Section */
   .ep-section-head { margin: 2.5rem 0 1.25rem; }
-  .ep-section-head h2 { font-size: 1.2rem; font-weight: 800; color: #102B4E; margin: 0 0 .25rem; }
-  .ep-section-head p  { font-size: .85rem; color: #64748b; margin: 0; }
+  .ep-section-head h2 { font-size: 1.2rem; font-weight: 800; color: #fff; margin: 0 0 .25rem; }
+  .ep-section-head p  { font-size: .85rem; color: rgba(255,255,255,.55); margin: 0; }
 
   /* Test grid */
   .ep-test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.1rem; }
 
   .ep-test-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.1);
     border-radius: 14px;
     padding: 1.25rem;
     display: flex; flex-direction: column;
     transition: box-shadow .2s, border-color .2s;
   }
-  .ep-test-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08); border-color: #F59E0B; }
+  .ep-test-card:hover { box-shadow: 0 18px 40px rgba(0,0,0,.22); border-color: rgba(245,158,11,.65); }
   .ep-test-tags { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: .75rem; }
   .ep-tag {
     border-radius: 20px; padding: .18rem .6rem;
@@ -92,10 +93,10 @@
   .ep-tag-ielts    { background: #F0FDF4; color: #15803d; }
   .ep-tag-toefl    { background: #FFF7ED; color: #c2410c; }
   .ep-tag-toeic    { background: #FDF4FF; color: #7e22ce; }
-  .ep-tag-level    { background: #F1F5F9; color: #475569; }
-  .ep-test-name { font-size: .98rem; font-weight: 700; color: #102B4E; margin: 0 0 .4rem; }
-  .ep-test-desc { font-size: .82rem; color: #64748b; margin: 0 0 .75rem; flex: 1; }
-  .ep-test-meta { font-size: .75rem; color: #94a3b8; margin-bottom: .9rem; }
+  .ep-tag-level    { background: rgba(255,255,255,.08); color: rgba(255,255,255,.72); }
+  .ep-test-name { font-size: .98rem; font-weight: 700; color: #fff; margin: 0 0 .4rem; }
+  .ep-test-desc { font-size: .82rem; color: rgba(255,255,255,.58); margin: 0 0 .75rem; flex: 1; }
+  .ep-test-meta { font-size: .75rem; color: rgba(255,255,255,.42); margin-bottom: .9rem; }
   .ep-test-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
   .ep-btn-sm-primary {
     background: #102B4E; color: #fff;
@@ -105,31 +106,31 @@
   }
   .ep-btn-sm-primary:hover { background: #1a3d6b; color: #fff; }
   .ep-btn-sm-outline {
-    background: #f8fafc; color: #475569;
-    border: 1px solid #e2e8f0;
+    background: rgba(255,255,255,.045); color: rgba(255,255,255,.72);
+    border: 1px solid rgba(255,255,255,.12);
     border-radius: 8px; padding: .5rem 1rem;
     font-size: .8rem; font-weight: 600;
     text-decoration: none; transition: background .2s;
   }
-  .ep-btn-sm-outline:hover { background: #e2e8f0; }
+  .ep-btn-sm-outline:hover { background: rgba(255,255,255,.09); color:#fff; }
 
   /* Skill stats */
   .ep-skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
   .ep-skill-card {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 1.1rem;
   }
-  .ep-skill-name { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #64748b; margin-bottom: .5rem; }
-  .ep-skill-pct { font-size: 2rem; font-weight: 800; color: #102B4E; }
-  .ep-skill-bar { height: 6px; background: #f1f5f9; border-radius: 4px; margin-top: .5rem; }
+  .ep-skill-name { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: rgba(255,255,255,.5); margin-bottom: .5rem; }
+  .ep-skill-pct { font-size: 2rem; font-weight: 800; color: #fff; }
+  .ep-skill-bar { height: 6px; background: rgba(255,255,255,.08); border-radius: 4px; margin-top: .5rem; }
   .ep-skill-fill { height: 100%; background: #F59E0B; border-radius: 4px; }
 
   /* Recent sessions */
   .ep-sessions-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
   .ep-sessions-table th {
-    background: #f8fafc; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
-    color: #64748b; padding: .65rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0;
+    background: rgba(255,255,255,.04); font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
+    color: rgba(255,255,255,.5); padding: .65rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,.08);
   }
-  .ep-sessions-table td { padding: .75rem 1rem; border-bottom: 1px solid #f1f5f9; }
+  .ep-sessions-table td { padding: .75rem 1rem; border-bottom: 1px solid rgba(255,255,255,.06); color: rgba(255,255,255,.72); }
   .ep-sessions-table tr:last-child td { border-bottom: none; }
   .ep-score-pill {
     border-radius: 20px; padding: .2rem .7rem; font-weight: 700; font-size: .78rem;
@@ -139,19 +140,19 @@
   .ep-score-retry  { background: #FEF2F2; color: #b91c1c; }
 
   /* Empty */
-  .ep-empty { text-align: center; padding: 3rem 1rem; color: #94a3b8; font-size: .9rem; background: #f8fafc; border-radius: 14px; }
+  .ep-empty { text-align: center; padding: 3rem 1rem; color: rgba(255,255,255,.52); font-size: .9rem; background: rgba(255,255,255,.035); border: 1px dashed rgba(255,255,255,.12); border-radius: 14px; }
 
   /* Nav breadcrumb */
-  .ep-bc { font-size: .82rem; color: #64748b; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .ep-bc { font-size: .82rem; color: rgba(255,255,255,.45); margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
   .ep-bc a { color: #F59E0B; text-decoration: none; font-weight: 500; }
   .ep-bc a:hover { text-decoration: underline; }
 
   /* Quick links */
   .ep-quick { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0 2.5rem; }
   .ep-quick-link {
-    background: #fff; border: 1px solid #e2e8f0;
+    background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.1);
     border-radius: 10px; padding: .65rem 1.2rem;
-    font-size: .85rem; font-weight: 600; color: #102B4E;
+    font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.82);
     text-decoration: none; transition: border-color .2s, box-shadow .2s;
     display: flex; align-items: center; gap: .4rem;
   }
@@ -169,6 +170,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="ep-shell">
 <div class="ep-wrap">
 
   <!-- Hero -->
@@ -278,7 +280,7 @@
   <div class="ep-section-head" style="margin-top:2.5rem;">
     <h2>Dernières sessions</h2>
   </div>
-  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;">
+  <div style="background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;">
     <table class="ep-sessions-table">
       <thead>
         <tr>
@@ -292,7 +294,7 @@
       <tbody>
         {% for s in last_sessions %}
         <tr>
-          <td style="font-weight:600;color:#102B4E;">{{ s.test.name }}</td>
+          <td style="font-weight:600;color:#fff;">{{ s.test.name }}</td>
           <td>{{ s.test.level }}</td>
           <td>
             {% if s.score is not None %}
@@ -313,4 +315,5 @@
   {% endif %}
 
 </div>
+</main>
 {% endblock %}

@@ -6,6 +6,8 @@
 {% block extra_css %}
 <style>
 :root{--h-gold:#D4A843;--h-gold-lt:#F0C060;--h-glass:rgba(255,255,255,.04);}
+.german-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.german-page a{text-decoration:none;}
 
 .gsa-breadcrumb{max-width:1080px;margin:0 auto;padding:1.25rem 1.25rem 0;display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:rgba(255,255,255,.35);}
 .gsa-breadcrumb a{color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s;}
@@ -54,6 +56,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="german-page">
 
 <div class="gsa-breadcrumb">
   <a href="{% url 'germanprep:home' %}">Allemand</a>
@@ -114,4 +117,5 @@
   <a href="{% url 'germanprep:test_result' session.id %}" class="gsa-btn gsa-btn--ghost">← Retour au résultat</a>
 </div>
 
+</main>
 {% endblock %}

@@ -1,7 +1,4 @@
 import json
-from django.conf import settings
-
-from openai import OpenAI, OpenAIError
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -15,6 +12,8 @@ from django.db.models import Max, Avg   # 👈 AJOUT ICI
 
 import os, tempfile, logging
 _log = logging.getLogger(__name__)
+from services.ai_service import AIService, AIServiceError
+from preparation_tests.services.daily_content_agent import DailyContentAgent
 
 from .models import (
     EnglishTest,
@@ -27,13 +26,6 @@ from .models import (
     EnglishEESubmission,
     LEVEL_THRESHOLDS,
 )
-
-# =============================
-# CLIENT OPENAI - COACH IA
-# =============================
-OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", None)
-client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
-
 
 # =========================
 #  UTILITAIRES
@@ -645,6 +637,23 @@ def exam_learning_path(request, test_id):
     return render(request, "english/exam_learning_path.html", context)
 
 
+@login_required
+def english_daily_lesson(request):
+    section = (request.GET.get("section") or "").strip().lower()
+    level = (request.GET.get("level") or "").strip().upper()
+    selection = DailyContentAgent().select_english_lesson(section=section, level=level)
+    return render(
+        request,
+        "english/daily_lesson.html",
+        {
+            "selection": selection,
+            "section": section,
+            "level": level,
+            "is_sunday": timezone.localdate().weekday() == 6,
+        },
+    )
+
+
 # =========================
 #  COACH IA (chat JS)
 # =========================
@@ -686,15 +695,6 @@ def ai_coach_api(request):
     """
     if request.method != "POST":
         return JsonResponse({"error": "Only POST allowed"}, status=405)
-
-    if client is None:
-        return JsonResponse(
-            {
-                "error": "API key manquante",
-                "reply": "La clé OPENAI_API_KEY n'est pas configurée sur le serveur.",
-            },
-            status=500,
-        )
 
     try:
         data = json.loads(request.body.decode("utf-8"))
@@ -760,13 +760,13 @@ def ai_coach_api(request):
     messages.append({"role": "user", "content": user_message})
 
     try:
-        completion = client.chat.completions.create(
-            model="gpt-4.1-mini",
-            messages=messages,
-            temperature=0.4,
+        result = AIService().generate_response(
+            user_input=user_message,
+            task_type="visa",
+            conversation_history=messages,
         )
-        reply_text = completion.choices[0].message.content
-    except OpenAIError as e:
+        reply_text = result["response"]
+    except AIServiceError as e:
         return JsonResponse(
             {
                 "error": "IA error",

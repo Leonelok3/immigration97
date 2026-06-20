@@ -26,7 +26,7 @@ Message :
 {invite.message}
 
 Pour accepter ou refuser cette invitation, connectez-vous à votre espace :
-https://immigration97.com/profiles/mes-invitations/
+https://immigration97.com/profiles/me/invitations/
 
 Cordialement,
 L'équipe Immigration97

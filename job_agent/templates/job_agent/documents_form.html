@@ -1,55 +1,125 @@
 {% extends "base.html" %}
+{% load static %}
 {% load widget_tweaks %}
-{% block title %}CV / Lettre{% endblock %}
+
+{% block title %}Documents candidature | Job Agent{% endblock %}
+{% block body_class %}job-agent{% endblock %}
+{% block app_scope %}job-agent{% endblock %}
+
+{% block extra_css %}
+{% include "job_agent/_ja_critical.html" %}
+{% endblock %}
 
 {% block content %}
-<h1>CV / Lettre</h1>
-{% include "job_agent/_menu.html" %}
-
-
-<div class="c-card" style="padding:14px; margin-bottom:14px;">
-  <p>
-    Pour un scoring précis, colle le texte du CV + la lettre de base.
-    (Upload fichiers utile pour ton archive, mais le matching MVP utilise surtout le texte.)
-  </p>
-</div>
-
-<form method="post" enctype="multipart/form-data" class="c-card" style="padding:14px;">
-  {% csrf_token %}
-
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-    <div>
-      <label>Fichier CV</label>
-      {{ form.cv_file }}
+<div class="app-main job-agent">
+  <div class="ja-container">
+    <div class="ja-pagehead">
+      <div class="ja-pagehead__title">
+        <h1>Documents & CV texte</h1>
+        <p>Importez votre CV pour permettre à l’agent ATS gratuit d’adapter vos candidatures.</p>
+      </div>
+      <div class="ja-pagehead__actions">
+        <a class="c-btn" href="{% url 'job_agent:dashboard' %}">Dashboard</a>
+        <a class="c-btn c-btn--primary" href="{% url 'job_agent:public_offers' %}">Voir les offres</a>
+      </div>
     </div>
-    <div>
-      <label>Fichier lettre</label>
-      {{ form.cover_letter_file }}
+
+    <div class="ja-layout">
+      {% include "job_agent/_menu.html" with active="docs" %}
+
+      <div class="ja-content">
+        <section class="ja-card" style="margin-bottom:1.5rem;">
+          <div class="ja-card__head">
+            <h2>Qualité du CV texte</h2>
+            <div class="ja-pagehead__actions">
+              <span class="c-btn" style="pointer-events:none;">{{ cv_quality.score }}/100</span>
+            </div>
+          </div>
+          <div class="ja-card__body">
+            <div style="height:8px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;margin-bottom:1rem;">
+              <div style="height:100%;width:{{ cv_quality.score }}%;background:linear-gradient(90deg,#D4A843,#F59E0B);"></div>
+            </div>
+            <div class="ja-formgrid">
+              <div class="ja-col-6">
+                <div class="ja-block">
+                  <div class="ja-block__head"><h3>Diagnostic</h3></div>
+                  <p class="ja-muted" style="margin:0 0 .4rem;">{{ cv_quality.words_count }} mots détectés • {{ cv_quality.lines_count }} lignes</p>
+                  {% if cv_quality.warnings %}
+                    <ul style="margin:.5rem 0 0;padding-left:1.2rem;color:rgba(232,234,240,.8);">
+                      {% for warning in cv_quality.warnings %}
+                        <li>{{ warning }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <p class="ja-muted" style="margin:0;">CV texte exploitable pour l’adaptation ATS.</p>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="ja-col-6">
+                <div class="ja-block">
+                  <div class="ja-block__head"><h3>Mots-clés détectés</h3></div>
+                  <pre>{% if cv_quality.keywords %}{% for kw in cv_quality.keywords %}{{ kw }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}Ajoutez ou extrayez votre CV pour voir les mots-clés.{% endif %}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <form method="post" enctype="multipart/form-data" class="ja-card">
+          {% csrf_token %}
+          <div class="ja-card__head">
+            <h2>Importer / corriger mon CV</h2>
+            <button class="c-btn c-btn--primary" type="submit">Enregistrer et analyser</button>
+          </div>
+
+          <div class="ja-card__body">
+            <div class="ja-formgrid">
+              <div class="ja-col-6">
+                <div class="ja-field">
+                  <label>Fichier CV PDF</label>
+                  {{ form.cv_file }}
+                  {% if docs.cv_file %}
+                    <p class="ja-muted" style="margin:.45rem 0 0;">Fichier actuel: {{ docs.cv_file.name }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="ja-col-6">
+                <div class="ja-field">
+                  <label>Fichier lettre de base</label>
+                  {{ form.cover_letter_file }}
+                  {% if docs.cover_letter_file %}
+                    <p class="ja-muted" style="margin:.45rem 0 0;">Fichier actuel: {{ docs.cover_letter_file.name }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="ja-field" style="margin-top:1rem;">
+              <label style="display:flex;gap:.6rem;align-items:center;">
+                {{ form.auto_extract_cv }}
+                <span>Extraire automatiquement le texte du CV PDF</span>
+              </label>
+              <p class="ja-muted" style="margin:.3rem 0 0;">Si le PDF est scanné comme une image, l’extraction peut être vide. Dans ce cas, collez le texte manuellement.</p>
+            </div>
+
+            <div class="ja-field" style="margin-top:1rem;">
+              <label>Texte CV utilisé par l’agent ATS</label>
+              {{ form.cv_text|add_class:"c-input" }}
+            </div>
+
+            <div class="ja-field" style="margin-top:1rem;">
+              <label>Lettre de motivation de base</label>
+              {{ form.base_letter_text|add_class:"c-input" }}
+            </div>
+          </div>
+
+          <div class="ja-card__foot">
+            <button class="c-btn c-btn--primary" type="submit">Enregistrer et analyser</button>
+            <a class="c-btn" href="{% url 'job_agent:public_offers' %}">Adapter une offre</a>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-
-  <div style="margin-top:12px;">
-    <label>Texte CV (recommandé)</label>
-    {{ form.cv_text|add_class:"c-input" }}
-  </div>
-
-  <div style="margin-top:12px;">
-    <label>Lettre de motivation de base</label>
-    {{ form.base_letter_text|add_class:"c-input" }}
-  </div>
-
-  <div style="margin-top:14px; display:flex; gap:10px;">
-
-    <div style="margin-top:12px;">
-  <label style="display:flex; gap:10px; align-items:center;">
-    {{ form.auto_extract_cv }}
-    <span>Extraire automatiquement le texte du CV (PDF)</span>
-  </label>
-  <small>{{ form.auto_extract_cv.help_text }}</small>
 </div>
-
-    <button class="c-btn c-btn--primary" type="submit">Enregistrer</button>
-    <a class="c-btn c-btn--outline" href="{% url 'job_agent:dashboard' %}">Retour</a>
-  </div>
-</form>
 {% endblock %}

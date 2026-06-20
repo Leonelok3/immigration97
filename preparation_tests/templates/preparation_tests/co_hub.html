@@ -17,6 +17,8 @@
   --h-glass:rgba(255,255,255,0.04);--h-border:rgba(212,168,67,.2);
   --h-co:#3B82F6;   /* blue  — CO accent */
 }
+.fr-prep-page{min-height:100vh;background:#050b18;color:#fff;padding-bottom:3rem;}
+.fr-prep-page a{text-decoration:none;}
 
 /* ── HERO ── */
 .sh-hero{padding:3rem 0 2rem;text-align:center;}
@@ -143,6 +145,7 @@
 {% endblock %}
 
 {% block content %}
+<main class="fr-prep-page">
 
 {% include "preparation_tests/partials/_prep_nav.html" %}
 
@@ -178,6 +181,8 @@
   </div>
   {% endwith %}
 </div>
+
+{% include "preparation_tests/partials/_exam_resource_ctas.html" %}
 
 
 <!-- ══ SUJET DU MOIS ══ -->
@@ -218,6 +223,7 @@
   {% endif %}
 </div>
 
+{% include "preparation_tests/partials/_monthly_and_past_exam_blocks.html" %}
 
 <!-- ══ SUJETS OFFICIELS & CORRECTIONS ══ -->
 {% if official_subjects %}
@@ -398,6 +404,7 @@
 </div>
 {% endif %}
 
+</main>
 {% endblock %}
 
 {% block extra_js %}

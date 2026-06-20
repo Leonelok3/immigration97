@@ -96,6 +96,20 @@ def _safe_reverse(name: str, fallback: str = "#") -> str:
 
 @staff_member_required
 def arsenal_ia_page(request):
+    orchestration = None
+    orchestration_goal = ""
+    if request.method == "POST":
+        orchestration_goal = (request.POST.get("goal") or "").strip()
+        try:
+            from ai_engine.orchestrator import orchestrate_immigration97
+
+            orchestration = orchestrate_immigration97(
+                request.user if request.user.is_authenticated else None,
+                orchestration_goal,
+            )
+        except Exception:
+            orchestration = None
+
     stats = {
         "scraped_leads": 0,
         "verified_opportunities": 0,
@@ -272,7 +286,16 @@ def arsenal_ia_page(request):
         },
     ]
 
-    return render(request, "core/arsenal_ia.html", {"agents": agents, "stats": stats})
+    return render(
+        request,
+        "core/arsenal_ia.html",
+        {
+            "agents": agents,
+            "stats": stats,
+            "orchestration": orchestration,
+            "orchestration_goal": orchestration_goal,
+        },
+    )
 
 
 def home(request):
@@ -318,3 +341,234 @@ def consultation_request(request):
 def consultation_success(request):
     """Page de confirmation après soumission d'une demande."""
     return render(request, "consultation/success.html")
+
+
+# ======================================================
+# MODE FACILE / ASSISTANT LOCAL SANS OPENAI
+# ======================================================
+
+OFFICIAL_LINK_GROUPS = [
+    {
+        "title": "Canada",
+        "links": [
+            {"label": "Immigration Canada - site officiel", "url": "https://www.canada.ca/fr/immigration-refugies-citoyennete.html"},
+            {"label": "Permis d'études Canada", "url": "https://www.canada.ca/fr/immigration-refugies-citoyennete/services/etudier-canada.html"},
+            {"label": "Permis de travail Canada", "url": "https://www.canada.ca/fr/immigration-refugies-citoyennete/services/travailler-canada.html"},
+            {"label": "Guichet emplois Canada", "url": "https://www.guichetemplois.gc.ca/"},
+        ],
+    },
+    {
+        "title": "Allemagne",
+        "links": [
+            {"label": "Make it in Germany", "url": "https://www.make-it-in-germany.com/fr/"},
+            {"label": "Visa et immigration Allemagne", "url": "https://www.auswaertiges-amt.de/fr/service/visa-und-aufenthalt"},
+            {"label": "Reconnaissance des diplômes", "url": "https://www.anerkennung-in-deutschland.de/html/fr/index.php"},
+            {"label": "Agence fédérale pour l'emploi", "url": "https://www.arbeitsagentur.de/en"},
+        ],
+    },
+    {
+        "title": "Europe et France",
+        "links": [
+            {"label": "Portail immigration UE", "url": "https://immigration-portal.ec.europa.eu/index_fr"},
+            {"label": "EURES - emplois en Europe", "url": "https://eures.europa.eu/index_fr"},
+            {"label": "France-Visas", "url": "https://france-visas.gouv.fr/"},
+            {"label": "Campus France", "url": "https://www.campusfrance.org/fr"},
+        ],
+    },
+    {
+        "title": "Bourses et études",
+        "links": [
+            {"label": "DAAD - bourses Allemagne", "url": "https://www.daad.de/en/studying-in-germany/scholarships/"},
+            {"label": "Erasmus+", "url": "https://erasmus-plus.ec.europa.eu/fr"},
+            {"label": "Bourses du gouvernement français", "url": "https://www.campusfrance.org/fr/bourses-etudiants-etrangers"},
+            {"label": "Bourses Canada", "url": "https://www.educanada.ca/scholarships-bourses/index.aspx?lang=fra"},
+        ],
+    },
+]
+
+LOCAL_ASSISTANT_ANSWERS = {
+    "commencer": "Commence par choisir un objectif: étudier, travailler, chercher une bourse ou préparer un test de langue. Ensuite, prépare passeport, diplôme, CV et preuves financières.",
+    "bourse": "Pour les bourses, vise les sources officielles: Campus France, DAAD, Erasmus+ et EduCanada. Prépare relevés, diplôme, CV, lettre de motivation et passeport.",
+    "travail": "Pour le travail, commence par un CV clair, un métier précis, des offres avec lien officiel, et vérifie les signaux visa/sponsoring avant de postuler.",
+    "canada": "Pour le Canada, utilise Canada.ca et Guichet-Emplois. Ne paie jamais quelqu'un qui promet un visa garanti.",
+    "allemagne": "Pour l'Allemagne, utilise Make it in Germany, l'ambassade et Anerkennung in Deutschland pour vérifier visa, emploi et reconnaissance du diplôme.",
+    "langue": "Pour les tests de langue, fais une leçon et un exercice par jour. Le dimanche, fais un examen blanc pour mesurer tes progrès.",
+    "document": "Les documents de base sont: passeport, acte de naissance, diplômes, relevés, CV, preuves financières, photos et justificatifs d'expérience.",
+}
+
+
+def _official_links_for_route(route_key: str) -> list[dict[str, str]]:
+    """Retourne quelques liens officiels prioritaires selon le parcours."""
+
+    flat_links = [link for group in OFFICIAL_LINK_GROUPS for link in group["links"]]
+    keywords = {
+        "study": ("études", "Campus", "Permis d'études", "France", "Canada"),
+        "work": ("travail", "emploi", "EURES", "Germany", "Agence"),
+        "scholarship": ("bourses", "DAAD", "Erasmus", "Bourses"),
+        "language": ("Campus", "Canada", "Germany"),
+        "documents": ("France-Visas", "Immigration", "Canada"),
+    }.get(route_key, ())
+
+    selected = [
+        link for link in flat_links
+        if any(word.lower() in link["label"].lower() for word in keywords)
+    ]
+    return selected[:4] or flat_links[:4]
+
+
+def _build_easy_recommendation(form_data) -> dict[str, object]:
+    """Construit une orientation simple et une checklist sans appel IA."""
+
+    goal = (form_data.get("goal") or "").strip()
+    budget = (form_data.get("budget") or "").strip()
+    job = (form_data.get("job") or "").strip()
+    study_level = (form_data.get("study_level") or "").strip()
+    country = (form_data.get("country") or "").strip()
+
+    route_map = {
+        "study": {
+            "title": "Visa études",
+            "url": _safe_reverse("visaetude:home", "/visa-etudes/"),
+            "steps": ["Choisir un pays et une formation", "Préparer les documents scolaires", "Vérifier visa et preuves financières"],
+        },
+        "work": {
+            "title": "Travail à l'international",
+            "url": _safe_reverse("job_agent:public_offers", "/jobs/offres-publiques/"),
+            "steps": ["Créer un CV clair", "Postuler via les liens officiels", "Vérifier visa, contrat et employeur"],
+        },
+        "scholarship": {
+            "title": "Bourses d'études",
+            "url": _safe_reverse("visaetude:scholarship_offers", "/visa-etudes/bourses/"),
+            "steps": ["Identifier les bourses ouvertes aux étrangers", "Préparer CV, notes et motivation", "Postuler sur le site officiel"],
+        },
+        "language": {
+            "title": "Tests de langue",
+            "url": _safe_reverse("preparation_tests:home", "/prep/"),
+            "steps": ["Faire la leçon du jour", "Faire l'exercice du jour", "Passer l'examen blanc du dimanche"],
+        },
+        "documents": {
+            "title": "Documents et dossier",
+            "url": "/documents/",
+            "steps": ["Lister les documents", "Scanner en PDF lisible", "Classer par pays et objectif"],
+        },
+    }
+    route_key = goal if goal in route_map else "study"
+    route = route_map[route_key]
+
+    checklist = [
+        "Passeport valide",
+        "Acte de naissance",
+        "CV simple et à jour",
+        "Diplômes et relevés disponibles en PDF",
+        "Preuves financières ou plan de financement",
+    ]
+    if route_key == "study":
+        checklist.extend(["Attestation d'admission ou liste d'écoles", "Lettre de motivation académique"])
+    elif route_key == "work":
+        checklist.extend(["Expérience professionnelle résumée", "Liens directs des offres ciblées", "Preuves de compétences"])
+    elif route_key == "scholarship":
+        checklist.extend(["Relevés de notes", "Recommandations si demandées", "Calendrier des dates limites"])
+    elif route_key == "language":
+        checklist.extend(["Niveau actuel estimé", "Objectif de score", "Planning quotidien CO/CE/EE/EO"])
+    else:
+        checklist.extend(["Photos conformes", "Traductions certifiées si demandées", "Nom des fichiers clair"])
+
+    note = "Parcours économique: utilise d'abord les pages gratuites, les liens officiels et les contenus du jour."
+    if budget in {"low", "very_low"}:
+        note = "Budget faible: vise les bourses, les liens officiels gratuits et évite tout paiement non vérifié."
+
+    return {
+        "route_key": route_key,
+        "route_title": route["title"],
+        "route_url": route["url"],
+        "steps": route["steps"],
+        "checklist": checklist,
+        "official_links": _official_links_for_route(route_key),
+        "profile": {
+            "age": form_data.get("age", "").strip(),
+            "country": country or "Non précisé",
+            "study_level": study_level or "Non précisé",
+            "job": job or "Non précisé",
+            "budget": budget or "Non précisé",
+        },
+        "note": note,
+    }
+
+
+def _local_assistant_answer(question: str) -> str:
+    """Répond avec des règles locales pour éviter tout coût API."""
+
+    normalized = question.lower().strip()
+    if not normalized:
+        return "Écris une question courte, par exemple: je veux commencer, bourse Canada, travail Allemagne."
+    for keyword, answer in LOCAL_ASSISTANT_ANSWERS.items():
+        if keyword in normalized:
+            return answer
+    return (
+        "Je peux t'aider sans OpenAI. Dis si ton objectif est: études, travail, bourse, langue ou documents. "
+        "Je te donnerai les prochaines étapes et les liens officiels."
+    )
+
+
+def easy_start_view(request):
+    """Parcours ultra simple pour orienter les utilisateurs peu à l'aise au téléphone."""
+
+    from django.contrib import messages
+    from django.db import IntegrityError
+
+    result = None
+    if request.method == "POST":
+        form_type = request.POST.get("form_type")
+        if form_type == "alerts":
+            from .models import ImmigrationAlertSubscriber
+
+            email = (request.POST.get("email") or "").strip()
+            whatsapp = (request.POST.get("whatsapp") or "").strip()
+            if not email and not whatsapp:
+                messages.error(request, "Ajoute au moins un email ou un numéro WhatsApp.")
+            else:
+                try:
+                    ImmigrationAlertSubscriber.objects.create(
+                        email=email,
+                        whatsapp=whatsapp,
+                        country=(request.POST.get("country") or "").strip(),
+                        project_type=request.POST.get("project_type") or "news",
+                        channel=request.POST.get("channel") or "email",
+                    )
+                    messages.success(request, "Alerte enregistrée. Tu recevras les nouveautés utiles.")
+                except IntegrityError:
+                    messages.info(request, "Cette alerte existe déjà. Aucun doublon ajouté.")
+            return redirect("easy_start")
+
+        result = _build_easy_recommendation(request.POST)
+
+    return render(
+        request,
+        "core/start_easy.html",
+        {
+            "result": result,
+            "official_link_groups": OFFICIAL_LINK_GROUPS,
+            "local_answer": _local_assistant_answer(request.GET.get("q", "")),
+        },
+    )
+
+
+def official_links_view(request):
+    """Page publique de liens officiels uniquement."""
+
+    return render(request, "core/official_links.html", {"official_link_groups": OFFICIAL_LINK_GROUPS})
+
+
+def local_assistant_api(request):
+    """Assistant local JSON, volontairement sans OpenAI."""
+
+    from django.http import JsonResponse
+
+    question = request.GET.get("q") or request.POST.get("q") or ""
+    return JsonResponse(
+        {
+            "answer": _local_assistant_answer(question),
+            "source": "local_fallback",
+            "openai_used": False,
+        }
+    )

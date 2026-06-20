@@ -1,7 +1,4 @@
-from openai import OpenAI
-from django.conf import settings
-
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+from services.ai_service import AIService
 
 def generate_professional_summary(cv):
     """
@@ -40,11 +37,4 @@ Skills:
 {skill_text}
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.4,
-        max_tokens=120
-    )
-
-    return response.choices[0].message.content.strip()
+    return AIService().generate_response(prompt, task_type="faq")["response"]

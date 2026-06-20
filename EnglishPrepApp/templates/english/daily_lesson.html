@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}English lesson of the day | Immigration97{% endblock %}
+{% block body_class %}english-prep{% endblock %}
+
+{% block content %}
+<main class="container" style="padding:2rem 1rem 4rem;max-width:960px;">
+  <h1>English lesson of the day</h1>
+  <p>Daily lesson and exercises selected from the Immigration97 database.</p>
+  {% if is_sunday %}
+    <p><a href="{% url 'englishprep:exam_list' %}">Sunday mock exam: start an English test</a></p>
+  {% endif %}
+
+  {% if selection.lesson %}
+    <section style="margin:1rem 0;padding:1rem;border:1px solid rgba(0,0,0,.12);border-radius:8px;">
+      <p><strong>{{ selection.lesson.get_skill_display }}</strong>{% if selection.level %} · {{ selection.level }}{% endif %}</p>
+      <h2>{{ selection.lesson.title }}</h2>
+      {% if selection.lesson.short_description %}<p>{{ selection.lesson.short_description }}</p>{% endif %}
+      {% if selection.lesson.content %}<div>{{ selection.lesson.content|linebreaks }}</div>{% endif %}
+    </section>
+
+    <section>
+      <h2>Daily exercises</h2>
+      {% for exercise in selection.exercises %}
+        <article style="margin:.75rem 0;padding:1rem;border:1px solid rgba(0,0,0,.1);border-radius:8px;">
+          <h3>{{ forloop.counter }}. {{ exercise.title }}</h3>
+          {% if exercise.description %}<p>{{ exercise.description }}</p>{% endif %}
+          {% if exercise.content %}<div>{{ exercise.content|linebreaks }}</div>{% endif %}
+          {% if exercise.external_url %}<a href="{{ exercise.external_url }}" target="_blank" rel="noopener">Open resource</a>{% endif %}
+        </article>
+      {% empty %}
+        <p>No exercise linked to this lesson yet.</p>
+      {% endfor %}
+    </section>
+  {% else %}
+    <p>{{ selection.empty_reason }}</p>
+  {% endif %}
+</main>
+{% endblock %}

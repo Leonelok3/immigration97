@@ -50,6 +50,7 @@ urlpatterns = [
         views.exam_learning_path,
         name="exam_learning_path",
     ),
+    path("lecon-du-jour/", views.english_daily_lesson, name="daily_lesson"),
 
     # Profil / progression anglais
     path("profil/", views.english_profile, name="profile"),

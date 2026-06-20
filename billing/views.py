@@ -2,6 +2,7 @@
 from datetime import timedelta
 from decimal import Decimal
 import uuid
+from urllib.parse import quote
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -64,12 +65,14 @@ def pricing(request):
 
     has_active_sub = request.user.is_authenticated and has_active_access(request.user)
     notchpay_available = bool(getattr(django_settings, "NOTCHPAY_PUBLIC_KEY", ""))
+    payunit_available = bool(getattr(django_settings, "PAYUNIT_AVAILABLE", False))
 
     return render(request, "billing/pricing.html", {
         "candidate_plans": candidate_plans,
         "recruiter_plans": recruiter_plans,
         "plans": candidate_plans,
         "has_active_sub": has_active_sub,
+        "payunit_available": payunit_available,
         "notchpay_available": notchpay_available,
         "next": request.GET.get("next", ""),
     })
@@ -311,12 +314,79 @@ def wallet_dashboard(request):
 # FLOW PAIEMENT (placeholder)
 # =============================================================================
 
+def _complete_paid_transaction(tx, *, provider, provider_metadata=None):
+    if tx.status == "COMPLETED" and tx.related_subscription_id:
+        return tx.related_subscription
+
+    provider_metadata = provider_metadata or {}
+    payment_method = provider
+    if provider == "PAYUNIT":
+        channel = (
+            provider_metadata.get("payunit_channel")
+            or (tx.metadata or {}).get("payunit_channel")
+            or ""
+        )
+        payment_method = "CARD" if channel == "card" else "MOBILE_MONEY"
+
+    tx.status = "COMPLETED"
+    tx.payment_method = payment_method
+    tx.metadata = {
+        **(tx.metadata or {}),
+        "provider": provider,
+        **provider_metadata,
+    }
+    tx.save(update_fields=["status", "payment_method", "metadata"])
+
+    sub, _ = Subscription.activate_or_extend(user=tx.user, plan=tx.plan)
+    tx.related_subscription = sub
+    tx.save(update_fields=["related_subscription"])
+
+    create_commission_for_transaction(tx)
+
+    from .emails import send_welcome_subscription
+    send_welcome_subscription(tx.user, tx.plan, sub)
+    return sub
+
+
+def _payunit_status_from_payload(payload):
+    status = (
+        payload.get("status")
+        or payload.get("transaction_status")
+        or payload.get("transactionStatus")
+        or payload.get("payment_status")
+        or payload.get("state")
+        or ""
+    )
+    return str(status).strip().lower()
+
+
+def _payunit_status_is_success(status):
+    return status in {"success", "successful", "complete", "completed", "paid", "approved"}
+
+
+def _payunit_status_is_failure(status):
+    return status in {"failed", "failure", "cancelled", "canceled", "declined", "expired", "error"}
+
+
+def _whatsapp_code_url(plan, request):
+    text = (
+        "Bonjour Immigration97, je veux payer l'abonnement "
+        f"{plan.name} ({plan.price_usd} USD / environ {plan.price_xaf} FCFA) "
+        "et recevoir un code d'abonnement."
+    )
+    next_url = request.POST.get("next") or request.GET.get("next")
+    if next_url:
+        text += f" Mon lien de retour: {request.build_absolute_uri(next_url)}"
+    return "https://wa.me/237693649944?text=" + quote(text)
+
+
 @login_required
 def buy_plan(request, plan_slug):
     plan = get_object_or_404(SubscriptionPlan, slug=plan_slug, is_active=True)
 
     from django.conf import settings
     notchpay_available = bool(getattr(settings, "NOTCHPAY_PUBLIC_KEY", ""))
+    payunit_available = bool(getattr(settings, "PAYUNIT_AVAILABLE", False))
 
     tx = Transaction.objects.create(
         user=request.user,
@@ -326,12 +396,14 @@ def buy_plan(request, plan_slug):
         type="CREDIT",
         status="PENDING",
         description=f"Achat {plan.name}",
-        payment_method="NOTCHPAY",
+        payment_method="MOBILE_MONEY" if payunit_available else "OTHER",
+        metadata={"provider": "PAYUNIT" if payunit_available else "NOTCHPAY"},
     )
 
     return render(request, "billing/buy_plan.html", {
         "plan": plan,
         "transaction": tx,
+        "payunit_available": payunit_available,
         "notchpay_available": notchpay_available,
         "cinetpay_available": False,
         "stripe_available": False,
@@ -352,6 +424,81 @@ def initiate_payment(request, transaction_id):
 
     if request.method != "POST":
         return redirect("billing:buy_plan", plan_slug=tx.plan.slug)
+
+    selected_method = (request.POST.get("payment_method") or "").upper()
+    if selected_method == "WHATSAPP_CODE":
+        tx.metadata = {
+            **(tx.metadata or {}),
+            "provider": "WHATSAPP",
+            "payment_choice": "whatsapp_code",
+        }
+        tx.save(update_fields=["metadata"])
+        return redirect(_whatsapp_code_url(tx.plan, request))
+
+    payunit_methods = {
+        "PAYUNIT": ("mobile_money", "Mobile Money"),
+        "PAYUNIT_MTN": ("mtn_momo", "MTN Mobile Money"),
+        "PAYUNIT_ORANGE": ("orange_money", "Orange Money"),
+        "PAYUNIT_CARD": ("card", "Carte bancaire"),
+    }
+
+    if selected_method in payunit_methods:
+        from .payunit_service import initialize_payunit_payment, make_payunit_refs
+
+        payunit_available = bool(getattr(settings, "PAYUNIT_AVAILABLE", False))
+        if not payunit_available:
+            messages.warning(
+                request,
+                "Paiement en ligne indisponible pour le moment. Contacte-nous sur WhatsApp pour recevoir un code.",
+            )
+            return redirect(_whatsapp_code_url(tx.plan, request))
+
+        payunit_channel, payunit_label = payunit_methods[selected_method]
+        refs = make_payunit_refs()
+        tx.metadata = {
+            **(tx.metadata or {}),
+            "provider": "PAYUNIT",
+            "payment_choice": selected_method,
+            "payunit_channel": payunit_channel,
+            "payunit_channel_label": payunit_label,
+            "payunit_purchase_ref": refs["purchase_ref"],
+            "payunit_transaction_id": refs["transaction_id"],
+        }
+        tx.payment_method = "CARD" if payunit_channel == "card" else "MOBILE_MONEY"
+        tx.description = f"Achat {tx.plan.name} - {payunit_label}"
+        tx.save(update_fields=["payment_method", "description", "metadata"])
+
+        return_url = request.build_absolute_uri(
+            reverse("billing:payunit_return") + f"?tx={tx.id}&ref={refs['purchase_ref']}"
+        )
+        notify_url = request.build_absolute_uri(
+            reverse("billing:payunit_notify") + f"?tx={tx.id}&ref={refs['purchase_ref']}"
+        )
+        result = initialize_payunit_payment(
+            amount_xaf=int(tx.amount),
+            description=f"Immigration97 - {tx.plan.name} - {payunit_label}",
+            return_url=return_url,
+            notify_url=notify_url,
+            refs=refs,
+        )
+        if result["success"]:
+            tx.metadata = {
+                **(tx.metadata or {}),
+                "payunit_initialized": True,
+                "payunit_init_response": result.get("raw"),
+            }
+            tx.save(update_fields=["metadata"])
+            return redirect(result["payment_url"])
+
+        tx.status = "FAILED"
+        tx.metadata = {
+            **(tx.metadata or {}),
+            "payunit_error": result.get("error"),
+            "payunit_init_response": result.get("raw"),
+        }
+        tx.save(update_fields=["status", "metadata"])
+        messages.error(request, f"Erreur PayUnit : {result.get('error', 'initialisation impossible')}")
+        return redirect(reverse("billing:payment_failed") + f"?tx={tx.id}")
 
     notchpay_available = bool(getattr(settings, "NOTCHPAY_PUBLIC_KEY", ""))
     if not notchpay_available:
@@ -408,20 +555,11 @@ def notchpay_callback(request):
     result = verify_payment(trxref)
 
     if result["success"] and result["status"] == "complete":
-        tx.status = "COMPLETED"
-        tx.payment_method = "NOTCHPAY"
-        tx.metadata = {**(tx.metadata or {}), "notchpay_verified": True, "notchpay_ref": trxref}
-        tx.save(update_fields=["status", "payment_method", "metadata"])
-
-        sub, _ = Subscription.activate_or_extend(user=request.user, plan=tx.plan)
-        tx.related_subscription = sub
-        tx.save(update_fields=["related_subscription"])
-
-        create_commission_for_transaction(tx)
-
-        from .emails import send_welcome_subscription
-        send_welcome_subscription(request.user, tx.plan, sub)
-
+        sub = _complete_paid_transaction(
+            tx,
+            provider="NOTCHPAY",
+            provider_metadata={"notchpay_verified": True, "notchpay_ref": trxref},
+        )
         return redirect(reverse("billing:payment_success") + f"?sub={sub.id}")
 
     # Paiement échoué ou en attente
@@ -493,6 +631,98 @@ def notchpay_webhook(request):
             tx.save(update_fields=["related_subscription"])
 
             create_commission_for_transaction(tx)
+
+    return HttpResponse("OK", status=200)
+
+
+@login_required
+def payunit_return(request):
+    tx_id = request.GET.get("tx")
+    purchase_ref = request.GET.get("ref") or request.GET.get("purchaseRef")
+    status = _payunit_status_from_payload(request.GET)
+    if not tx_id:
+        messages.error(request, "Paramètres PayUnit manquants.")
+        return redirect("billing:pricing")
+
+    tx = get_object_or_404(Transaction.objects.select_related("plan", "user"), id=tx_id, user=request.user)
+    if tx.status == "COMPLETED":
+        messages.success(request, "Ton abonnement est déjà actif.")
+        return redirect("billing:wallet")
+
+    if _payunit_status_is_failure(status):
+        tx.status = "FAILED"
+        tx.metadata = {
+            **(tx.metadata or {}),
+            "payunit_return": True,
+            "payunit_status": status,
+            "payunit_purchase_ref": purchase_ref or (tx.metadata or {}).get("payunit_purchase_ref"),
+            "payunit_query": dict(request.GET.items()),
+        }
+        tx.save(update_fields=["status", "metadata"])
+        messages.error(request, "Paiement PayUnit non confirmé. Tu peux réessayer.")
+        return redirect(reverse("billing:payment_failed") + f"?tx={tx.id}")
+
+    sub = _complete_paid_transaction(
+        tx,
+        provider="PAYUNIT",
+        provider_metadata={
+            "payunit_return": True,
+            "payunit_status": status or "return_without_status",
+            "payunit_purchase_ref": purchase_ref or (tx.metadata or {}).get("payunit_purchase_ref"),
+            "payunit_query": dict(request.GET.items()),
+        },
+    )
+    messages.success(request, "Paiement confirmé. Ton accès Premium est actif.")
+    return redirect(reverse("billing:payment_success") + f"?sub={sub.id}")
+
+
+@csrf_exempt
+def payunit_notify(request):
+    payload = {}
+    if request.method == "POST":
+        try:
+            payload = _json.loads(request.body.decode("utf-8") or "{}")
+        except Exception:
+            payload = request.POST.dict()
+    else:
+        payload = request.GET.dict()
+
+    tx_id = request.GET.get("tx") or payload.get("tx") or payload.get("transaction")
+    purchase_ref = (
+        request.GET.get("ref")
+        or payload.get("purchaseRef")
+        or payload.get("purchase_ref")
+        or payload.get("ref")
+    )
+    payunit_transaction_id = payload.get("transaction_id") or payload.get("transactionId")
+
+    tx_qs = Transaction.objects.select_related("plan", "user")
+    tx = None
+    if tx_id:
+        tx = tx_qs.filter(id=tx_id).first()
+    if not tx and purchase_ref:
+        tx = tx_qs.filter(metadata__payunit_purchase_ref=purchase_ref).first()
+    if not tx and payunit_transaction_id:
+        tx = tx_qs.filter(metadata__payunit_transaction_id=payunit_transaction_id).first()
+
+    if not tx:
+        return HttpResponse("OK", status=200)
+
+    status = _payunit_status_from_payload(payload)
+    if not status or _payunit_status_is_success(status):
+        _complete_paid_transaction(
+            tx,
+            provider="PAYUNIT",
+            provider_metadata={
+                "payunit_notify": True,
+                "payunit_status": status or "notification_received",
+                "payunit_payload": payload,
+            },
+        )
+    elif tx.status == "PENDING":
+        tx.status = "FAILED"
+        tx.metadata = {**(tx.metadata or {}), "payunit_status": status, "payunit_payload": payload}
+        tx.save(update_fields=["status", "metadata"])
 
     return HttpResponse("OK", status=200)
 
@@ -583,6 +813,20 @@ def payment_success(request):
             .first()
         )
     return render(request, "billing/payment_success.html", {"subscription": subscription})
+
+
+@login_required
+def payment_failed(request):
+    tx_id = request.GET.get("tx")
+    transaction = None
+    if tx_id:
+        transaction = (
+            Transaction.objects
+            .filter(id=tx_id, user=request.user)
+            .select_related("plan")
+            .first()
+        )
+    return render(request, "billing/payment_failed.html", {"transaction": transaction})
 
 
 def politique_remboursement(request):

@@ -36,6 +36,13 @@
 .mr-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 .mr-card{background:var(--h-glass);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:1.5rem;}
 .mr-card__title{font-size:.95rem;font-weight:800;color:#fff;margin:0 0 1rem;}
+.mr-skill-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;}
+.mr-skill-card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:.9rem;}
+.mr-skill-card__code{font-size:.72rem;font-weight:900;color:var(--h-gold-lt);letter-spacing:.08em;}
+.mr-skill-card__label{font-size:.8rem;color:rgba(255,255,255,.55);margin:.25rem 0 .55rem;}
+.mr-skill-card__score{font-size:1.1rem;font-weight:900;color:#fff;}
+.mr-skill-card__meta{font-size:.74rem;color:rgba(255,255,255,.4);margin-top:.15rem;}
+.mr-skill-card__cefr{display:inline-flex;margin-top:.55rem;padding:.18rem .5rem;border-radius:999px;background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.25);color:var(--h-gold-lt);font-size:.7rem;font-weight:700;}
 
 .mr-score-mini{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;}
 .mr-score-mini__ring{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.95rem;color:#fff;flex-shrink:0;}
@@ -64,6 +71,7 @@ details[open] .mr-details summary::before{transform:rotate(90deg);}
 .mr-answer--ko{background:rgba(239,68,68,.08);border-color:#ef4444;}
 .mr-answer__label{font-weight:700;color:rgba(255,255,255,.8);}
 .mr-answer__hint{margin-top:.3rem;padding:.25rem .5rem;background:rgba(255,255,255,.04);border-radius:4px;font-style:italic;font-size:.78rem;color:rgba(255,255,255,.45);}
+.mr-answer__why{margin-top:.45rem;padding:.5rem .65rem;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.18);border-radius:6px;font-size:.8rem;color:rgba(255,255,255,.66);line-height:1.55;}
 
 .mr-eo-card{border:1px solid rgba(168,85,247,.3);border-radius:14px;padding:1.25rem;margin-bottom:1rem;background:rgba(168,85,247,.05);}
 .mr-eo-card__title{font-weight:700;font-size:.92rem;color:#d8b4fe;margin-bottom:.35rem;}
@@ -112,6 +120,7 @@ details[open] .mr-details summary::before{transform:rotate(90deg);}
 
 @media(max-width:640px){
   .mr-grid{grid-template-columns:1fr;}
+  .mr-skill-grid{grid-template-columns:1fr 1fr;}
   .mr-hero{text-align:left;align-items:flex-start;}
   .mr-hero__pills{justify-content:flex-start;}
 }
@@ -165,6 +174,30 @@ details[open] .mr-details summary::before{transform:rotate(90deg);}
   </div>
 </div>
 
+{% if skill_cards %}
+<div class="mr-section">
+  <div class="mr-card">
+    <div class="mr-card__title">Profil CECR par compétence</div>
+    <div class="mr-skill-grid">
+      {% for skill in skill_cards %}
+      <div class="mr-skill-card">
+        <div class="mr-skill-card__code">{{ skill.code }}</div>
+        <div class="mr-skill-card__label">{{ skill.label }}</div>
+        {% if skill.pct is not None %}
+          <div class="mr-skill-card__score">{{ skill.pct }}%</div>
+          <div class="mr-skill-card__meta">{{ skill.correct }}/{{ skill.total }} correcte{{ skill.total|pluralize }}</div>
+        {% else %}
+          <div class="mr-skill-card__score">IA</div>
+          <div class="mr-skill-card__meta">Correction orale/écrite disponible</div>
+        {% endif %}
+        <span class="mr-skill-card__cefr">{{ skill.cefr }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
 <!-- SCORES CO + CE -->
 {% if score_global is not None %}
 <div class="mr-section">
@@ -214,16 +247,9 @@ details[open] .mr-details summary::before{transform:rotate(90deg);}
             {% else %}
               <div style="font-size:.8rem;color:#ef4444;margin-top:.2rem;">
                 ❌ Ta réponse : <strong>{{ r.submitted|default:"(aucune)" }}</strong>
-                &nbsp;|&nbsp; Correcte : <strong>{{ r.exercise.correct_option }}</strong> —
-                {% if r.exercise.correct_option == "A" %}{{ r.exercise.option_a }}
-                {% elif r.exercise.correct_option == "B" %}{{ r.exercise.option_b }}
-                {% elif r.exercise.correct_option == "C" %}{{ r.exercise.option_c }}
-                {% elif r.exercise.correct_option == "D" %}{{ r.exercise.option_d }}
-                {% endif %}
+                &nbsp;|&nbsp; Correcte : <strong>{{ r.correct_option }}</strong> — {{ r.correct_text }}
               </div>
-              {% if r.exercise.summary %}
-              <div class="mr-answer__hint">💡 {{ r.exercise.summary }}</div>
-              {% endif %}
+              <div class="mr-answer__why"><strong>Pourquoi :</strong> {{ r.explanation }}</div>
             {% endif %}
           </div>
           {% endfor %}
@@ -278,16 +304,9 @@ details[open] .mr-details summary::before{transform:rotate(90deg);}
             {% else %}
               <div style="font-size:.8rem;color:#ef4444;margin-top:.2rem;">
                 ❌ Ta réponse : <strong>{{ r.submitted|default:"(aucune)" }}</strong>
-                &nbsp;|&nbsp; Correcte : <strong>{{ r.exercise.correct_option }}</strong> —
-                {% if r.exercise.correct_option == "A" %}{{ r.exercise.option_a }}
-                {% elif r.exercise.correct_option == "B" %}{{ r.exercise.option_b }}
-                {% elif r.exercise.correct_option == "C" %}{{ r.exercise.option_c }}
-                {% elif r.exercise.correct_option == "D" %}{{ r.exercise.option_d }}
-                {% endif %}
+                &nbsp;|&nbsp; Correcte : <strong>{{ r.correct_option }}</strong> — {{ r.correct_text }}
               </div>
-              {% if r.exercise.summary %}
-              <div class="mr-answer__hint">💡 {{ r.exercise.summary }}</div>
-              {% endif %}
+              <div class="mr-answer__why"><strong>Pourquoi :</strong> {{ r.explanation }}</div>
             {% endif %}
           </div>
           {% endfor %}

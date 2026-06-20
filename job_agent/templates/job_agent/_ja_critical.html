@@ -1,9 +1,87 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'job_agent/job_agent.css' %}?v=2">
+<link rel="stylesheet" href="{% static 'job_agent/job_agent.css' %}?v=20260610-readable">
 <style>
 /* Job Agent — Critical gold overrides (inline, beats cache) */
 body.job-agent{background:#050A18!important}
-body.job-agent .app-main.job-agent{background:transparent}
+body.job-agent .app-main.job-agent{
+  --ja-bg:#050A18;
+  --ja-panel:#0A1628;
+  --ja-panel-soft:rgba(15,32,64,.76);
+  --ja-border:rgba(212,168,67,.22);
+  --ja-text:rgba(232,234,240,.92);
+  --ja-muted:rgba(232,234,240,.68);
+  --ja-muted-2:rgba(232,234,240,.48);
+  --ja-gold:#D4A843;
+  --ja-gold-light:#F0C060;
+  background:transparent;
+  color:var(--ja-text)!important;
+  font-family:"DM Sans",Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.5;
+}
+body.job-agent .app-main.job-agent *{box-sizing:border-box}
+body.job-agent .app-main.job-agent .ja-container{
+  width:min(1180px,calc(100% - 32px));
+  margin:0 auto;
+  padding:28px 0 52px;
+}
+body.job-agent .app-main.job-agent .ja-pagehead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:24px;
+}
+body.job-agent .app-main.job-agent .ja-pagehead__title p,
+body.job-agent .app-main.job-agent .ja-help,
+body.job-agent .app-main.job-agent .ja-muted,
+body.job-agent .app-main.job-agent .ja-muted-2{
+  color:var(--ja-muted)!important;
+}
+body.job-agent .app-main.job-agent .ja-pagehead__actions,
+body.job-agent .app-main.job-agent .ja-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+}
+body.job-agent .app-main.job-agent .ja-layout{
+  display:grid;
+  grid-template-columns:minmax(220px,280px) minmax(0,1fr);
+  gap:24px;
+  align-items:start;
+}
+body.job-agent .app-main.job-agent .ja-content{min-width:0}
+body.job-agent .app-main.job-agent .ja-menu{
+  position:sticky;
+  top:18px;
+  box-shadow:0 18px 42px rgba(0,0,0,.26);
+}
+body.job-agent .app-main.job-agent .ja-card{
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(15,32,64,.82),rgba(5,10,24,.92))!important;
+  border:1px solid var(--ja-border)!important;
+  box-shadow:0 18px 42px rgba(0,0,0,.26);
+  overflow:hidden;
+}
+body.job-agent .app-main.job-agent .ja-card__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:18px 20px;
+  border-bottom:1px solid rgba(212,168,67,.16);
+}
+body.job-agent .app-main.job-agent .ja-card__body{padding:20px}
+body.job-agent .app-main.job-agent .ja-card__foot{
+  padding:16px 20px;
+  border-top:1px solid rgba(212,168,67,.16);
+}
+body.job-agent .app-main.job-agent .ja-divider{
+  height:1px;
+  margin:18px 0;
+  background:rgba(212,168,67,.18);
+}
 body.job-agent .app-main.job-agent .c-btn,
 body.job-agent .app-main.job-agent a.c-btn,
 body.job-agent .app-main.job-agent button.c-btn{
@@ -34,12 +112,11 @@ body.job-agent .app-main.job-agent button.c-btn--primary:hover{
 }
 body.job-agent .app-main.job-agent .ja-pagehead__title h1{
   font-family:'Cormorant Garamond',Georgia,serif;
-  color:#F0C060;letter-spacing:.02em;
-}
-body.job-agent .app-main.job-agent .ja-card{
-  background:rgba(10,22,40,0.75)!important;
-  border:1px solid rgba(212,168,67,0.20)!important;
-  backdrop-filter:blur(16px);
+  color:#F0C060!important;
+  font-size:clamp(32px,4.6vw,54px);
+  line-height:1.02;
+  letter-spacing:0;
+  margin:0 0 8px;
 }
 body.job-agent .app-main.job-agent .ja-card__head h2,
 body.job-agent .app-main.job-agent .ja-card__head h3{
@@ -83,15 +160,74 @@ body.job-agent .app-main.job-agent .ja-toast{
   background:rgba(5,10,24,0.9)!important;
   border:1px solid rgba(212,168,67,0.3)!important;
 }
+body.job-agent .app-main.job-agent .ja-alert{
+  margin:0 0 16px;
+  padding:14px 16px;
+  border-radius:12px;
+  line-height:1.55;
+}
+body.job-agent .app-main.job-agent .ja-alert--info{
+  background:rgba(212,168,67,.09)!important;
+  border:1px solid rgba(212,168,67,.25)!important;
+  color:rgba(255,247,230,.92)!important;
+}
+body.job-agent .app-main.job-agent .ja-calloutgrid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+body.job-agent .app-main.job-agent .ja-callout{
+  padding:14px;
+  border:1px solid rgba(212,168,67,.18);
+  border-radius:12px;
+  background:rgba(212,168,67,.07);
+}
+body.job-agent .app-main.job-agent .ja-callout p{margin:0}
+body.job-agent .app-main.job-agent .ja-callout__k{
+  color:#F0C060!important;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+body.job-agent .app-main.job-agent .ja-callout__v{
+  margin-top:6px!important;
+  color:rgba(232,234,240,.82)!important;
+}
+body.job-agent .app-main.job-agent .ja-formgrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:20px 18px;
+}
+body.job-agent .app-main.job-agent .ja-col-12{grid-column:1/-1}
+body.job-agent .app-main.job-agent .ja-field label{
+  display:block;
+  margin:0 0 7px;
+  color:#F0C060!important;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+body.job-agent .app-main.job-agent .ja-help{
+  margin:8px 0 0;
+  font-size:13px;
+  line-height:1.45;
+}
 body.job-agent .app-main.job-agent .c-input,
 body.job-agent .app-main.job-agent select,
 body.job-agent .app-main.job-agent textarea,
 body.job-agent .app-main.job-agent input[type="text"],
 body.job-agent .app-main.job-agent input[type="url"],
 body.job-agent .app-main.job-agent input[type="email"]{
-  background:rgba(5,10,24,0.7)!important;
+  width:100%!important;
+  min-height:46px;
+  padding:11px 13px!important;
+  background:rgba(5,10,24,0.74)!important;
   border:1px solid rgba(212,168,67,0.25)!important;
-  color:rgba(232,234,240,0.9)!important;border-radius:10px!important;
+  color:rgba(232,234,240,0.94)!important;
+  border-radius:10px!important;
+  font:inherit;
 }
 body.job-agent .app-main.job-agent input:focus,
 body.job-agent .app-main.job-agent select:focus,
@@ -99,5 +235,292 @@ body.job-agent .app-main.job-agent textarea:focus{
   border-color:#D4A843!important;
   box-shadow:0 0 0 3px rgba(212,168,67,0.12)!important;
 }
-body.job-agent .app-main.job-agent select option{background:#0A1628!important}
+body.job-agent .app-main.job-agent textarea{min-height:150px;resize:vertical}
+body.job-agent .app-main.job-agent select option{background:#0A1628!important;color:#F8FAFC!important}
+
+/* Production hardening: these rules do not depend on nested app-main wrappers. */
+body.job-agent {
+  background: #050A18 !important;
+}
+
+body.job-agent main.app-main.job-agent {
+  color: rgba(248,250,252,.94);
+  background:
+    radial-gradient(circle at 82% 4%, rgba(212,168,67,.06), transparent 26rem),
+    #050A18;
+}
+
+body.job-agent .ja-container {
+  width: min(1180px, calc(100% - 32px)) !important;
+  margin-inline: auto !important;
+  padding: 36px 0 64px !important;
+}
+
+body.job-agent .ja-pagehead {
+  display: flex !important;
+  align-items: end !important;
+  justify-content: space-between !important;
+  gap: 22px !important;
+  margin-bottom: 28px !important;
+}
+
+body.job-agent .ja-pagehead__title h1 {
+  margin: 0 0 12px !important;
+  color: #F0C060 !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: clamp(42px, 5vw, 74px) !important;
+  line-height: .92 !important;
+  letter-spacing: 0 !important;
+}
+
+body.job-agent .ja-pagehead__title p {
+  margin: 0 !important;
+  color: rgba(232,234,240,.66) !important;
+  font-size: 17px !important;
+  line-height: 1.55 !important;
+}
+
+body.job-agent .ja-pagehead__actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  justify-content: flex-end !important;
+}
+
+body.job-agent .ja-layout {
+  display: grid !important;
+  grid-template-columns: 270px minmax(0, 1fr) !important;
+  gap: 28px !important;
+  align-items: start !important;
+}
+
+body.job-agent .ja-content {
+  min-width: 0 !important;
+}
+
+body.job-agent .ja-menu {
+  position: sticky !important;
+  top: 92px !important;
+  border-radius: 18px !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.28) !important;
+}
+
+body.job-agent .ja-card,
+body.job-agent .ja-kanban__col,
+body.job-agent .ja-leadcard,
+body.job-agent .ja-stat {
+  border: 1px solid rgba(212,168,67,.22) !important;
+  background: linear-gradient(180deg, rgba(15,32,64,.84), rgba(5,10,24,.94)) !important;
+  box-shadow: 0 18px 46px rgba(0,0,0,.24) !important;
+}
+
+body.job-agent .ja-card {
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+body.job-agent .ja-card__head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  min-height: 72px !important;
+  padding: 18px 24px !important;
+  border-bottom: 1px solid rgba(212,168,67,.16) !important;
+}
+
+body.job-agent .ja-card__head h2,
+body.job-agent .ja-card__head h3 {
+  margin: 0 !important;
+  color: #F0C060 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+}
+
+body.job-agent .ja-card__body {
+  padding: 24px !important;
+}
+
+body.job-agent .ja-stats {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  margin-bottom: 18px !important;
+}
+
+body.job-agent .ja-stat {
+  min-height: 132px !important;
+  padding: 18px !important;
+  border-radius: 16px !important;
+  border-left: 3px solid #D4A843 !important;
+}
+
+body.job-agent .ja-stat__k {
+  margin: 0 0 12px !important;
+  color: #D4A843 !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+}
+
+body.job-agent .ja-stat__v {
+  margin: 0 0 8px !important;
+  color: #FFF7E6 !important;
+  font-size: 42px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+body.job-agent .ja-stat__hint {
+  margin: 0 !important;
+  color: rgba(232,234,240,.62) !important;
+  font-size: 13px !important;
+}
+
+body.job-agent .ja-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 16px !important;
+}
+
+body.job-agent .ja-leadcard {
+  display: grid !important;
+  min-height: 170px !important;
+  border-radius: 16px !important;
+  color: rgba(248,250,252,.92) !important;
+  overflow: hidden !important;
+}
+
+body.job-agent .ja-leadcard__body {
+  padding: 18px !important;
+}
+
+body.job-agent .ja-leadcard__top {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+body.job-agent .ja-leadcard__title strong {
+  display: block !important;
+  color: #FFF7E6 !important;
+  font-size: 18px !important;
+  line-height: 1.25 !important;
+}
+
+body.job-agent .ja-leadcard__title span,
+body.job-agent .ja-muted,
+body.job-agent .ja-muted-2 {
+  color: rgba(232,234,240,.64) !important;
+}
+
+body.job-agent .ja-leadcard__meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin-top: 14px !important;
+}
+
+body.job-agent .ja-leadcard__foot {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 14px 18px !important;
+  border-top: 1px solid rgba(212,168,67,.14) !important;
+}
+
+body.job-agent .ja-kanban {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(220px, 1fr)) !important;
+  gap: 14px !important;
+  overflow-x: auto !important;
+  padding-bottom: 4px !important;
+}
+
+body.job-agent .ja-kanban__col {
+  min-width: 220px !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+body.job-agent .ja-kanban__colhead {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding: 14px 16px !important;
+  border-bottom: 1px solid rgba(212,168,67,.16) !important;
+}
+
+body.job-agent .ja-kanban__colhead strong {
+  color: #F0C060 !important;
+  font-size: 13px !important;
+}
+
+body.job-agent .ja-kanban__list {
+  display: grid !important;
+  gap: 12px !important;
+  min-height: 180px !important;
+  padding: 14px !important;
+}
+
+body.job-agent .ja-kanban__card .ja-leadcard__title strong {
+  font-size: 15px !important;
+}
+
+body.job-agent .ja-kanban__empty {
+  min-height: 110px !important;
+  padding: 14px !important;
+  border: 1px dashed rgba(212,168,67,.24) !important;
+  border-radius: 12px !important;
+  background: rgba(255,255,255,.035) !important;
+}
+
+body.job-agent .ja-toast {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 24px !important;
+  z-index: 9999 !important;
+  display: none !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  border: 1px solid rgba(212,168,67,.3) !important;
+  border-radius: 999px !important;
+  background: rgba(5,10,24,.94) !important;
+  color: rgba(248,250,252,.94) !important;
+  box-shadow: 0 16px 42px rgba(0,0,0,.35) !important;
+  transform: translateX(-50%) !important;
+}
+
+body.job-agent .ja-toast.is-visible {
+  display: flex !important;
+}
+
+@media (max-width:920px){
+  body.job-agent .app-main.job-agent .ja-layout{grid-template-columns:1fr}
+  body.job-agent .app-main.job-agent .ja-menu{position:static}
+  body.job-agent .app-main.job-agent .ja-pagehead{flex-direction:column}
+  body.job-agent .ja-layout{grid-template-columns:1fr!important}
+  body.job-agent .ja-menu{position:static!important}
+  body.job-agent .ja-pagehead{align-items:flex-start!important;flex-direction:column!important}
+  body.job-agent .ja-pagehead__actions{justify-content:flex-start!important}
+  body.job-agent .ja-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media (max-width:720px){
+  body.job-agent .app-main.job-agent .ja-container{width:min(100% - 20px,1180px);padding-top:18px}
+  body.job-agent .app-main.job-agent .ja-formgrid,
+  body.job-agent .app-main.job-agent .ja-calloutgrid{grid-template-columns:1fr}
+  body.job-agent .app-main.job-agent .ja-card__head{align-items:flex-start;flex-direction:column}
+  body.job-agent .ja-container{width:min(100% - 20px,1180px)!important;padding-top:22px!important}
+  body.job-agent .ja-stats,
+  body.job-agent .ja-grid{grid-template-columns:1fr!important}
+  body.job-agent .ja-card__head{align-items:flex-start!important;flex-direction:column!important}
+  body.job-agent .ja-card__body{padding:18px!important}
+}
 </style>

@@ -14,20 +14,20 @@ class Command(BaseCommand):
                 "slug": "premium-mensuel",
                 "description": "Accès complet à tous les outils Immigration97 pendant 30 jours.",
                 "duration_days": 30,
-                "price_usd": "10.00",
-                "price_xaf": 6500,
+                "price_usd": "15.00",
+                "price_xaf": 9500,
                 "is_popular": True,
                 "order": 1,
                 "plan_type": "candidate",
                 "features": [
-                    "CV illimités aux normes IRCC, Europass, ATS",
-                    "Simulations d'examens TEF, TCF, DELF, DALF",
-                    "Tests de langue : Français, Anglais, Allemand, Italien",
-                    "Profil candidat visible par les recruteurs",
-                    "Accès à toutes les ressources (PDF, Excel, guides)",
-                    "Lettres de motivation IA",
-                    "Calculateurs visa & éligibilité",
-                    "Support prioritaire 24/7",
+                    "Job Agent : offres accessibles aux étrangers et alertes utiles",
+                    "Bourses d'études vérifiées avec liens officiels",
+                    "Examens blancs TEF, TCF, IELTS, DELF, DALF",
+                    "Génération et export CV international ATS",
+                    "Lettres de motivation, emails et dossiers IA",
+                    "Guides, vidéos et ressources premium ajoutés depuis l'admin",
+                    "Plans visa, études, travail et immigration personnalisés",
+                    "Support prioritaire WhatsApp",
                 ],
             },
             {
@@ -78,7 +78,7 @@ class Command(BaseCommand):
         # Désactiver les anciens plans obsolètes
         old_slugs = ["decouverte-24h", "hebdo-7j", "mensuel-30j", "annuel-365j", "month"]
         SubscriptionPlan.objects.filter(slug__in=old_slugs).update(is_active=False)
-        self.stdout.write(self.style.WARNING("⚠ Anciens plans désactivés."))
+        self.stdout.write(self.style.WARNING("Anciens plans desactives."))
 
         for plan_data in plans_data:
             plan, created = SubscriptionPlan.objects.update_or_create(
@@ -86,6 +86,6 @@ class Command(BaseCommand):
                 defaults=plan_data,
             )
             action = "créé" if created else "mis à jour"
-            self.stdout.write(self.style.SUCCESS(f"✓ Plan '{plan.name}' {action}"))
+            self.stdout.write(self.style.SUCCESS(f"Plan '{plan.name}' {action}"))
 
-        self.stdout.write(self.style.SUCCESS(f"\n✅ {len(plans_data)} plans configurés !"))
+        self.stdout.write(self.style.SUCCESS(f"\n{len(plans_data)} plans configures."))

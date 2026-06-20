@@ -22,7 +22,8 @@ from django.http import Http404
 from django.shortcuts import render
 from django.utils.timezone import localtime
 
-from .models import CourseLesson, CourseExercise, MockExamResult
+from .models import CourseLesson, CourseExercise, MockExamResult, UserExerciseProgress
+from preparation_tests.services.error_revision import record_detailed_attempt
 
 # Niveaux CECR valides
 VALID_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"]
@@ -48,6 +49,76 @@ def _estimate_cefr(score: int) -> str:
     if score >= 40:
         return "A2–B1"
     return "A1–A2"
+
+
+def _option_text(exercise: CourseExercise, option: str) -> str:
+    return {
+        "A": exercise.option_a,
+        "B": exercise.option_b,
+        "C": exercise.option_c,
+        "D": exercise.option_d,
+    }.get((option or "").upper(), "")
+
+
+def _explanation(exercise: CourseExercise) -> str:
+    if exercise.summary:
+        return exercise.summary
+    correct = (exercise.correct_option or "").upper()
+    return (
+        f"La bonne réponse est {correct}. {_option_text(exercise, correct)} "
+        "car cette option reprend l'information réellement portée par le document. "
+        "Pour progresser, repère le mot-clé de la question, retrouve son équivalent "
+        "dans le texte ou l'audio, puis élimine les options trop larges ou contradictoires."
+    )
+
+
+def _remember_attempt(user, exercise: CourseExercise, answer: str, is_correct: bool) -> None:
+    if not user.is_authenticated:
+        return
+    prog, _ = UserExerciseProgress.objects.get_or_create(
+        user=user,
+        exercise=exercise,
+        defaults={"lesson": exercise.lesson},
+    )
+    if prog.lesson_id != exercise.lesson_id:
+        prog.lesson = exercise.lesson
+    prog.mark_attempt(selected=answer, correct=is_correct)
+    prog.save()
+    record_detailed_attempt(
+        user=user,
+        exercise=exercise,
+        selected=answer,
+        is_correct=is_correct,
+        source="level_mock",
+        explanation=_explanation(exercise),
+    )
+
+
+def _skill_cards(score_co, co_correct, co_total, score_ce, ce_correct, ce_total) -> list:
+    cards = []
+    if score_co is not None:
+        cards.append({
+            "code": "CO",
+            "label": "Compréhension orale",
+            "pct": score_co,
+            "correct": co_correct,
+            "total": co_total,
+            "cefr": _estimate_cefr(score_co),
+        })
+    if score_ce is not None:
+        cards.append({
+            "code": "CE",
+            "label": "Compréhension écrite",
+            "pct": score_ce,
+            "correct": ce_correct,
+            "total": ce_total,
+            "cefr": _estimate_cefr(score_ce),
+        })
+    cards.extend([
+        {"code": "EO", "label": "Expression orale", "pct": None, "correct": None, "total": None, "cefr": "À évaluer par IA"},
+        {"code": "EE", "label": "Expression écrite", "pct": None, "correct": None, "total": None, "cefr": "À évaluer par IA"},
+    ])
+    return cards
 
 
 def _get_level_data(level: str) -> dict:
@@ -161,10 +232,15 @@ def level_mock_exam(request, level: str):
             is_correct = submitted == ex.correct_option
             if is_correct:
                 co_correct += 1
+            _remember_attempt(request.user, ex, submitted, is_correct)
             co_results.append({
                 "exercise": ex,
                 "submitted": submitted,
                 "is_correct": is_correct,
+                "correct_option": ex.correct_option,
+                "correct_text": _option_text(ex, ex.correct_option),
+                "answer_text": _option_text(ex, submitted),
+                "explanation": _explanation(ex),
             })
 
         # Correction CE
@@ -175,10 +251,15 @@ def level_mock_exam(request, level: str):
             is_correct = submitted == ex.correct_option
             if is_correct:
                 ce_correct += 1
+            _remember_attempt(request.user, ex, submitted, is_correct)
             ce_results.append({
                 "exercise": ex,
                 "submitted": submitted,
                 "is_correct": is_correct,
+                "correct_option": ex.correct_option,
+                "correct_text": _option_text(ex, ex.correct_option),
+                "answer_text": _option_text(ex, submitted),
+                "explanation": _explanation(ex),
             })
 
         # Scores
@@ -247,6 +328,10 @@ def level_mock_exam(request, level: str):
             "score_ce": score_ce,
             "score_global": score_global,
             "cefr_estimate": cefr_estimate,
+            "skill_cards": _skill_cards(
+                score_co, co_correct, len(co_exercises),
+                score_ce, ce_correct, len(ce_exercises),
+            ),
             "eo_items": eo_items,
             "ee_lesson": ee_lesson,
             "ee_exercise": ee_exercise,

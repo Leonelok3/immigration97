@@ -1,15 +1,21 @@
 from django.contrib import admin
 from django import forms
 from django.utils.html import format_html
+from django.shortcuts import redirect
+from django.urls import path, reverse
+from django.contrib import messages
 
 from .models import (
     Exam, ExamSection, Passage, Asset,
     Question, Choice, Explanation,
     Session, Attempt, Answer,
     CourseLesson, CourseExercise,
+    DetailedError,
     EOSubmission, EESubmission,
+    MonthlyTrainingPack, PastExamSubject,
     FeaturedContent,
 )
+from preparation_tests.services.monthly_content_ai import generate_exercises_for_source
 
 # =====================================================
 # EXAM
@@ -195,6 +201,18 @@ class CourseExerciseAdmin(admin.ModelAdmin):
     has_audio.short_description = "Audio"
 
 
+@admin.register(DetailedError)
+class DetailedErrorAdmin(admin.ModelAdmin):
+    list_display = (
+        "id", "user", "category", "status", "lesson", "exercise",
+        "occurrences", "repetitions", "next_review_at", "updated_at",
+    )
+    list_filter = ("category", "status", "source", "lesson__section", "lesson__level")
+    search_fields = ("user__username", "user__email", "exercise__question_text", "explanation")
+    readonly_fields = ("created_at", "updated_at", "last_reviewed_at")
+    ordering = ("status", "next_review_at", "-occurrences")
+
+
 # =====================================================
 # SOUMISSIONS EO / EE
 # =====================================================
@@ -215,6 +233,96 @@ class EESubmissionAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "text")
     readonly_fields = ("feedback_json", "created_at")
     ordering = ("-created_at",)
+
+
+# =====================================================
+# PACKS MENSUELS & ANCIENS SUJETS
+# =====================================================
+
+class GenerateExercisesAdminMixin:
+    def get_urls(self):
+        urls = super().get_urls()
+        custom = [
+            path(
+                "<int:object_id>/generate-exercises/",
+                self.admin_site.admin_view(self.generate_exercises_view),
+                name=f"preparation_tests_{self.model._meta.model_name}_generate_exercises",
+            ),
+        ]
+        return custom + urls
+
+    def generate_button(self, obj):
+        url = reverse(f"admin:preparation_tests_{self.model._meta.model_name}_generate_exercises", args=[obj.pk])
+        label = "Regénérer" if obj.exercises.exists() else "Générer exercices"
+        return format_html('<a class="button" href="{}">{}</a>', url, label)
+    generate_button.short_description = "IA"
+
+    def generate_exercises_view(self, request, object_id):
+        obj = self.get_object(request, object_id)
+        if not obj:
+            messages.error(request, "Contenu introuvable.")
+            return redirect("..")
+        result = generate_exercises_for_source(obj, count=6, use_ai=True)
+        messages.success(
+            request,
+            f"{result['created']} exercice(s) créé(s). Source: {result['generated_by']}.",
+        )
+        return redirect(f"../../{object_id}/change/")
+
+    @admin.action(description="Générer les exercices corrigés avec IA")
+    def generate_exercises_action(self, request, queryset):
+        total = 0
+        for obj in queryset:
+            result = generate_exercises_for_source(obj, count=6, use_ai=True)
+            total += result["created"]
+        self.message_user(request, f"{total} exercice(s) généré(s).", messages.SUCCESS)
+
+
+@admin.register(MonthlyTrainingPack)
+class MonthlyTrainingPackAdmin(GenerateExercisesAdminMixin, admin.ModelAdmin):
+    list_display = (
+        "title", "section", "level", "exam_code", "month",
+        "is_premium", "is_published", "exercise_count", "generate_button",
+    )
+    list_filter = ("language", "section", "level", "exam_code", "is_premium", "is_published", "month")
+    search_fields = ("title", "subtitle", "objective", "recurring_theme")
+    prepopulated_fields = {"slug": ("title",)}
+    filter_horizontal = ("exercises",)
+    actions = ("generate_exercises_action",)
+    fieldsets = (
+        ("Positionnement", {"fields": ("language", "section", "level", "exam_code", "month", "order")}),
+        ("Contenu", {"fields": ("title", "slug", "subtitle", "objective", "recurring_theme", "lesson_html", "correction_html")}),
+        ("Leçon et exercices liés", {"fields": ("related_lesson", "exercises")}),
+        ("Publication", {"fields": ("is_premium", "is_published")}),
+    )
+
+    def exercise_count(self, obj):
+        return obj.exercises.count()
+    exercise_count.short_description = "Exercices"
+
+
+@admin.register(PastExamSubject)
+class PastExamSubjectAdmin(GenerateExercisesAdminMixin, admin.ModelAdmin):
+    list_display = (
+        "title", "exam_code", "section", "level", "source_label",
+        "frequency_score", "is_premium", "is_published", "exercise_count", "generate_button",
+    )
+    list_filter = ("language", "exam_code", "section", "level", "is_premium", "is_published")
+    search_fields = ("title", "source_label", "recurring_theme", "subject_html", "correction_html")
+    prepopulated_fields = {"slug": ("title",)}
+    filter_horizontal = ("exercises",)
+    actions = ("generate_exercises_action",)
+    fieldsets = (
+        ("Positionnement", {"fields": ("language", "exam_code", "section", "level", "order")}),
+        ("Sujet", {"fields": ("title", "slug", "source_label", "recurring_theme", "frequency_score", "subject_html")}),
+        ("Correction", {"fields": ("correction_html", "pdf_subject", "pdf_correction")}),
+        ("Leçon et exercices liés", {"fields": ("related_lesson", "exercises")}),
+        ("Publication", {"fields": ("is_premium", "is_published")}),
+    )
+
+    def exercise_count(self, obj):
+        return obj.exercises.count()
+    exercise_count.short_description = "Exercices"
 
 
 # =====================================================

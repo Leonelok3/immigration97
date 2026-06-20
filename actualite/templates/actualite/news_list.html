@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block meta_description %}
-  Dernières actualités, opportunités, lois et offres d’emploi immigration (USA, Canada, Allemagne, Italie, France).
+  12 actualités immigration vérifiées chaque matin depuis des sources officielles: Canada, Allemagne, Europe, conférences et intégration.
   Guides fiables et sources officielles.
 {% endblock %}
 
@@ -15,7 +15,7 @@
 {% block app_scope %}actualite{% endblock %}
 
 {% block og_title %}Actualités Immigration – Immigration97{% endblock %}
-{% block og_description %}Dernières actualités, opportunités, lois et offres d'emploi immigration (USA, Canada, Allemagne, Italie, France). Guides fiables et sources officielles.{% endblock %}
+{% block og_description %}12 actualités immigration vérifiées chaque matin depuis des sources gouvernementales et officielles: Canada, Allemagne, Europe, conférences et intégration.{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/actualite.css' %}">
@@ -416,9 +416,9 @@ body.actualite .a-hero .c-btn--outline{border-color:rgba(212,168,67,0.5)!importa
     <div class="a-hero__content">
       <h1>Actualités &amp; Opportunités<br>Immigration</h1>
       <p>
-        Informations vérifiées, orientées résultats —<br>
-        <strong>USA</strong> · <strong>Canada</strong> · <strong>Allemagne</strong> ·
-        <strong>Italie</strong> · <strong>France</strong>
+        12 informations vérifiées chaque matin depuis les sources officielles —<br>
+        <strong>Canada</strong> · <strong>Allemagne</strong> · <strong>Europe</strong> ·
+        <strong>Intégration</strong> · <strong>Conférences</strong>
       </p>
 
       <div class="a-hero__actions">
@@ -430,11 +430,11 @@ body.actualite .a-hero .c-btn--outline{border-color:rgba(212,168,67,0.5)!importa
     <div class="a-hero__stats">
       <div class="a-stat">
         <div class="a-stat__k">Couverture</div>
-        <div class="a-stat__v">5 Pays</div>
+        <div class="a-stat__v">3 Zones</div>
       </div>
       <div class="a-stat">
         <div class="a-stat__k">Updates</div>
-        <div class="a-stat__v">Quotidiennes</div>
+        <div class="a-stat__v">05:00</div>
       </div>
       <div class="a-stat">
         <div class="a-stat__k">Sources</div>
@@ -454,13 +454,14 @@ body.actualite .a-hero .c-btn--outline{border-color:rgba(212,168,67,0.5)!importa
       <div class="a-card">
         <div class="a-card__head">
           <h3>Immigration par pays</h3>
-          <p>Pages SEO GEO dédiées (USA, Canada, Europe).</p>
+          <p>Pages dédiées aux sources gouvernementales.</p>
         </div>
 
         <ul class="a-country-links">
           <li><a href="{% url 'actualite:by_country' 'usa' %}">Immigration USA</a></li>
           <li><a href="{% url 'actualite:by_country' 'canada' %}">Immigration Canada</a></li>
           <li><a href="{% url 'actualite:by_country' 'allemagne' %}">Immigration Allemagne</a></li>
+          <li><a href="{% url 'actualite:by_country' 'europe' %}">Immigration Europe</a></li>
           <li><a href="{% url 'actualite:by_country' 'italie' %}">Immigration Italie</a></li>
           <li><a href="{% url 'actualite:by_country' 'france' %}">Immigration France</a></li>
         </ul>

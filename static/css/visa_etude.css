@@ -1,4 +1,269 @@
 /* =====================================================
+   VISA ETUDES — FALLBACK PRODUCTION
+   Keeps the student module polished even when global
+   design variables or framework utilities are unavailable.
+===================================================== */
+body.visa-etude {
+  --bg-main: #050a18;
+  --text-main: #f8fafc;
+  --text-soft: rgba(226, 232, 240, 0.78);
+  --border-subtle: rgba(148, 163, 184, 0.18);
+  --radius-md: 10px;
+  --radius-pill: 999px;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 420px at 82% -10%, rgba(16, 185, 129, .13), transparent 62%),
+    radial-gradient(720px 300px at 12% 5%, rgba(212, 168, 67, .08), transparent 58%),
+    #050a18 !important;
+  color: var(--text-main);
+}
+
+.visa-etude main,
+.visa-etude .site-main {
+  background: transparent;
+}
+
+.visa-etude .container {
+  width: min(1120px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.visa-etude .ve-dashboard-hero {
+  margin: 1.5rem auto 0;
+  width: min(1120px, calc(100% - 32px));
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.visa-etude .ve-dashboard-modules,
+.visa-etude section {
+  position: relative;
+  z-index: 1;
+}
+
+.visa-etude .ve-modules-grid {
+  align-items: start;
+}
+
+.visa-etude .row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.visa-etude .col-lg-5 {
+  grid-column: span 5;
+}
+
+.visa-etude .col-lg-7 {
+  grid-column: span 7;
+}
+
+.visa-etude .col-lg-9 {
+  grid-column: span 9;
+}
+
+.visa-etude .mb-0 { margin-bottom: 0 !important; }
+.visa-etude .mb-4 { margin-bottom: 1.5rem !important; }
+.visa-etude .mt-3 { margin-top: 1rem !important; }
+.visa-etude .p-4 { padding: 1.5rem !important; }
+.visa-etude .w-100 { width: 100% !important; }
+
+.visa-etude .ve-module-card,
+.visa-etude .card-module,
+.visa-etude .ve-paywall-block {
+  color: var(--text-main);
+  background:
+    linear-gradient(135deg, rgba(15,23,42,.94), rgba(8,15,32,.96)) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 22px 55px rgba(0,0,0,.30);
+}
+
+.visa-etude .ve-module-card h1,
+.visa-etude .ve-module-card h2,
+.visa-etude .ve-module-card h3,
+.visa-etude .card-module h1,
+.visa-etude .card-module h2,
+.visa-etude .card-module h3 {
+  color: #fff;
+}
+
+.visa-etude .ve-module-card a,
+.visa-etude .card-module a {
+  color: #7dd3fc;
+}
+
+.visa-etude .ve-form-group input,
+.visa-etude .ve-form-group select,
+.visa-etude .ve-form-group textarea,
+.visa-etude .form-control,
+.visa-etude .form-select {
+  width: 100%;
+  min-height: 44px;
+  background: rgba(2, 6, 23, .76) !important;
+  border: 1px solid rgba(148, 163, 184, .22) !important;
+  border-radius: 10px !important;
+  color: #f8fafc !important;
+  padding: .72rem .85rem !important;
+  font: inherit;
+}
+
+.visa-etude .ve-form-group textarea,
+.visa-etude textarea.form-control {
+  min-height: 110px;
+}
+
+.visa-etude .ve-form-group input::placeholder,
+.visa-etude .ve-form-group textarea::placeholder {
+  color: rgba(203, 213, 225, .45);
+}
+
+.visa-etude .ve-form-group label,
+.visa-etude .ve-label {
+  color: rgba(248,250,252,.88);
+}
+
+.visa-etude .small,
+.visa-etude .text-muted,
+.visa-etude .ve-help {
+  color: rgba(203,213,225,.66) !important;
+}
+
+.visa-etude .ve-checklist {
+  padding-left: 1.1rem;
+}
+
+.visa-etude .ve-checklist li,
+.visa-etude .ve-timeline-item {
+  margin-bottom: .75rem;
+}
+
+.visa-etude .ve-progress-bar {
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(148,163,184,.16);
+}
+
+.visa-etude .ve-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #10b981, #d4a843);
+}
+
+.visa-etude .ve-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.visa-etude .ve-cta-final {
+  padding: 3rem 1.5rem 5rem;
+}
+
+.visa-etude .text-center {
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .visa-etude .row {
+    grid-template-columns: 1fr;
+  }
+
+  .visa-etude .col-lg-5,
+  .visa-etude .col-lg-7,
+  .visa-etude .col-lg-9 {
+    grid-column: 1;
+  }
+
+  .visa-etude .ve-cta-group,
+  .visa-etude .ve-progress-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .visa-etude .ve-btn-primary,
+  .visa-etude .ve-btn-secondary,
+  .visa-etude .ve-btn-gold,
+  .visa-etude .ve-btn-premium {
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   FINAL OVERRIDES — VISA ETUDES ONLY
+===================================================== */
+body.visa-etude,
+body.visa-etude .app-main,
+body.visa-etude .app-container {
+  background:
+    radial-gradient(900px 420px at 82% -10%, rgba(16, 185, 129, .12), transparent 62%),
+    radial-gradient(720px 300px at 12% 0%, rgba(212, 168, 67, .08), transparent 58%),
+    #050a18 !important;
+  color: #f8fafc !important;
+}
+
+body.visa-etude .app-container {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+body.visa-etude .ve-dashboard-hero,
+body.visa-etude .ve-dashboard-modules,
+body.visa-etude .ve-cta-final {
+  color: #f8fafc !important;
+}
+
+body.visa-etude .ve-dashboard-hero {
+  background:
+    radial-gradient(720px 260px at 20% 20%, rgba(16,185,129,.18), transparent 62%),
+    linear-gradient(135deg, #07111f, #0b1b32 56%, #050a18) !important;
+}
+
+body.visa-etude .ve-dashboard-hero h1,
+body.visa-etude .ve-title,
+body.visa-etude .ve-module-card h1,
+body.visa-etude .ve-module-card h2,
+body.visa-etude .ve-module-card h3 {
+  color: #fff !important;
+}
+
+body.visa-etude .ve-lead,
+body.visa-etude .ve-module-card p,
+body.visa-etude .ve-module-card li {
+  color: rgba(226, 232, 240, .78) !important;
+}
+
+body.visa-etude .ve-module-card {
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, .94), rgba(8, 15, 32, .98)) !important;
+  border-color: rgba(255, 255, 255, .11) !important;
+}
+
+body.visa-etude .ve-module-link,
+body.visa-etude .ve-module-card a:not(.ve-btn-primary):not(.ve-btn-secondary) {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: .85rem;
+  color: #7dd3fc !important;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+body.visa-etude .ve-module-link--muted {
+  margin-left: .75rem;
+  color: #f0c060 !important;
+}
+
+/* =====================================================
    IMMIGRATION97 — VISA ÉTUDES
    PREMIUM • STABLE • SCALABLE • 2026 READY
 ===================================================== */
@@ -482,5 +747,338 @@ body.visa-etude {
 
   .visa-etude .ve-cta-final {
     padding: 2rem 1rem;
+  }
+}
+/* =====================================================
+   VISA ETUDES — LAST WORD OVERRIDES
+   Must stay at the end of this file.
+===================================================== */
+body.visa-etude,
+body.visa-etude .app-main,
+body.visa-etude .app-container {
+  background:
+    radial-gradient(900px 420px at 82% -10%, rgba(16, 185, 129, .12), transparent 62%),
+    radial-gradient(720px 300px at 12% 0%, rgba(212, 168, 67, .08), transparent 58%),
+    #050a18 !important;
+  color: #f8fafc !important;
+}
+
+body.visa-etude .app-container {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+body.visa-etude .ve-dashboard-hero {
+  width: min(1120px, calc(100% - 32px)) !important;
+  margin: 1.5rem auto 0 !important;
+  padding: clamp(3rem, 6vw, 5rem) 1.5rem !important;
+  background:
+    radial-gradient(720px 260px at 20% 20%, rgba(16,185,129,.18), transparent 62%),
+    linear-gradient(135deg, #07111f, #0b1b32 56%, #050a18) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+body.visa-etude .ve-dashboard-modules {
+  width: 100% !important;
+  padding: clamp(2rem, 5vw, 4rem) 1rem !important;
+  background: transparent !important;
+}
+
+body.visa-etude .container {
+  width: min(1120px, calc(100% - 32px)) !important;
+  max-width: 1120px !important;
+  margin-inline: auto !important;
+}
+
+body.visa-etude .ve-modules-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 1.25rem !important;
+  align-items: stretch !important;
+}
+
+body.visa-etude .ve-module-card,
+body.visa-etude .card-module,
+body.visa-etude .ve-paywall-block {
+  display: flex !important;
+  flex-direction: column !important;
+  color: #f8fafc !important;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, .94), rgba(8, 15, 32, .98)) !important;
+  border: 1px solid rgba(255, 255, 255, .11) !important;
+  border-radius: 14px !important;
+  padding: 1.5rem !important;
+  box-shadow: 0 22px 55px rgba(0,0,0,.30) !important;
+}
+
+body.visa-etude .ve-dashboard-hero h1,
+body.visa-etude .ve-title,
+body.visa-etude .ve-module-card h1,
+body.visa-etude .ve-module-card h2,
+body.visa-etude .ve-module-card h3 {
+  color: #fff !important;
+}
+
+body.visa-etude .ve-dashboard-hero h1,
+body.visa-etude .ve-title {
+  font-size: clamp(2rem, 4.2vw, 3.4rem) !important;
+  line-height: 1.08 !important;
+}
+
+body.visa-etude .ve-lead,
+body.visa-etude .ve-module-card p,
+body.visa-etude .ve-module-card li {
+  color: rgba(226, 232, 240, .78) !important;
+}
+
+body.visa-etude .ve-badge,
+body.visa-etude .ve-step,
+body.visa-etude .ve-premium-badge {
+  display: inline-flex !important;
+  width: fit-content !important;
+  align-items: center !important;
+  gap: .35rem !important;
+  margin: 0 0 .85rem !important;
+  padding: .35rem .7rem !important;
+  border-radius: 999px !important;
+  color: #f0c060 !important;
+  background: rgba(212,168,67,.12) !important;
+  border: 1px solid rgba(212,168,67,.35) !important;
+  font-size: .72rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+body.visa-etude .ve-module-link,
+body.visa-etude .ve-module-card a:not(.ve-btn-primary):not(.ve-btn-secondary) {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: fit-content !important;
+  margin-top: .85rem !important;
+  color: #7dd3fc !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+}
+
+body.visa-etude .ve-module-link--muted {
+  color: #f0c060 !important;
+}
+
+body.visa-etude .ve-cta-group {
+  display: flex !important;
+  gap: .75rem !important;
+  flex-wrap: wrap !important;
+  margin-top: 1.25rem !important;
+}
+
+body.visa-etude .ve-btn-primary,
+body.visa-etude .ve-btn-secondary,
+body.visa-etude .ve-btn-gold,
+body.visa-etude .ve-btn-premium {
+  display: inline-flex !important;
+  min-height: 44px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  padding: 0 1.25rem !important;
+  font-weight: 850 !important;
+  text-decoration: none !important;
+}
+
+body.visa-etude .ve-btn-primary,
+body.visa-etude .ve-btn-gold,
+body.visa-etude .ve-btn-premium {
+  color: #07111f !important;
+  background: linear-gradient(135deg, #d4a843, #f0c060) !important;
+  border: 0 !important;
+}
+
+body.visa-etude .ve-btn-secondary {
+  color: #f8fafc !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+}
+
+body.visa-etude input,
+body.visa-etude select,
+body.visa-etude textarea,
+body.visa-etude .form-control,
+body.visa-etude .form-select {
+  background: rgba(2, 6, 23, .78) !important;
+  border: 1px solid rgba(148, 163, 184, .24) !important;
+  color: #f8fafc !important;
+  border-radius: 10px !important;
+}
+
+body.visa-etude .ve-check-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: .65rem !important;
+  padding: .85rem 0 !important;
+}
+
+@media (max-width: 720px) {
+  body.visa-etude .ve-dashboard-hero,
+  body.visa-etude .container {
+    width: min(100% - 20px, 1120px) !important;
+  }
+
+  body.visa-etude .ve-cta-group {
+    flex-direction: column !important;
+  }
+
+  body.visa-etude .ve-btn-primary,
+  body.visa-etude .ve-btn-secondary,
+  body.visa-etude .ve-btn-gold,
+  body.visa-etude .ve-btn-premium {
+    width: 100% !important;
+  }
+}
+/* Mobile readability guard: prevent long Visa Etudes titles from overflowing. */
+@media (max-width: 640px) {
+  body.visa-etude .ve-dashboard-hero h1,
+  body.visa-etude .ve-title,
+  body.visa-etude h1 {
+    max-width: 305px !important;
+    font-size: clamp(1.42rem, 6.7vw, 1.72rem) !important;
+    line-height: 1.18 !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  body.visa-etude .ve-lead,
+  body.visa-etude .ve-dashboard-hero p,
+  body.visa-etude p,
+  body.visa-etude li {
+    max-width: 315px !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  body.visa-etude .ve-btn-primary,
+  body.visa-etude .ve-btn-secondary,
+  body.visa-etude .ve-btn-gold,
+  body.visa-etude .ve-btn-premium,
+  body.visa-etude a[class*="btn"] {
+    width: min(100%, 280px) !important;
+    max-width: 100% !important;
+    padding-inline: 0.85rem !important;
+    font-size: 0.82rem !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+}
+.ve-section-head {
+  margin: 0 0 18px;
+}
+
+.ve-section-head h2 {
+  color: #fff7e6;
+  font-size: clamp(24px, 3vw, 38px);
+  line-height: 1.08;
+  margin: 0 0 8px;
+}
+
+.ve-section-head p {
+  color: rgba(232, 234, 240, .72);
+  margin: 0;
+}
+
+.ve-scholarship-filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(150px, .45fr)) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.ve-scholarship-filters label {
+  display: grid;
+  gap: 7px;
+}
+
+.ve-scholarship-filters span {
+  color: #d4a843;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.ve-scholarship-filters input,
+.ve-scholarship-filters select {
+  min-height: 46px;
+  width: 100%;
+  border: 1px solid rgba(212, 168, 67, .24);
+  border-radius: 12px;
+  background: rgba(5, 10, 24, .72);
+  color: rgba(255, 247, 230, .92);
+  padding: 0 13px;
+}
+
+.ve-scholarship-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ve-scholarship-card {
+  border: 1px solid rgba(212, 168, 67, .18);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(15, 32, 64, .78), rgba(5, 10, 24, .92));
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.ve-scholarship-card__top,
+.ve-scholarship-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ve-scholarship-card h2 {
+  color: #fff7e6;
+  font-size: 20px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.ve-scholarship-card p,
+.ve-scholarship-meta {
+  color: rgba(232, 234, 240, .74);
+  line-height: 1.48;
+  margin: 0;
+}
+
+.ve-scholarship-badge,
+.ve-scholarship-score,
+.ve-scholarship-facts span {
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 10px;
+}
+
+.ve-scholarship-badge {
+  color: #071323;
+  background: #5ee6a8;
+}
+
+.ve-scholarship-score,
+.ve-scholarship-facts span {
+  color: #f0c060;
+  border: 1px solid rgba(212, 168, 67, .22);
+  background: rgba(212, 168, 67, .08);
+}
+
+@media (max-width: 980px) {
+  .ve-scholarship-filters,
+  .ve-scholarship-grid {
+    grid-template-columns: 1fr;
   }
 }

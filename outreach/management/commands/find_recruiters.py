@@ -12,6 +12,7 @@ import logging
 import time
 
 from django.core.management.base import BaseCommand, CommandError
+from services.ai_service import AIService, AIServiceError
 
 logger = logging.getLogger(__name__)
 
@@ -139,17 +140,6 @@ class Command(BaseCommand):
         )
 
     def _generate_with_ai(self, sector_label, country_label, count, model) -> list:
-        try:
-            import openai
-            import os
-            client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        except ImportError:
-            self.stderr.write("openai non disponible.")
-            return []
-        except Exception as e:
-            self.stderr.write(f"OpenAI init error: {e}")
-            return []
-
         user_msg = USER_PROMPT_TEMPLATE.format(
             count=count, sector_label=sector_label, country_label=country_label
         )
@@ -157,16 +147,11 @@ class Command(BaseCommand):
         for attempt in range(1, 4):
             try:
                 self.stdout.write(f"  Tentative {attempt}/3 …")
-                resp = client.chat.completions.create(
-                    model=model,
-                    messages=[
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": user_msg},
-                    ],
-                    temperature=0.7,
-                    max_tokens=4000,
+                raw = AIService().chat_text(
+                    system_prompt=SYSTEM_PROMPT,
+                    user_prompt=user_msg,
+                    task_type="analyse",
                 )
-                raw = resp.choices[0].message.content.strip()
 
                 # Nettoyer le markdown si présent
                 if raw.startswith("```"):
@@ -186,6 +171,9 @@ class Command(BaseCommand):
                 self.stderr.write(f"  JSON parse error (tentative {attempt}): {e}")
                 if attempt < 3:
                     time.sleep(2)
+            except AIServiceError as e:
+                self.stderr.write(f"  AIService error: {e}")
+                return []
             except Exception as e:
                 self.stderr.write(f"  API error (tentative {attempt}): {e}")
                 if attempt < 3:

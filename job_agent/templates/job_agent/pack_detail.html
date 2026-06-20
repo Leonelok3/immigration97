@@ -39,6 +39,9 @@
           <a class="c-btn" href="{% url 'job_agent:lead_detail' lead.id %}">
             Détail offre
           </a>
+          <a class="c-btn c-btn--primary" href="{% url 'job_agent:interview_coach' lead.id %}">
+            Préparer entretien
+          </a>
         {% endif %}
       </div>
     </div>
@@ -58,6 +61,111 @@
             secondary_href=leads_url
           %}
         {% else %}
+        <section class="ja-card" style="margin-bottom:18px;" aria-label="Utiliser le pack">
+          <div class="ja-card__head">
+            <h2>Comment utiliser ce pack</h2>
+            <span class="ja-muted-2">Relis, personnalise, postule, puis prépare l’entretien.</span>
+          </div>
+          <div class="ja-card__body">
+            <div class="ja-calloutgrid">
+              <div class="ja-callout">
+                <p class="ja-callout__k">CV</p>
+                <p class="ja-callout__v">Garde seulement les éléments vrais et ajoute tes preuves concrètes.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">Email</p>
+                <p class="ja-callout__v">Copie l’objet et le message dans le canal de candidature.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">Lettre</p>
+                <p class="ja-callout__v">Personnalise l’accroche si tu connais le recruteur ou l’entreprise.</p>
+              </div>
+              <div class="ja-callout">
+                <p class="ja-callout__k">Entretien</p>
+                <p class="ja-callout__v">Utilise les réponses suggérées pour préparer ton pitch et ta relance.</p>
+              </div>
+            </div>
+            <div class="ja-actions ja-actions--wrap">
+              <a class="c-btn c-btn--primary" href="{% url 'job_agent:interview_coach' lead.id %}">
+                Ouvrir l’assistant entretien
+              </a>
+              <a class="c-btn" href="{% url 'job_agent:apply_wizard' lead.id %}">
+                Postuler vite
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================= -->
+        <!-- COACH IA -->
+        <!-- ========================= -->
+        <section class="ja-card">
+          <div class="ja-card__head">
+            <h2>Coach IA</h2>
+            <div class="ja-pagehead__actions">
+              <span class="c-btn" style="pointer-events:none;">Score ATS {{ pack.ats_score|default:0 }}/100</span>
+            </div>
+          </div>
+
+          <div class="ja-card__body">
+            {% if pack.coach_notes %}
+              <div class="ja-block">
+                <div class="ja-block__head"><h3>Conseils</h3></div>
+                <pre>{{ pack.coach_notes }}</pre>
+              </div>
+              <div class="ja-divider"></div>
+            {% endif %}
+
+            <div class="ja-formgrid">
+              <div class="ja-col-6">
+                <div class="ja-block">
+                  <div class="ja-block__head"><h3>Mots-clés trouvés</h3></div>
+                  <pre>{% if pack.matched_keywords %}{% for kw in pack.matched_keywords %}{{ kw }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}—{% endif %}</pre>
+                </div>
+              </div>
+              <div class="ja-col-6">
+                <div class="ja-block">
+                  <div class="ja-block__head"><h3>Mots-clés à renforcer</h3></div>
+                  <pre>{% if pack.missing_keywords %}{% for kw in pack.missing_keywords %}{{ kw }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}—{% endif %}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="ja-divider"></div>
+
+        <!-- ========================= -->
+        <!-- CV ADAPTÉ -->
+        <!-- ========================= -->
+        <section class="ja-card">
+          <div class="ja-card__head">
+            <h2>CV adapté</h2>
+            <div class="ja-pagehead__actions">
+              <a class="c-btn"
+                 href="{% url 'job_agent:pack_download_pdf' lead.id 'cv' %}">
+                PDF
+              </a>
+              <a class="c-btn"
+                 href="{% url 'job_agent:pack_download_docx' lead.id 'cv' %}">
+                Word
+              </a>
+              <button class="c-btn c-btn--primary"
+                      type="button"
+                      data-copy
+                      data-copy-target="#ja-tailored-cv"
+                      data-copy-toast="CV adapté copié ✅">
+                Copier le CV
+              </button>
+            </div>
+          </div>
+
+          <div class="ja-card__body">
+            <pre id="ja-tailored-cv">{{ pack.tailored_cv_text }}</pre>
+          </div>
+        </section>
+
+        <div class="ja-divider"></div>
 
         <!-- ========================= -->
         <!-- EMAIL -->
@@ -67,6 +175,14 @@
             <h2>Email</h2>
 
             <div class="ja-pagehead__actions">
+              <a class="c-btn"
+                 href="{% url 'job_agent:pack_download_pdf' lead.id 'email' %}">
+                PDF
+              </a>
+              <a class="c-btn"
+                 href="{% url 'job_agent:pack_download_docx' lead.id 'email' %}">
+                Word
+              </a>
               <button class="c-btn"
                       type="button"
                       data-copy
@@ -133,6 +249,14 @@
             <h2>Lettre</h2>
 
             <div class="ja-pagehead__actions">
+              <a class="c-btn"
+                 href="{% url 'job_agent:pack_download_pdf' lead.id 'letter' %}">
+                PDF
+              </a>
+              <a class="c-btn"
+                 href="{% url 'job_agent:pack_download_docx' lead.id 'letter' %}">
+                Word
+              </a>
               <button class="c-btn c-btn--primary"
                       type="button"
                       data-copy

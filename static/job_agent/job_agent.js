@@ -93,7 +93,7 @@
           text = explicitText;
         } else if (targetSelector) {
           const el = qs(targetSelector);
-          if (el) text = clampText(el.textContent);
+          if (el) text = clampText(el.value !== undefined ? el.value : el.textContent);
         }
 
         text = clampText(text);

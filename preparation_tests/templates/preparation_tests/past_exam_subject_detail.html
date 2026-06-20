@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static prep_content %}
+
+{% block title %}{{ subject.title }} | Ancien sujet corrigé{% endblock %}
+{% block body_class %}preparation-tests{% endblock %}
+{% block app_scope %}preparation-tests{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/preparation_tests.css' %}?v=20260329">
+<style>
+.pd-page{min-height:100vh;background:#050b18;color:#fff;padding:2rem 1.25rem 4rem;}
+.pd-wrap{max-width:960px;margin:0 auto;}
+.pd-head{margin:1rem 0 1.5rem;}
+.pd-meta{font-size:.75rem;font-weight:800;color:#86efac;text-transform:uppercase;letter-spacing:.08em;}
+.pd-title{font-size:1.8rem;font-weight:900;margin:.35rem 0;color:#fff;}
+.pd-lead{color:rgba(255,255,255,.58);line-height:1.7;}
+.pd-panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:1.25rem;margin:1rem 0;}
+.pd-panel h2{font-size:1rem;margin:0 0 .75rem;color:#fff;}
+.pd-rich{color:rgba(255,255,255,.74);line-height:1.8;font-size:.92rem;}
+.pd-actions{display:flex;gap:.65rem;flex-wrap:wrap;margin:1rem 0;}
+.pd-btn{display:inline-flex;align-items:center;justify-content:center;padding:.6rem 1rem;border-radius:8px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.35);color:#f0c060;font-size:.84rem;font-weight:800;text-decoration:none;}
+.pd-ex{padding:.85rem;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);margin:.75rem 0;}
+.pd-ex__q{font-weight:800;color:#fff;margin-bottom:.45rem;}
+.pd-ex__a{font-size:.84rem;color:rgba(255,255,255,.62);line-height:1.65;}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="pd-page">
+  <div class="pd-wrap">
+    {% include "preparation_tests/partials/_prep_nav.html" %}
+    <section class="pd-head">
+      <div class="pd-meta">{{ subject.exam_code|upper }} · {{ subject.section|upper }} · {{ subject.level }}</div>
+      <h1 class="pd-title">{{ subject.title }}</h1>
+      {% if subject.source_label %}<p class="pd-lead">{{ subject.source_label }}</p>{% endif %}
+      {% if subject.recurring_theme %}<p class="pd-lead">Thème fréquent: {{ subject.recurring_theme }} · Récurrence {{ subject.frequency_score }}/100</p>{% endif %}
+      <div class="pd-actions">
+        {% if subject.related_lesson %}
+        <a class="pd-btn" href="{% url 'preparation_tests:lesson_session' 'CECR' subject.section subject.related_lesson.id %}">S'entraîner sur ce sujet</a>
+        {% endif %}
+        {% if subject.pdf_subject %}<a class="pd-btn" href="{{ subject.pdf_subject.url }}" target="_blank">PDF sujet</a>{% endif %}
+        {% if subject.pdf_correction %}<a class="pd-btn" href="{{ subject.pdf_correction.url }}" target="_blank">PDF correction</a>{% endif %}
+        <a class="pd-btn" href="{% url 'preparation_tests:past_exam_subjects_index' %}">Tous les anciens sujets</a>
+      </div>
+    </section>
+    {% if subject.subject_html %}
+    <section class="pd-panel">
+      <h2>Sujet</h2>
+      <div class="pd-rich">{{ subject.subject_html|prep_rich }}</div>
+    </section>
+    {% endif %}
+    {% if subject.correction_html %}
+    <section class="pd-panel">
+      <h2>Correction détaillée</h2>
+      <div class="pd-rich">{{ subject.correction_html|prep_rich }}</div>
+    </section>
+    {% endif %}
+    {% if subject.exercises.exists %}
+    <section class="pd-panel">
+      <h2>Exercices dérivés</h2>
+      {% for ex in subject.exercises.all %}
+      <article class="pd-ex">
+        <div class="pd-ex__q">{{ forloop.counter }}. {{ ex.question_text|prep_plain }}</div>
+        <div class="pd-ex__a">Réponse: <strong>{{ ex.correct_option }}</strong>. {{ ex.summary|prep_plain }}</div>
+      </article>
+      {% endfor %}
+    </section>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

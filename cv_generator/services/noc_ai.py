@@ -1,6 +1,4 @@
-from openai import OpenAI
-
-client = OpenAI()
+from services.ai_service import AIService
 
 def generate_noc_tasks(job_title, language="fr"):
     """
@@ -26,13 +24,8 @@ def generate_noc_tasks(job_title, language="fr"):
         f"Format attendu : liste à puces"
     )
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        temperature=0.4,
+    return AIService().chat_text(
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        task_type="faq",
     )
-
-    return response.choices[0].message.content.strip()

@@ -3,9 +3,9 @@
 {% load static %}
 
 {% block title %}Tarifs Immigration97 — Activer mon accès | Visa, CV, Tests de Langue{% endblock %}
-{% block meta_description %}Plans d'accès Immigration97 : Candidat Premium, Pack Famille, Recruteur Pro. Paiement en ligne ou via WhatsApp — MTN MoMo, Orange Money, PayPal, carte. Activation instantanée.{% endblock %}
+{% block meta_description %}Plans d'accès Immigration97 : Candidat Premium, Pack Famille, Recruteur Pro. Paiement en ligne PayUnit ou assistance WhatsApp — MTN MoMo, Orange Money, carte. Activation instantanée.{% endblock %}
 {% block og_title %}Tarifs Immigration97 — Activer mon accès Premium{% endblock %}
-{% block og_description %}Choisis ton plan et paie en ligne ou via WhatsApp. MTN MoMo, Orange Money, PayPal, MoneyGram, Bitcoin. Accès instantané.{% endblock %}
+{% block og_description %}Choisis ton plan et paie en ligne avec PayUnit. MTN MoMo, Orange Money et carte bancaire. Accès instantané.{% endblock %}
 
 {% block body_class %}billing{% endblock %}
 {% block app_scope %}billing{% endblock %}
@@ -16,8 +16,8 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type":"Question","name":"Comment payer ?","acceptedAnswer":{"@type":"Answer","text":"Paiement en ligne (MTN MoMo, Orange Money, carte) directement sur le site, ou via WhatsApp. Accès activé en 30 secondes."}},
-    {"@type":"Question","name":"Quels modes de paiement ?","acceptedAnswer":{"@type":"Answer","text":"MTN Mobile Money, Orange Money, Wave, PayPal, MoneyGram, Bitcoin et carte bancaire."}},
+    {"@type":"Question","name":"Comment payer ?","acceptedAnswer":{"@type":"Answer","text":"Paiement en ligne via PayUnit (MTN MoMo, Orange Money, carte) directement sur le site. Accès activé après confirmation."}},
+    {"@type":"Question","name":"Quels modes de paiement ?","acceptedAnswer":{"@type":"Answer","text":"MTN Mobile Money, Orange Money et carte bancaire via PayUnit."}},
     {"@type":"Question","name":"Le pack famille, c'est quoi ?","acceptedAnswer":{"@type":"Answer","text":"1 code Premium pour 3 membres de la même famille. Idéal pour partager l'accès entre frères/sœurs ou parents."}},
     {"@type":"Question","name":"Les recruteurs paient-ils ?","acceptedAnswer":{"@type":"Answer","text":"Voir les profils est gratuit. Le plan Pro débloque la messagerie, les invitations illimitées et l'export des contacts."}}
   ]
@@ -172,11 +172,11 @@
 <div class="p-hero">
   <div class="p-hero__badge">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
-    Paiement via WhatsApp · Activation en 30 min
+    Premium mensuel · 15$ · Paiement PayUnit
   </div>
   <h1>Investissez dans votre<br><span>avenir à l'international</span></h1>
   <p class="p-hero__sub">
-    Payez via WhatsApp en quelques minutes. MTN MoMo, Orange Money, PayPal, MoneyGram, carte. Accès activé dès confirmation.
+    Un seul abonnement Premium donne accès aux outils clés: Job Agent, bourses, CV, lettres IA, guides, vidéos et examens blancs. Paiement en ligne via PayUnit, activation après confirmation.
   </p>
 
   <!-- Stats -->
@@ -203,8 +203,8 @@
   <div class="p-free-banner">
     <div class="p-free-banner__icon">🎓</div>
     <div>
-      <strong>Cours de langue 100% gratuits</strong> — Tout le contenu pédagogique (Français, Anglais, Allemand, Italien) est accessible sans abonnement.
-      Le Premium débloque les <strong>simulations d'examen officielles, le profil visible par les recruteurs et les ressources PDF</strong>.
+      <strong>Gratuit pour découvrir</strong> — cours, leçons, offres publiques, bourses publiques et certains guides restent accessibles.
+      Le Premium débloque les <strong>examens blancs, exports CV, guides/vidéos premium, ressources privées et outils IA avancés</strong>.
     </div>
   </div>
 
@@ -234,10 +234,14 @@
       </ul>
 
       <div class="p-card__ctas">
-        <a href="https://wa.me/237693649944?text=Bonjour+Immigration97%2C+je+veux+le+plan+%22{{ plan.name|urlencode }}%22+%28{{ plan.price_xaf|floatformat:0 }}+FCFA%29.+Comment+proc%C3%A9der+%3F"
-           target="_blank" rel="noopener"
+        <a href="{% url 'billing:buy_plan' plan.slug %}?next={{ next|default:''|urlencode }}"
            class="p-card__cta {% if plan.is_popular %}p-card__cta--primary{% else %}p-card__cta--outline{% endif %}">
-          💬 Payer via WhatsApp →
+          Activer Premium maintenant
+        </a>
+        <a href="https://wa.me/237680625082?text=Bonjour+Immigration97%2C+j%27ai+besoin+d%27aide+pour+activer+Premium."
+           target="_blank" rel="noopener"
+           class="p-card__cta p-card__cta--wa p-card__cta--small">
+          Assistance WhatsApp
         </a>
       </div>
     </article>
@@ -391,12 +395,12 @@
     <div>
       <div class="p-hiw__step-icon">💬</div>
       <div class="p-hiw__step-num">1 · Choisir & payer</div>
-      <div class="p-hiw__step-desc">Cliquez "Payer via WhatsApp". MoMo, Orange Money, PayPal, MoneyGram, carte…</div>
+      <div class="p-hiw__step-desc">Choisissez Premium puis payez en ligne avec PayUnit: MoMo, Orange Money ou carte.</div>
     </div>
     <div>
       <div class="p-hiw__step-icon">🔑</div>
-      <div class="p-hiw__step-num">2 · Code reçu</div>
-      <div class="p-hiw__step-desc">Dès réception du paiement, votre code d'activation est envoyé sur WhatsApp.</div>
+      <div class="p-hiw__step-num">2 · Confirmation</div>
+      <div class="p-hiw__step-desc">Après validation PayUnit, votre compte Premium est activé automatiquement.</div>
     </div>
     <div>
       <div class="p-hiw__step-icon">✅</div>

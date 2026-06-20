@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static prep_content %}
 
 {% block body_class %}preparation-tests{% endblock %}
 {% block app_scope %}preparation-tests{% endblock %}
@@ -47,6 +47,32 @@ score officiel, analyse CECR et correction IA EO/EE.
 
   </div>
 </section>
+
+{% if skill_cards %}
+<section class="pt-section">
+  <div class="container">
+    <article class="pt-card">
+      <h3 style="margin-bottom:1rem;">Profil CECR par compétence</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;">
+        {% for skill in skill_cards %}
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.9rem;text-align:left;">
+          <div style="font-size:.72rem;font-weight:800;color:#22c55e;letter-spacing:.08em;">{{ skill.code }}</div>
+          <div style="font-size:.82rem;opacity:.72;margin:.25rem 0 .55rem;">{{ skill.label }}</div>
+          {% if skill.pct is not None %}
+            <div style="font-size:1.15rem;font-weight:900;">{{ skill.pct }}%</div>
+            <div style="font-size:.76rem;opacity:.55;">{{ skill.correct }}/{{ skill.total }} correcte{{ skill.total|pluralize }}</div>
+          {% else %}
+            <div style="font-size:1.15rem;font-weight:900;">IA</div>
+            <div style="font-size:.76rem;opacity:.55;">Correction orale/écrite</div>
+          {% endif %}
+          <span style="display:inline-flex;margin-top:.55rem;padding:.18rem .5rem;border-radius:999px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#86efac;font-size:.72rem;font-weight:700;">{{ skill.cefr }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </article>
+  </div>
+</section>
+{% endif %}
 
 <!-- SCORE PRINCIPAL -->
 <section class="pt-section">
@@ -170,32 +196,28 @@ score officiel, analyse CECR et correction IA EO/EE.
               {% if not r.is_correct %}
               data-revision-section="co"
               data-revision-id="{{ r.exercise.id }}"
-              data-revision-question="{{ r.exercise.question_text|escapejs }}"
-              data-revision-a="{{ r.exercise.option_a|escapejs }}"
-              data-revision-b="{{ r.exercise.option_b|escapejs }}"
-              data-revision-c="{{ r.exercise.option_c|escapejs }}"
-              data-revision-d="{{ r.exercise.option_d|escapejs }}"
+              data-revision-question="{{ r.exercise.question_text|prep_clean|escapejs }}"
+              data-revision-a="{{ r.exercise.option_a|prep_clean|escapejs }}"
+              data-revision-b="{{ r.exercise.option_b|prep_clean|escapejs }}"
+              data-revision-c="{{ r.exercise.option_c|prep_clean|escapejs }}"
+              data-revision-d="{{ r.exercise.option_d|prep_clean|escapejs }}"
               data-revision-correct="{{ r.exercise.correct_option }}"
               {% endif %}
               >
-                <strong>Q{{ forloop.counter }}</strong> — {{ r.exercise.question_text }}
+                <strong>Q{{ forloop.counter }}</strong> — {{ r.exercise.question_text|prep_plain }}
                 <br>
                 {% if r.is_correct %}
                   ✅ <strong>{{ r.answer }}</strong> — Bonne réponse
                 {% else %}
                   ❌ Ta réponse : <strong>{{ r.answer|default:"(aucune)" }}</strong>
                   &nbsp;|&nbsp;
-                  Correcte : <strong>{{ r.exercise.correct_option }}</strong> —
-                  {% if r.exercise.correct_option == "A" %}{{ r.exercise.option_a }}
-                  {% elif r.exercise.correct_option == "B" %}{{ r.exercise.option_b }}
-                  {% elif r.exercise.correct_option == "C" %}{{ r.exercise.option_c }}
-                  {% elif r.exercise.correct_option == "D" %}{{ r.exercise.option_d }}
-                  {% endif %}
+                  Correcte : <strong>{{ r.correct_option }}</strong> — {{ r.correct_text|prep_plain }}
                 {% endif %}
-                {% if r.exercise.summary and not r.is_correct %}
-                <div style="margin-top:.35rem; padding:.3rem .5rem; background:rgba(0,0,0,.06);
-                            border-radius:4px; font-style:italic; color:#999; font-size:.82rem;">
-                  💡 {{ r.exercise.summary }}
+                {% if not r.is_correct %}
+                <div style="margin-top:.4rem; padding:.45rem .6rem; background:rgba(59,130,246,.08);
+                            border:1px solid rgba(59,130,246,.2); border-radius:6px;
+                            color:rgba(255,255,255,.72); font-size:.82rem; line-height:1.55;">
+                  <strong>Pourquoi :</strong> {{ r.explanation|prep_plain }}
                 </div>
                 {% endif %}
               </div>
@@ -264,32 +286,28 @@ score officiel, analyse CECR et correction IA EO/EE.
               {% if not r.is_correct %}
               data-revision-section="ce"
               data-revision-id="{{ r.exercise.id }}"
-              data-revision-question="{{ r.exercise.question_text|escapejs }}"
-              data-revision-a="{{ r.exercise.option_a|escapejs }}"
-              data-revision-b="{{ r.exercise.option_b|escapejs }}"
-              data-revision-c="{{ r.exercise.option_c|escapejs }}"
-              data-revision-d="{{ r.exercise.option_d|escapejs }}"
+              data-revision-question="{{ r.exercise.question_text|prep_clean|escapejs }}"
+              data-revision-a="{{ r.exercise.option_a|prep_clean|escapejs }}"
+              data-revision-b="{{ r.exercise.option_b|prep_clean|escapejs }}"
+              data-revision-c="{{ r.exercise.option_c|prep_clean|escapejs }}"
+              data-revision-d="{{ r.exercise.option_d|prep_clean|escapejs }}"
               data-revision-correct="{{ r.exercise.correct_option }}"
               {% endif %}
               >
-                <strong>Q{{ forloop.counter }}</strong> — {{ r.exercise.question_text }}
+                <strong>Q{{ forloop.counter }}</strong> — {{ r.exercise.question_text|prep_plain }}
                 <br>
                 {% if r.is_correct %}
                   ✅ <strong>{{ r.answer }}</strong> — Bonne réponse
                 {% else %}
                   ❌ Ta réponse : <strong>{{ r.answer|default:"(aucune)" }}</strong>
                   &nbsp;|&nbsp;
-                  Correcte : <strong>{{ r.exercise.correct_option }}</strong> —
-                  {% if r.exercise.correct_option == "A" %}{{ r.exercise.option_a }}
-                  {% elif r.exercise.correct_option == "B" %}{{ r.exercise.option_b }}
-                  {% elif r.exercise.correct_option == "C" %}{{ r.exercise.option_c }}
-                  {% elif r.exercise.correct_option == "D" %}{{ r.exercise.option_d }}
-                  {% endif %}
+                  Correcte : <strong>{{ r.correct_option }}</strong> — {{ r.correct_text|prep_plain }}
                 {% endif %}
-                {% if r.exercise.summary and not r.is_correct %}
-                <div style="margin-top:.35rem; padding:.3rem .5rem; background:rgba(0,0,0,.06);
-                            border-radius:4px; font-style:italic; color:#999; font-size:.82rem;">
-                  💡 {{ r.exercise.summary }}
+                {% if not r.is_correct %}
+                <div style="margin-top:.4rem; padding:.45rem .6rem; background:rgba(59,130,246,.08);
+                            border:1px solid rgba(59,130,246,.2); border-radius:6px;
+                            color:rgba(255,255,255,.72); font-size:.82rem; line-height:1.55;">
+                  <strong>Pourquoi :</strong> {{ r.explanation|prep_plain }}
                 </div>
                 {% endif %}
               </div>
@@ -372,16 +390,16 @@ score officiel, analyse CECR et correction IA EO/EE.
                   border-radius:0 8px 8px 0; background:rgba(168,85,247,.06);">
 
         <p style="font-weight:600; margin-bottom:.35rem;">
-          🎤 Sujet {{ forloop.counter }} — {{ item.exercise.title }}
+          🎤 Sujet {{ forloop.counter }} — {{ item.exercise.title|prep_plain }}
         </p>
         {% if item.exercise.instruction %}
         <p style="font-size:.88rem; opacity:.75; margin-bottom:.4rem;">
-          {{ item.exercise.instruction }}
+          {{ item.exercise.instruction|prep_plain }}
         </p>
         {% endif %}
         {% if item.exercise.question_text %}
         <p style="font-size:.9rem; color:#a855f7; margin-bottom:.75rem;">
-          📝 {{ item.exercise.question_text }}
+          📝 {{ item.exercise.question_text|prep_plain }}
         </p>
         {% endif %}
 
@@ -430,16 +448,16 @@ score officiel, analyse CECR et correction IA EO/EE.
                   margin-bottom:1rem;">
 
         <p style="font-weight:600; margin-bottom:.35rem;">
-          ✍️ Sujet {{ forloop.counter }} — {{ item.exercise.title }}
+          ✍️ Sujet {{ forloop.counter }} — {{ item.exercise.title|prep_plain }}
         </p>
         {% if item.exercise.instruction %}
         <p style="font-size:.88rem; opacity:.75; margin-bottom:.4rem;">
-          {{ item.exercise.instruction }}
+          {{ item.exercise.instruction|prep_plain }}
         </p>
         {% endif %}
         {% if item.exercise.question_text %}
         <p style="font-size:.9rem; color:#f59e0b; margin-bottom:.75rem;">
-          📝 {{ item.exercise.question_text }}
+          📝 {{ item.exercise.question_text|prep_plain }}
         </p>
         {% endif %}
 

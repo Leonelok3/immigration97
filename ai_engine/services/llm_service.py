@@ -3,6 +3,8 @@ import os
 import urllib.error
 import urllib.request
 
+from services.ai_service import AIService
+
 
 def _mock_response(user_prompt: str) -> str:
     p = (user_prompt or "").upper()
@@ -76,34 +78,11 @@ def _http_post_json(url: str, headers: dict, payload: dict, timeout: int = 60) -
 
 
 def _call_openai(system_prompt: str, user_prompt: str) -> str:
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY is missing.")
-
-    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
-    model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
-    timeout = int(os.getenv("LLM_TIMEOUT_SECONDS", "60"))
-
-    payload = {
-        "model": model,
-        "temperature": float(os.getenv("OPENAI_TEMPERATURE", "0.2")),
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-    }
-
-    data = _http_post_json(
-        url=f"{base_url}/chat/completions",
-        headers={"Authorization": f"Bearer {api_key}"},
-        payload=payload,
-        timeout=timeout,
+    return AIService(timeout=int(os.getenv("LLM_TIMEOUT_SECONDS", "60"))).chat_text(
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        task_type="analyse",
     )
-
-    try:
-        return data["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        raise RuntimeError(f"Unexpected OpenAI response format: {data}") from e
 
 
 def _call_azure_openai(system_prompt: str, user_prompt: str) -> str:

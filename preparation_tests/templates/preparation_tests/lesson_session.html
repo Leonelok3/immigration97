@@ -224,12 +224,19 @@
   <div class="ls-main">
 
     <!-- CE / CO: lesson text passage -->
-    {% if lesson.content_html %}
+    {% if lesson.content_html or passage_text %}
     <div class="ls-passage">
       <div class="ls-passage__label">
         {% if section == "ce" %}📄 Texte de compréhension{% elif section == "co" %}📝 Contexte de l'audio{% else %}📘 Introduction{% endif %}
       </div>
+      {% if lesson.content_html %}
       <div class="ls-passage__body">{{ lesson.content_html|prep_rich }}</div>
+      {% endif %}
+      {% if section == "ce" and passage_text %}
+      <div class="ls-passage__body pt-reading-passage" style="margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; line-height: 1.7;">
+        {{ passage_text|prep_rich }}
+      </div>
+      {% endif %}
     </div>
     {% endif %}
 
@@ -329,9 +336,7 @@
         <span>{{ forloop.counter }}</span> Question {{ forloop.counter }}
       </div>
 
-      {% if exercise.instruction %}
-      <div class="ls-ex-card__instruction">{{ exercise.instruction|prep_plain }}</div>
-      {% endif %}
+      {# exercise.instruction (texte de compréhension) est affiché une seule fois en haut de la page #}
 
       <div class="ls-ex-card__question">{{ exercise.question_text|prep_plain }}</div>
 

@@ -405,6 +405,10 @@ def lesson_session(request, exam_code, section, lesson_id):
         for ex in raw_exercises
     ]
 
+    passage_text = ""
+    if section == "ce" and raw_exercises.exists():
+        passage_text = raw_exercises.first().instruction
+
     context = {
         "lesson": lesson,
         "exercises": exercises,
@@ -415,6 +419,7 @@ def lesson_session(request, exam_code, section, lesson_id):
         "progress_total": progress_total,
         "progress_percent": progress_percent,
         "is_premium": is_premium,
+        "passage_text": passage_text,
     }
 
     return render(request, "preparation_tests/lesson_session.html", context)

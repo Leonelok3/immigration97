@@ -24,6 +24,20 @@ PYTHON_BIN="$VENV_DIR/bin/python3"
 PIP_BIN="$VENV_DIR/bin/pip"
 cd "$PROJECT_PATH" || exit 1
 
+echo ""
+echo -e "${BLUE}[0/6] 🔄 Synchronisation Git locale${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+git fetch origin --quiet
+GitModified=$(git status --short | wc -l)
+if [ "$GitModified" -ne 0 ]; then
+    git reset --hard origin/main
+    git clean -fd
+fi
+
+git checkout origin/main -- deploy_ce_final.sh || true
+
+git reset --hard origin/main
+
 if [ ! -d "$VENV_DIR" ]; then
     echo ""
     echo -e "${BLUE}[0/6] 🐍 Création de l'environnement virtuel${NC}"

@@ -18,7 +18,7 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-PROJECT_PATH="/home/ubuntu/e-shelle"
+PROJECT_PATH="/home/ubuntu/immigration97"
 cd "$PROJECT_PATH" || exit 1
 
 # ============================================================

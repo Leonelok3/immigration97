@@ -145,6 +145,7 @@ INSTALLED_APPS = [
     "mediafiles",
     "resources",
     "outreach",
+    "esignature",
 ]
 
 
@@ -337,46 +338,19 @@ AXES_COOLOFF_TIME = 1
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": ("'self'",),
-        "connect-src": (
-            "'self'",
-            "https://pagead2.googlesyndication.com",
-            "https://adservice.google.com",
-            "https://googleads.g.doubleclick.net",
-            "https://www.google.com",
-            "https://tpc.googlesyndication.com",
-            "https://www.gstatic.com",
-        ),
+        "connect-src": ("'self'",),
         "font-src": ("'self'", "https://fonts.gstatic.com", "data:"),
-        "frame-src": (
-            "'self'",
-            "https://googleads.g.doubleclick.net",
-            "https://pagead2.googlesyndication.com",
-            "https://tpc.googlesyndication.com",
-            "https://www.google.com",
-            "https://google.com",
-        ),
+        "frame-src": ("'self'",),
         "img-src": (
             "'self'",
             "data:",
             "https://res.cloudinary.com",
-            "https://pagead2.googlesyndication.com",
-            "https://adservice.google.com",
-            "https://googleads.g.doubleclick.net",
-            "https://tpc.googlesyndication.com",
-            "https://www.google.com",
-            "https://www.gstatic.com",
         ),
         "script-src": (
             "'self'",
             "https://cdnjs.cloudflare.com",
             "'unsafe-inline'",
             "'unsafe-eval'",
-            "https://pagead2.googlesyndication.com",
-            "https://adservice.google.com",
-            "https://www.googletagservices.com",
-            "https://www.google.com",
-            "https://tpc.googlesyndication.com",
-            "https://googleads.g.doubleclick.net",
         ),
         "style-src": ("'self'", "https://fonts.googleapis.com", "'unsafe-inline'"),
     }

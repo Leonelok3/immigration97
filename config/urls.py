@@ -20,22 +20,12 @@ def _serve_sw(request):
     return resp
 
 
-def _serve_ads_txt(request):
-    """Sert ads.txt depuis /ads.txt pour Google AdSense."""
-    from django.http import HttpResponse
-    content = "google.com, pub-8153544065381730, DIRECT, f08c47fec0942fa0\n"
-    resp = HttpResponse(content, content_type="text/plain; charset=utf-8")
-    resp["Cache-Control"] = "public, max-age=300"
-    return resp
-
-
 def _serve_robots_txt(request):
     """Autorise les robots et expose les fichiers publics attendus."""
     from django.http import HttpResponse
     content = "\n".join([
         "User-agent: *",
         "Allow: /",
-        "Allow: /ads.txt",
         "Sitemap: https://immigration97.com/sitemap.xml",
         "",
     ])
@@ -95,7 +85,6 @@ sitemaps = {"actualite": NewsItemSitemap}
 
 urlpatterns = [
     path("sw.js", _serve_sw, name="service_worker"),
-    path("ads.txt", _serve_ads_txt, name="ads_txt"),
     path("robots.txt", _serve_robots_txt, name="robots_txt"),
     path("admin/", admin.site.urls),
     path("", home, name="home"),
@@ -170,6 +159,7 @@ urlpatterns = [
     path("protected-media/", include("mediafiles.urls")),
     path("api/ai/", include("ai_engine.urls")),
     path("ressources/", include(("resources.urls", "resources"), namespace="resources")),
+    path("esignature/", include(("esignature.urls", "esignature"), namespace="esignature")),
     path("", include(("outreach.urls", "outreach"), namespace="outreach")),
     path("edu/", include("edu_platform.urls", namespace="edu")),
 

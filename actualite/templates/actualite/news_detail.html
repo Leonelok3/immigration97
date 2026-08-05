@@ -200,7 +200,6 @@ body.actualite{background:#050A18!important;color:#E8EAF0!important;font-family:
     <div class="ad-toc" id="toc-container"><div class="ad-toc__hd">📋 Sommaire</div><ul class="ad-toc__ul" id="toc-list"></ul></div>
     <div class="ad-sum" id="auto-summary" style="display:none;"><div class="ad-sum__hd">⚡ Points essentiels</div><ul class="ad-sum__ul" id="auto-summary-list"></ul></div>
     <article class="ad-art" id="article-content">{% if article.content %}{{ article.content|safe }}{% else %}<p>Contenu en préparation.</p>{% endif %}</article>
-    {% include "actualite/partials/_ads_slot.html" with slot="in_article" %}
     {% if related %}
     <div style="margin-top:2rem;">
       <p class="ad-sec-eye">Même pays</p><h2 class="ad-sec-hd">Articles similaires</h2>
@@ -235,7 +234,6 @@ body.actualite{background:#050A18!important;color:#E8EAF0!important;font-family:
       </div>
     </div>
     {% if article.tags.all %}<div class="ad-sb"><h4>Mots-clés</h4><div class="ad-tags">{% for t in article.tags.all %}<span class="ad-tag">#{{ t.name }}</span>{% endfor %}</div></div>{% endif %}
-    {% include "actualite/partials/_ads_slot.html" with slot="sidebar" %}
   </div>
 </div>
 

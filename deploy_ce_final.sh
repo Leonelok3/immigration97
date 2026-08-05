@@ -29,7 +29,8 @@ if [ ! -d "$VENV_DIR" ]; then
     echo -e "${BLUE}[0/6] 🐍 Création de l'environnement virtuel${NC}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     python3 -m venv "$VENV_DIR"
-    "$PIP_BIN" install --upgrade pip
+    "$PIP_BIN" install --upgrade pip setuptools wheel
+    "$PIP_BIN" install cython
     "$PIP_BIN" install -r requirements.txt
 fi
 

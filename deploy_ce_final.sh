@@ -19,7 +19,21 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 PROJECT_PATH="/home/ubuntu/immigration97"
+VENV_DIR="$PROJECT_PATH/.venv"
+PYTHON_BIN="$VENV_DIR/bin/python3"
+PIP_BIN="$VENV_DIR/bin/pip"
 cd "$PROJECT_PATH" || exit 1
+
+if [ ! -d "$VENV_DIR" ]; then
+    echo ""
+    echo -e "${BLUE}[0/6] 🐍 Création de l'environnement virtuel${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    python3 -m venv "$VENV_DIR"
+    "$PIP_BIN" install --upgrade pip
+    "$PIP_BIN" install -r requirements.txt
+fi
+
+source "$VENV_DIR/bin/activate"
 
 # ============================================================
 # ÉTAPE 1: GIT PULL
@@ -41,7 +55,7 @@ echo ""
 echo -e "${BLUE}[2/6] 📚 IMPORT CURRICULUM CE A1 (--clear)${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-python3 manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_A1_fr.json --clear 2>&1 | tail -20
+python manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_A1_fr.json --clear 2>&1 | tail -20
 
 # ============================================================
 # ÉTAPE 3: IMPORT REMAINING CURRICULUM (A2-C2)
@@ -64,7 +78,7 @@ echo ""
 echo -e "${BLUE}[4/6] 📋 IMPORT EXAMS CE A1-B2 (--clear)${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-python3 manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_a_b_fr.json --clear 2>&1 | tail -20
+python manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_a_b_fr.json --clear 2>&1 | tail -20
 
 # ============================================================
 # ÉTAPE 5: IMPORT EXAMS C
@@ -73,7 +87,7 @@ echo ""
 echo -e "${BLUE}[5/6] 📋 IMPORT EXAMS CE C1-C2${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-python3 manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_c_fr.json 2>&1 | tail -20
+python manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_c_fr.json 2>&1 | tail -20
 
 echo -e "${GREEN}✅ Exams A1-C2 importés (195 questions)${NC}"
 
@@ -101,7 +115,7 @@ echo ""
 echo -e "${BLUE}VÉRIFICATION FINALE${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-python3 manage.py shell << PYTHON_EOF
+python manage.py shell << PYTHON_EOF
 import django
 from preparation_tests.models import CourseLesson, CourseExercise, Exam, Question
 

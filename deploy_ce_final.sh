@@ -41,7 +41,7 @@ echo ""
 echo -e "${BLUE}[2/6] 📚 IMPORT CURRICULUM CE A1 (--clear)${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-python manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_A1_fr.json --clear 2>&1 | tail -20
+python3 manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_A1_fr.json --clear 2>&1 | tail -20
 
 # ============================================================
 # ÉTAPE 3: IMPORT REMAINING CURRICULUM (A2-C2)
@@ -52,7 +52,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 for LEVEL in A2 B1 B2 C1 C2; do
     echo "  └─ Importing $LEVEL..."
-    python manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_${LEVEL}_fr.json 2>&1 | grep -E "✅|📝|Résumé" | tail -5
+    python3 manage.py import_reading_curriculum --file ai_engine/learning_content/reading_curriculum_${LEVEL}_fr.json 2>&1 | grep -E "✅|📝|Résumé" | tail -5
 done
 
 echo -e "${GREEN}✅ Curriculum A1-C2 importé (900 exercices)${NC}"
@@ -64,7 +64,7 @@ echo ""
 echo -e "${BLUE}[4/6] 📋 IMPORT EXAMS CE A1-B2 (--clear)${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-python manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_a_b_fr.json --clear 2>&1 | tail -20
+python3 manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_a_b_fr.json --clear 2>&1 | tail -20
 
 # ============================================================
 # ÉTAPE 5: IMPORT EXAMS C
@@ -73,7 +73,7 @@ echo ""
 echo -e "${BLUE}[5/6] 📋 IMPORT EXAMS CE C1-C2${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-python manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_c_fr.json 2>&1 | tail -20
+python3 manage.py import_reading_exams --file ai_engine/learning_content/exams_reading_c_fr.json 2>&1 | tail -20
 
 echo -e "${GREEN}✅ Exams A1-C2 importés (195 questions)${NC}"
 
@@ -101,7 +101,7 @@ echo ""
 echo -e "${BLUE}VÉRIFICATION FINALE${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-python manage.py shell << PYTHON_EOF
+python3 manage.py shell << PYTHON_EOF
 import django
 from preparation_tests.models import CourseLesson, CourseExercise, Exam, Question
 
